@@ -1,0 +1,34 @@
+# Task ID: 2
+# Title: Design Database Schema
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Create database schema for memories, people, and their relationships
+# Details:
+Design and implement a database schema with the following entities:
+
+1. Memories:
+   - id (primary key)
+   - title (string)
+   - date (date)
+   - description (text)
+   - photoUrl (string)
+   - createdAt (timestamp)
+   - updatedAt (timestamp)
+
+2. People:
+   - id (primary key)
+   - name (string)
+   - relationship (string, optional)
+   - createdAt (timestamp)
+   - updatedAt (timestamp)
+
+3. MemoryPerson (junction table):
+   - id (primary key)
+   - memoryId (foreign key)
+   - personId (foreign key)
+
+Implement database connection and ORM setup. Create migration scripts for schema creation and updates.
+
+# Test Strategy:
+Test database connection and basic CRUD operations for each entity. Verify that relationships between memories and people can be created and retrieved correctly. Test migration scripts to ensure they run without errors.

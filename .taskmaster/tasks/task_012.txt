@@ -1,0 +1,19 @@
+# Task ID: 12
+# Title: Implement First-Time User Experience
+# Status: pending
+# Dependencies: 7, 9
+# Priority: medium
+# Description: Create onboarding flow and empty states for new users
+# Details:
+Develop first-time user experience with the following elements:
+
+1. Welcome screen explaining the purpose of Good Times
+2. Guided tour of key features
+3. Empty state for timeline with clear call-to-action
+4. Empty state for people list with guidance
+5. Sample memory creation walkthrough
+
+Implement conditional rendering based on user state (new vs. returning). Create engaging and informative empty states that guide users to appropriate actions. Design a cohesive onboarding flow that introduces core concepts.
+
+# Test Strategy:
+Test onboarding flow as a new user. Verify that empty states provide clear guidance. Test sample memory creation walkthrough. Verify that the experience is cohesive and informative.

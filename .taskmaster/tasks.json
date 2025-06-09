@@ -1,0 +1,12 @@
+{
+  "version": "1.0",
+  "tasks": {
+    "hello": {
+      "description": "A simple hello world task",
+      "prompt": "Say hello to the world",
+      "model": "claude-3-opus-20240229",
+      "temperature": 0.7,
+      "maxTokens": 100
+    }
+  }
+} 

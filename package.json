@@ -1,0 +1,19 @@
+{
+  "name": "good-day",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "task": "task-master-ai",
+    "task:init": "task-master-ai init",
+    "task:list": "task-master-ai list",
+    "task:run": "task-master-ai run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "task-master-ai": "^0.16.2"
+  }
+}
