@@ -1,6 +1,6 @@
 # Task ID: 2
 # Title: Design Database Schema
-# Status: in-progress
+# Status: done
 # Dependencies: 1
 # Priority: high
 # Description: Create database schema for memories, people, and their relationships
@@ -34,31 +34,31 @@ Implement database connection and ORM setup. Create migration scripts for schema
 Test database connection and basic CRUD operations for each entity. Verify that relationships between memories and people can be created and retrieved correctly. Test migration scripts to ensure they run without errors.
 
 # Subtasks:
-## 1. Set up database connection and ORM configuration [pending]
+## 1. Set up database connection and ORM configuration [done]
 ### Dependencies: None
 ### Description: Configure the database connection and set up the ORM (Object-Relational Mapping) framework to interact with the database.
 ### Details:
 Install necessary database driver and ORM packages. Create configuration files for database connection including environment variables for credentials. Set up the ORM with appropriate configuration for the development environment. Ensure connection pooling is properly configured for optimal performance.
 
-## 2. Create entity models for Memories and People [pending]
+## 2. Create entity models for Memories and People [done]
 ### Dependencies: 2.1
 ### Description: Define the data models for the Memories and People entities according to the specified schema requirements.
 ### Details:
 Create model files for Memories and People with all required fields and data types. Include validation rules for each field (e.g., required fields, string length limits). Add timestamps for createdAt and updatedAt fields. Define appropriate indexes for frequently queried fields.
 
-## 3. Implement MemoryPerson junction table and relationships [pending]
+## 3. Implement MemoryPerson junction table and relationships [done]
 ### Dependencies: 2.2
 ### Description: Create the junction table model and establish the many-to-many relationship between Memories and People.
 ### Details:
 Define the MemoryPerson model with appropriate foreign keys. Set up the relationship mappings in both the Memory and Person models to enable easy querying of related entities. Ensure proper cascade behavior for create, update, and delete operations. Configure foreign key constraints with appropriate ON DELETE and ON UPDATE actions.
 
-## 4. Create database migration scripts [pending]
+## 4. Create database migration scripts [done]
 ### Dependencies: 2.3
 ### Description: Develop migration scripts to create the database schema and handle future updates.
 ### Details:
 Generate initial migration script to create all tables with proper columns, data types, and constraints. Include creation of primary keys, foreign keys, and indexes. Add separate migration scripts for potential future schema changes. Ensure migrations can be run both forward and backward (up/down).
 
-## 5. Implement database seed data and documentation [pending]
+## 5. Implement database seed data and documentation [done]
 ### Dependencies: 2.4
 ### Description: Create seed data for development and testing, and document the database schema.
 ### Details:
