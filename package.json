@@ -8,12 +8,18 @@
     "task": "task-master-ai",
     "task:init": "task-master-ai init",
     "task:list": "task-master-ai list",
-    "task:run": "task-master-ai run"
+    "task:run": "task-master-ai run",
+    "dev": "npm-run-all --parallel start:frontend start:backend",
+    "start:frontend": "npm --prefix frontend start",
+    "start:backend": "npm --prefix backend run dev"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "task-master-ai": "^0.16.2"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
   }
 }

@@ -8,7 +8,7 @@
       "testStrategy": "Verify that the development environment can be set up with a single command. Ensure that the frontend can communicate with the backend through GraphQL queries. Test that the basic application runs without errors in development mode.",
       "priority": "high",
       "dependencies": [],
-      "status": "pending",
+      "status": "done",
       "subtasks": [
         {
           "id": 1,
@@ -16,7 +16,7 @@
           "description": "Create the project repository and set up the basic folder structure for frontend and backend components.",
           "dependencies": [],
           "details": "Create a new Git repository. Initialize the project with npm init to create the root package.json. Set up a monorepo structure with 'frontend' and 'backend' directories. Create .gitignore file with appropriate entries for node_modules, build directories, and environment files. Add README.md with project overview and setup instructions.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Verify repository structure is correct and all initial files are properly created and committed."
         },
         {
@@ -27,7 +27,7 @@
             1
           ],
           "details": "Inside the frontend directory, initialize a new React application using Create React App (CRA). Install Material-UI dependencies (npm install @mui/material @emotion/react @emotion/styled). Set up basic folder structure for components, pages, services, and utilities. Configure basic routing with react-router-dom. Create a simple App component and index entry point. Add frontend-specific package.json scripts for development, building, and testing.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Run the development server and verify the React application loads correctly. Test that Material-UI components render properly."
         },
         {
@@ -38,7 +38,7 @@
             1
           ],
           "details": "Inside the backend directory, initialize a new Node.js application with npm init. Install Express and other necessary dependencies (cors, body-parser, dotenv, etc.). Create server.js as the entry point. Set up middleware for request parsing, CORS, and error handling. Implement a basic health check endpoint. Configure environment variables with dotenv. Create folder structure for routes, controllers, models, and utilities. Add backend-specific package.json scripts for development and production.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Start the server and test the health check endpoint. Verify proper error handling and middleware functionality."
         },
         {
@@ -49,7 +49,7 @@
             3
           ],
           "details": "Install Apollo Server and GraphQL dependencies (apollo-server-express, graphql). Create a basic GraphQL schema with type definitions and resolvers. Set up Apollo Server and integrate it with the Express application. Create folders for schema definitions, resolvers, and data sources. Implement a simple query to test the GraphQL endpoint. Configure GraphQL playground for development. Add proper error handling for GraphQL operations.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test GraphQL endpoint with a simple query using GraphQL playground. Verify schema is correctly defined and resolvers are working."
         },
         {
@@ -61,7 +61,7 @@
             4
           ],
           "details": "Install and configure ESLint and Prettier for both frontend and backend. Create configuration files (.eslintrc, .prettierrc) with appropriate rules. Set up Apollo Client in the React frontend to connect to the GraphQL API. Create a simple component that fetches data from the API to verify the connection. Configure proxy settings in the frontend to communicate with the backend during development. Set up scripts in the root package.json to run both frontend and backend concurrently. Create documentation for the development workflow.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Verify ESLint and Prettier are working correctly. Test the frontend-backend integration by making a GraphQL query from the React application and confirming data is retrieved correctly."
         }
       ]

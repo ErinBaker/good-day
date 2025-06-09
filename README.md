@@ -1,4 +1,4 @@
-# Good Day Project
+```# Good Day Project
 
 This project uses a monorepo structure with separate frontend and backend applications.
 
@@ -16,7 +16,16 @@ This project uses a monorepo structure with separate frontend and backend applic
 
 ## Development
 
-- Run frontend and backend separately in their respective directories.
+- To run both frontend and backend concurrently from the project root:
+  ```bash
+  npm run dev
+  ```
+  This will start the React frontend and the Node.js backend together.
+
+- The frontend is configured to proxy API requests to the backend at http://localhost:4000.
+- Apollo Client is set up in the frontend to connect to the GraphQL API. You can set the API URL with the `REACT_APP_GRAPHQL_API_URL` environment variable if needed.
+
+- You can still run frontend and backend separately in their respective directories if desired.
 - Use the root `.gitignore` to exclude node_modules, build, dist, and .env files.
 
 ## Usage

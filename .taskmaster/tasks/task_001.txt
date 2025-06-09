@@ -1,6 +1,6 @@
 # Task ID: 1
 # Title: Setup Project Infrastructure
-# Status: pending
+# Status: done
 # Dependencies: None
 # Priority: high
 # Description: Initialize the project repository with React frontend, Node.js backend, and GraphQL API architecture
@@ -16,31 +16,31 @@ Setup necessary configuration files including package.json, .gitignore, and envi
 Verify that the development environment can be set up with a single command. Ensure that the frontend can communicate with the backend through GraphQL queries. Test that the basic application runs without errors in development mode.
 
 # Subtasks:
-## 1. Initialize Project Repository and Base Structure [pending]
+## 1. Initialize Project Repository and Base Structure [done]
 ### Dependencies: None
 ### Description: Create the project repository and set up the basic folder structure for frontend and backend components.
 ### Details:
 Create a new Git repository. Initialize the project with npm init to create the root package.json. Set up a monorepo structure with 'frontend' and 'backend' directories. Create .gitignore file with appropriate entries for node_modules, build directories, and environment files. Add README.md with project overview and setup instructions.
 
-## 2. Configure Frontend React Application [pending]
+## 2. Configure Frontend React Application [done]
 ### Dependencies: 1.1
 ### Description: Set up the React frontend with Material-UI and necessary build configurations.
 ### Details:
 Inside the frontend directory, initialize a new React application using Create React App (CRA). Install Material-UI dependencies (npm install @mui/material @emotion/react @emotion/styled). Set up basic folder structure for components, pages, services, and utilities. Configure basic routing with react-router-dom. Create a simple App component and index entry point. Add frontend-specific package.json scripts for development, building, and testing.
 
-## 3. Set Up Node.js Backend with Express [pending]
+## 3. Set Up Node.js Backend with Express [done]
 ### Dependencies: 1.1
 ### Description: Create the Node.js backend server with Express framework and necessary middleware.
 ### Details:
 Inside the backend directory, initialize a new Node.js application with npm init. Install Express and other necessary dependencies (cors, body-parser, dotenv, etc.). Create server.js as the entry point. Set up middleware for request parsing, CORS, and error handling. Implement a basic health check endpoint. Configure environment variables with dotenv. Create folder structure for routes, controllers, models, and utilities. Add backend-specific package.json scripts for development and production.
 
-## 4. Implement GraphQL API with Apollo Server [pending]
+## 4. Implement GraphQL API with Apollo Server [done]
 ### Dependencies: 1.3
 ### Description: Set up Apollo Server for GraphQL API and integrate it with the Express backend.
 ### Details:
 Install Apollo Server and GraphQL dependencies (apollo-server-express, graphql). Create a basic GraphQL schema with type definitions and resolvers. Set up Apollo Server and integrate it with the Express application. Create folders for schema definitions, resolvers, and data sources. Implement a simple query to test the GraphQL endpoint. Configure GraphQL playground for development. Add proper error handling for GraphQL operations.
 
-## 5. Configure Development Tools and Connect Frontend to API [pending]
+## 5. Configure Development Tools and Connect Frontend to API [done]
 ### Dependencies: 1.2, 1.4
 ### Description: Set up code quality tools and connect the React frontend to the GraphQL API.
 ### Details:
