@@ -2,7 +2,7 @@ import React from 'react';
 import { ApolloProvider } from '@apollo/client';
 import client from './services/apolloClient';
 import Hello from './components/Hello';
-import FileUpload from './components/FileUpload';
+import MemoryEntryForm from './components/MemoryEntryForm';
 
 function App() {
   return (
@@ -10,7 +10,7 @@ function App() {
       <div style={{ padding: 32 }}>
         <h1>Good Day App</h1>
         <Hello />
-        <FileUpload />
+        <MemoryEntryForm />
       </div>
     </ApolloProvider>
   );
