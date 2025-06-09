@@ -38,6 +38,38 @@ npx task-master-ai <command>
 
 For more information about available commands and features, visit the [taskmaster-ai documentation](https://github.com/taskmaster-ai/taskmaster-ai).
 
+## Major Features & Milestones
+
+### Task 3: Photo Upload System
+Create a robust system for uploading, validating, processing, and storing photos for memory entries.
+- **Frontend:** React drag-and-drop/file picker component with progress indicators.
+- **Backend:** Express route using Multer for uploads, file validation (JPEG, PNG, WebP), size limits, and error handling.
+- **Image Processing:** Uses Sharp to generate optimized images and thumbnails (original, medium, thumbnail sizes).
+- **Storage:** Secure file storage with unique filenames and date-based folders. Metadata stored in the database. Cascade deletes and orphan cleanup supported.
+- **Retrieval:** API endpoints for image retrieval with caching and security.
+- **Integration:** Photo upload is integrated into memory entry creation/editing workflows in the UI.
+- **Test Strategy:** Upload various file types/sizes, verify validation, optimization, thumbnail generation, and retrieval.
+
+### Task 4: GraphQL API Schema
+Define and implement the GraphQL API for managing memories, people, and their relationships.
+- **Schema:** Types for Memory, Person, MemoryInput, PersonInput. Relationships between memories and people.
+- **Queries:**
+  - `memories(limit, offset, sortBy): [Memory]`
+  - `memory(id): Memory`
+  - `people(limit, offset, sortBy): [Person]`
+  - `person(id): Person`
+- **Mutations:**
+  - `createMemory(input: MemoryInput): Memory`
+  - `updateMemory(id: ID!, input: MemoryInput): Memory`
+  - `deleteMemory(id: ID!): Boolean`
+  - `createPerson(input: PersonInput): Person`
+  - `updatePerson(id: ID!, input: PersonInput): Person`
+  - `deletePerson(id: ID!): Boolean`
+  - `tagPersonInMemory(memoryId: ID!, personId: ID!): Memory`
+  - `removePersonFromMemory(memoryId: ID!, personId: ID!): Memory`
+- **Resolvers:** All queries and mutations implemented with pagination, sorting, relationship management, and error handling. Uses Prisma ORM for database access.
+- **Test Strategy:** Test all queries and mutations with various inputs, verify relationships, and handle edge cases.
+
 ## Database & Prisma ORM
 
 This project uses [Prisma ORM](https://www.prisma.io/) with SQLite for the backend database.
