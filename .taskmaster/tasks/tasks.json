@@ -76,8 +76,62 @@
       "dependencies": [
         1
       ],
-      "status": "pending",
-      "subtasks": []
+      "status": "in-progress",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Set up database connection and ORM configuration",
+          "description": "Configure the database connection and set up the ORM (Object-Relational Mapping) framework to interact with the database.",
+          "dependencies": [],
+          "details": "Install necessary database driver and ORM packages. Create configuration files for database connection including environment variables for credentials. Set up the ORM with appropriate configuration for the development environment. Ensure connection pooling is properly configured for optimal performance.",
+          "status": "pending",
+          "testStrategy": "Write a simple test that verifies the database connection can be established successfully."
+        },
+        {
+          "id": 2,
+          "title": "Create entity models for Memories and People",
+          "description": "Define the data models for the Memories and People entities according to the specified schema requirements.",
+          "dependencies": [
+            1
+          ],
+          "details": "Create model files for Memories and People with all required fields and data types. Include validation rules for each field (e.g., required fields, string length limits). Add timestamps for createdAt and updatedAt fields. Define appropriate indexes for frequently queried fields.",
+          "status": "pending",
+          "testStrategy": "Create unit tests to verify model validation rules work correctly."
+        },
+        {
+          "id": 3,
+          "title": "Implement MemoryPerson junction table and relationships",
+          "description": "Create the junction table model and establish the many-to-many relationship between Memories and People.",
+          "dependencies": [
+            2
+          ],
+          "details": "Define the MemoryPerson model with appropriate foreign keys. Set up the relationship mappings in both the Memory and Person models to enable easy querying of related entities. Ensure proper cascade behavior for create, update, and delete operations. Configure foreign key constraints with appropriate ON DELETE and ON UPDATE actions.",
+          "status": "pending",
+          "testStrategy": "Test the relationship by creating test data and verifying that related entities can be queried correctly."
+        },
+        {
+          "id": 4,
+          "title": "Create database migration scripts",
+          "description": "Develop migration scripts to create the database schema and handle future updates.",
+          "dependencies": [
+            3
+          ],
+          "details": "Generate initial migration script to create all tables with proper columns, data types, and constraints. Include creation of primary keys, foreign keys, and indexes. Add separate migration scripts for potential future schema changes. Ensure migrations can be run both forward and backward (up/down).",
+          "status": "pending",
+          "testStrategy": "Test migrations by running them against a test database and verifying the resulting schema matches expectations."
+        },
+        {
+          "id": 5,
+          "title": "Implement database seed data and documentation",
+          "description": "Create seed data for development and testing, and document the database schema.",
+          "dependencies": [
+            4
+          ],
+          "details": "Develop scripts to populate the database with sample data for development and testing purposes. Create comprehensive documentation of the database schema, including entity-relationship diagrams, field descriptions, and relationship explanations. Document any constraints, indexes, or special considerations for each table. Include examples of common query patterns.",
+          "status": "pending",
+          "testStrategy": "Verify seed data is correctly inserted and relationships are properly established by running test queries against the seeded database."
+        }
+      ]
     },
     {
       "id": 3,

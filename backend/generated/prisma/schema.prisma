@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Memory {
+  id          Int            @id @default(autoincrement())
+  title       String
+  date        DateTime
+  description String
+  photoUrl    String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  people      MemoryPerson[]
+}
+
+model Person {
+  id           Int            @id @default(autoincrement())
+  name         String
+  relationship String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  memories     MemoryPerson[]
+}
+
+model MemoryPerson {
+  id       Int    @id @default(autoincrement())
+  memory   Memory @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+  memoryId Int
+  person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId Int
+
+  @@unique([memoryId, personId])
+}
