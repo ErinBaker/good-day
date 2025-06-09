@@ -5,12 +5,22 @@ const bodyParser = require('body-parser');
 const { ApolloServer } = require('apollo-server-express');
 const typeDefs = require('./graphql/schema/typeDefs');
 const resolvers = require('./graphql/resolvers');
+const uploadRoute = require('./routes/upload');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// Ensure uploads directory exists
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
+}
+
 app.use(cors());
 // app.use(bodyParser.json()); // Removed to avoid conflict with Apollo Server
+
+app.use('/', uploadRoute);
+app.use('/uploads', express.static('uploads'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {

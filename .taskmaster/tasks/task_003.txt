@@ -1,6 +1,6 @@
 # Task ID: 3
 # Title: Implement Photo Upload System
-# Status: pending
+# Status: in-progress
 # Dependencies: 1
 # Priority: high
 # Description: Create a system for uploading, validating, and storing photos for memory entries
@@ -19,3 +19,47 @@ Use a library like multer for handling multipart form data. Implement image proc
 
 # Test Strategy:
 Test uploading various file formats to verify validation. Test uploading files of different sizes to verify size limitations. Verify that images are properly optimized and thumbnails are generated. Test image retrieval to ensure photos can be displayed correctly.
+
+# Subtasks:
+## 1. Create React File Upload Component [done]
+### Dependencies: None
+### Description: Implement a React component that allows users to upload photos via drag-and-drop or file picker
+### Details:
+Create a reusable React component that handles both drag-and-drop functionality and traditional file picker. Use React's useState and useRef hooks to manage the file selection state. Style the component to provide visual feedback during drag events. Include progress indicators for upload status.
+
+## 2. Implement Backend Upload Route with Multer [done]
+### Dependencies: None
+### Description: Create an Express route that uses Multer to handle multipart form data for file uploads
+### Details:
+Set up an Express route at '/api/photos/upload'. Configure Multer middleware to handle multipart form data. Create temporary storage for uploaded files before validation. Implement proper error handling for upload failures. Return appropriate HTTP status codes and error messages.
+
+## 3. Implement File Validation System [done]
+### Dependencies: 3.2
+### Description: Create validation logic to check file formats (JPEG, PNG, WebP) and size limitations
+### Details:
+Add validation middleware that checks MIME types and file extensions. Implement size validation (suggest 5MB limit). Create custom error messages for different validation failures. Use file-type or similar library to verify actual file content matches the extension.
+
+## 4. Implement Image Processing with Sharp [done]
+### Dependencies: 3.3
+### Description: Process uploaded images to create optimized versions and thumbnails
+### Details:
+Use Sharp library to process validated images. Create standardized sizes: original (max dimensions 2000x2000px), medium (1000x1000px), and thumbnail (200x200px). Maintain aspect ratios. Optimize quality settings for web display. Handle potential processing errors gracefully.
+
+## 5. Implement Secure File Storage System [done]
+### Dependencies: 3.4
+### Description: Create a system for securely storing processed images with proper naming and organization
+### Details:
+Implement a file storage system that uses unique identifiers (UUIDs) for filenames. Create a folder structure organized by date (YYYY/MM/DD). Store metadata in the database including original filename, storage path, and image dimensions. Implement proper file permissions. Consider implementing a cleanup routine for orphaned files.
+
+## 6. Create Image Retrieval API [done]
+### Dependencies: 3.5
+### Description: Implement API endpoints to retrieve stored images for display in memory entries
+### Details:
+Create GET routes for image retrieval: '/api/photos/:id' with optional size parameter. Implement proper caching headers (ETag, Cache-Control). Add security to prevent unauthorized access to private images. Implement error handling for missing images. Consider implementing a CDN-friendly URL structure.
+
+## 7. Integrate Photo Upload with Memory Entry System [pending]
+### Dependencies: 3.1, 3.6
+### Description: Connect the photo upload system with the memory entry creation and editing workflows
+### Details:
+Modify memory entry forms to include the photo upload component. Implement logic to associate uploaded photos with specific memory entries in the database. Create UI for displaying, removing, and rearranging photos within a memory entry. Update memory entry API to include photo references. Implement proper cleanup of orphaned photos when entries are deleted.
+

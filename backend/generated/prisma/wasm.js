@@ -141,6 +141,18 @@ exports.Prisma.MemoryPersonScalarFieldEnum = {
   personId: 'personId'
 };
 
+exports.Prisma.PhotoScalarFieldEnum = {
+  id: 'id',
+  originalFilename: 'originalFilename',
+  folder: 'folder',
+  baseFilename: 'baseFilename',
+  mimeType: 'mimeType',
+  size: 'size',
+  width: 'width',
+  height: 'height',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -155,7 +167,8 @@ exports.Prisma.NullsOrder = {
 exports.Prisma.ModelName = {
   Memory: 'Memory',
   Person: 'Person',
-  MemoryPerson: 'MemoryPerson'
+  MemoryPerson: 'MemoryPerson',
+  Photo: 'Photo'
 };
 
 /**

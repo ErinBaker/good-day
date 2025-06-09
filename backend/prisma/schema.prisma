@@ -39,3 +39,16 @@ model MemoryPerson {
   personId  Int
   @@unique([memoryId, personId])
 }
+
+model Photo {
+  id              String   @id @default(uuid())
+  originalFilename String
+  folder           String
+  baseFilename     String
+  mimeType         String
+  size             Int
+  width            Int
+  height           Int
+  createdAt        DateTime @default(now())
+  // memoryId      Int? // Uncomment and add relation if linking to Memory in future
+}
