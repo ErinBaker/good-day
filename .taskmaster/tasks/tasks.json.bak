@@ -143,8 +143,83 @@
       "dependencies": [
         1
       ],
-      "status": "pending",
-      "subtasks": []
+      "status": "done",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Create React File Upload Component",
+          "description": "Implement a React component that allows users to upload photos via drag-and-drop or file picker",
+          "dependencies": [],
+          "details": "Create a reusable React component that handles both drag-and-drop functionality and traditional file picker. Use React's useState and useRef hooks to manage the file selection state. Style the component to provide visual feedback during drag events. Include progress indicators for upload status.",
+          "status": "done",
+          "testStrategy": "Test with various file types and sizes. Verify drag-and-drop functionality works across different browsers. Use React Testing Library to validate component behavior."
+        },
+        {
+          "id": 2,
+          "title": "Implement Backend Upload Route with Multer",
+          "description": "Create an Express route that uses Multer to handle multipart form data for file uploads",
+          "dependencies": [],
+          "details": "Set up an Express route at '/api/photos/upload'. Configure Multer middleware to handle multipart form data. Create temporary storage for uploaded files before validation. Implement proper error handling for upload failures. Return appropriate HTTP status codes and error messages.",
+          "status": "done",
+          "testStrategy": "Test with valid and invalid uploads. Verify correct handling of edge cases like interrupted uploads or server errors."
+        },
+        {
+          "id": 3,
+          "title": "Implement File Validation System",
+          "description": "Create validation logic to check file formats (JPEG, PNG, WebP) and size limitations",
+          "dependencies": [
+            2
+          ],
+          "details": "Add validation middleware that checks MIME types and file extensions. Implement size validation (suggest 5MB limit). Create custom error messages for different validation failures. Use file-type or similar library to verify actual file content matches the extension.",
+          "status": "done",
+          "testStrategy": "Test with valid files, invalid formats, oversized files, and files with mismatched extensions vs. content."
+        },
+        {
+          "id": 4,
+          "title": "Implement Image Processing with Sharp",
+          "description": "Process uploaded images to create optimized versions and thumbnails",
+          "dependencies": [
+            3
+          ],
+          "details": "Use Sharp library to process validated images. Create standardized sizes: original (max dimensions 2000x2000px), medium (1000x1000px), and thumbnail (200x200px). Maintain aspect ratios. Optimize quality settings for web display. Handle potential processing errors gracefully.",
+          "status": "done",
+          "testStrategy": "Test with various image dimensions, orientations, and quality levels. Verify thumbnail generation maintains reasonable quality."
+        },
+        {
+          "id": 5,
+          "title": "Implement Secure File Storage System",
+          "description": "Create a system for securely storing processed images with proper naming and organization",
+          "dependencies": [
+            4
+          ],
+          "details": "Implement a file storage system that uses unique identifiers (UUIDs) for filenames. Create a folder structure organized by date (YYYY/MM/DD). Store metadata in the database including original filename, storage path, and image dimensions. Implement proper file permissions. Consider implementing a cleanup routine for orphaned files.",
+          "status": "done",
+          "testStrategy": "Test file storage with concurrent uploads. Verify proper organization and naming. Test error cases like disk full scenarios."
+        },
+        {
+          "id": 6,
+          "title": "Create Image Retrieval API",
+          "description": "Implement API endpoints to retrieve stored images for display in memory entries",
+          "dependencies": [
+            5
+          ],
+          "details": "Create GET routes for image retrieval: '/api/photos/:id' with optional size parameter. Implement proper caching headers (ETag, Cache-Control). Add security to prevent unauthorized access to private images. Implement error handling for missing images. Consider implementing a CDN-friendly URL structure.",
+          "status": "done",
+          "testStrategy": "Test retrieval of different image sizes. Verify proper caching behavior. Test with valid and invalid image IDs. Test authorization rules."
+        },
+        {
+          "id": 7,
+          "title": "Integrate Photo Upload with Memory Entry System",
+          "description": "Connect the photo upload system with the memory entry creation and editing workflows",
+          "dependencies": [
+            1,
+            6
+          ],
+          "details": "Modify memory entry forms to include the photo upload component. Implement logic to associate uploaded photos with specific memory entries in the database. Create UI for displaying, removing, and rearranging photos within a memory entry. Update memory entry API to include photo references. Implement proper cleanup of orphaned photos when entries are deleted.",
+          "status": "done",
+          "testStrategy": "Test the full workflow from upload to display in memory entries. Verify proper association between photos and entries. Test deletion and orphan cleanup."
+        }
+      ]
     },
     {
       "id": 4,

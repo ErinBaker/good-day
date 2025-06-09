@@ -232,7 +232,61 @@
         2
       ],
       "status": "pending",
-      "subtasks": []
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Define GraphQL Type Definitions",
+          "description": "Create the GraphQL type definitions for Memory, Person, and input types",
+          "dependencies": [],
+          "details": "Create a schema.graphql file that defines the Memory and Person types with all their fields (id, title, date, etc.), their relationships (Memory has people, Person has memories), and the input types (MemoryInput, PersonInput). Use the GraphQL SDL (Schema Definition Language) syntax. Ensure proper scalar types are used for each field, and define the relationships between types using the appropriate GraphQL syntax.",
+          "status": "done",
+          "testStrategy": "Validate the schema using a GraphQL schema validator to ensure it's syntactically correct and follows best practices."
+        },
+        {
+          "id": 2,
+          "title": "Implement Query Type Definitions",
+          "description": "Define the GraphQL Query type with all required query operations",
+          "dependencies": [
+            1
+          ],
+          "details": "Extend the schema.graphql file to include the Query type with all specified operations: memories(limit, offset, sortBy), memory(id), people(limit, offset, sortBy), and person(id). Define appropriate argument types and return types for each query. Ensure pagination parameters (limit, offset) and sorting options are properly typed.",
+          "status": "done",
+          "testStrategy": "Write GraphQL query tests to verify the query definitions are correct and can be executed without syntax errors."
+        },
+        {
+          "id": 3,
+          "title": "Implement Mutation Type Definitions",
+          "description": "Define the GraphQL Mutation type with all required mutation operations",
+          "dependencies": [
+            1
+          ],
+          "details": "Extend the schema.graphql file to include the Mutation type with all specified operations: createMemory, updateMemory, deleteMemory, createPerson, updatePerson, deletePerson, tagPersonInMemory, and removePersonFromMemory. Define appropriate argument types (using the input types from subtask 1) and return types for each mutation. Ensure proper error handling is considered in the type definitions.",
+          "status": "done",
+          "testStrategy": "Write GraphQL mutation tests to verify the mutation definitions are correct and can be executed without syntax errors."
+        },
+        {
+          "id": 4,
+          "title": "Implement Query Resolvers",
+          "description": "Create resolver functions for all GraphQL queries that interact with the database",
+          "dependencies": [
+            2
+          ],
+          "details": "Create resolver functions for each query defined in the schema. Implement the logic to fetch memories and people from the database, including support for pagination (limit, offset) and sorting. Handle the relationships between types by implementing nested resolvers (e.g., for Memory.people and Person.memories). Ensure proper error handling and performance considerations (like avoiding N+1 query problems).",
+          "status": "done",
+          "testStrategy": "Write unit tests for each resolver function, mocking the database layer. Test different scenarios including pagination, sorting, and error cases."
+        },
+        {
+          "id": 5,
+          "title": "Implement Mutation Resolvers",
+          "description": "Create resolver functions for all GraphQL mutations that modify data in the database",
+          "dependencies": [
+            3
+          ],
+          "details": "Create resolver functions for each mutation defined in the schema. Implement the logic to create, update, and delete memories and people in the database. For relationship mutations (tagPersonInMemory, removePersonFromMemory), implement the logic to update the relationships between memories and people. Include input validation, error handling, and transaction support where appropriate to ensure data integrity.",
+          "status": "in-progress",
+          "testStrategy": "Write unit tests for each mutation resolver, mocking the database layer. Test successful operations, validation errors, and edge cases like attempting to delete non-existent records or creating invalid relationships."
+        }
+      ]
     },
     {
       "id": 5,

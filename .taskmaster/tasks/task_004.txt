@@ -33,3 +33,35 @@ Implement resolvers for each query and mutation that interact with the database.
 
 # Test Strategy:
 Test each GraphQL query and mutation with various inputs. Verify that relationships between memories and people are correctly maintained. Test error handling for invalid inputs and edge cases.
+
+# Subtasks:
+## 1. Define GraphQL Type Definitions [done]
+### Dependencies: None
+### Description: Create the GraphQL type definitions for Memory, Person, and input types
+### Details:
+Create a schema.graphql file that defines the Memory and Person types with all their fields (id, title, date, etc.), their relationships (Memory has people, Person has memories), and the input types (MemoryInput, PersonInput). Use the GraphQL SDL (Schema Definition Language) syntax. Ensure proper scalar types are used for each field, and define the relationships between types using the appropriate GraphQL syntax.
+
+## 2. Implement Query Type Definitions [done]
+### Dependencies: 4.1
+### Description: Define the GraphQL Query type with all required query operations
+### Details:
+Extend the schema.graphql file to include the Query type with all specified operations: memories(limit, offset, sortBy), memory(id), people(limit, offset, sortBy), and person(id). Define appropriate argument types and return types for each query. Ensure pagination parameters (limit, offset) and sorting options are properly typed.
+
+## 3. Implement Mutation Type Definitions [done]
+### Dependencies: 4.1
+### Description: Define the GraphQL Mutation type with all required mutation operations
+### Details:
+Extend the schema.graphql file to include the Mutation type with all specified operations: createMemory, updateMemory, deleteMemory, createPerson, updatePerson, deletePerson, tagPersonInMemory, and removePersonFromMemory. Define appropriate argument types (using the input types from subtask 1) and return types for each mutation. Ensure proper error handling is considered in the type definitions.
+
+## 4. Implement Query Resolvers [done]
+### Dependencies: 4.2
+### Description: Create resolver functions for all GraphQL queries that interact with the database
+### Details:
+Create resolver functions for each query defined in the schema. Implement the logic to fetch memories and people from the database, including support for pagination (limit, offset) and sorting. Handle the relationships between types by implementing nested resolvers (e.g., for Memory.people and Person.memories). Ensure proper error handling and performance considerations (like avoiding N+1 query problems).
+
+## 5. Implement Mutation Resolvers [in-progress]
+### Dependencies: 4.3
+### Description: Create resolver functions for all GraphQL mutations that modify data in the database
+### Details:
+Create resolver functions for each mutation defined in the schema. Implement the logic to create, update, and delete memories and people in the database. For relationship mutations (tagPersonInMemory, removePersonFromMemory), implement the logic to update the relationships between memories and people. Include input validation, error handling, and transaction support where appropriate to ensure data integrity.
+
