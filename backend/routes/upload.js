@@ -200,4 +200,90 @@ router.get('/api/photos/:folder(*)/:id', (req, res) => {
   res.sendFile(path.resolve(filePath));
 });
 
+// PATCH /api/photos/:photoId/link/:memoryId
+router.patch('/api/photos/:photoId/link/:memoryId', async (req, res) => {
+  const { photoId, memoryId } = req.params;
+  try {
+    const photo = await prisma.photo.update({
+      where: { id: photoId },
+      data: { memoryId: parseInt(memoryId, 10) },
+    });
+    res.json(photo);
+  } catch (err) {
+    res.status(400).json({ error: 'Could not link photo to memory.' });
+  }
+});
+
+// PATCH /api/photos/:photoId/unlink
+router.patch('/api/photos/:photoId/unlink', async (req, res) => {
+  const { photoId } = req.params;
+  try {
+    const photo = await prisma.photo.update({
+      where: { id: photoId },
+      data: { memoryId: null },
+    });
+    res.json(photo);
+  } catch (err) {
+    res.status(400).json({ error: 'Could not unlink photo.' });
+  }
+});
+
+// GET /api/memories/:memoryId/photos
+router.get('/api/memories/:memoryId/photos', async (req, res) => {
+  const { memoryId } = req.params;
+  try {
+    const photos = await prisma.photo.findMany({ where: { memoryId: parseInt(memoryId, 10) } });
+    res.json(photos);
+  } catch (err) {
+    res.status(400).json({ error: 'Could not retrieve photos for memory.' });
+  }
+});
+
+// DELETE /api/photos/:photoId
+router.delete('/api/photos/:photoId', async (req, res) => {
+  const { photoId } = req.params;
+  try {
+    const photo = await prisma.photo.findUnique({ where: { id: photoId } });
+    if (!photo) return res.status(404).json({ error: 'Photo not found.' });
+    // Delete files
+    ['original', 'medium', 'thumbnail'].forEach(size => {
+      const ext = path.extname(photo.baseFilename);
+      const base = path.basename(photo.baseFilename, ext);
+      const filename = `${base}_${size}${ext}`;
+      const filePath = path.join('uploads', photo.folder, filename);
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    });
+    await prisma.photo.delete({ where: { id: photoId } });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(400).json({ error: 'Could not delete photo.' });
+  }
+});
+
+// DELETE /api/memories/:memoryId
+router.delete('/api/memories/:memoryId', async (req, res) => {
+  const { memoryId } = req.params;
+  try {
+    // Find all photos for this memory
+    const photos = await prisma.photo.findMany({ where: { memoryId: parseInt(memoryId, 10) } });
+    // Delete all photo files
+    photos.forEach(photo => {
+      ['original', 'medium', 'thumbnail'].forEach(size => {
+        const ext = path.extname(photo.baseFilename);
+        const base = path.basename(photo.baseFilename, ext);
+        const filename = `${base}_${size}${ext}`;
+        const filePath = path.join('uploads', photo.folder, filename);
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      });
+    });
+    // Delete all photo records
+    await prisma.photo.deleteMany({ where: { memoryId: parseInt(memoryId, 10) } });
+    // Delete the memory
+    await prisma.memory.delete({ where: { id: parseInt(memoryId, 10) } });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(400).json({ error: 'Could not delete memory and associated photos.' });
+  }
+});
+
 module.exports = router; 

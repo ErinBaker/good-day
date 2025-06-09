@@ -150,7 +150,8 @@ exports.Prisma.PhotoScalarFieldEnum = {
   size: 'size',
   width: 'width',
   height: 'height',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  memoryId: 'memoryId'
 };
 
 exports.Prisma.SortOrder = {

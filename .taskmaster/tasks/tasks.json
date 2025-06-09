@@ -143,7 +143,7 @@
       "dependencies": [
         1
       ],
-      "status": "in-progress",
+      "status": "done",
       "subtasks": [
         {
           "id": 1,
@@ -216,7 +216,7 @@
             6
           ],
           "details": "Modify memory entry forms to include the photo upload component. Implement logic to associate uploaded photos with specific memory entries in the database. Create UI for displaying, removing, and rearranging photos within a memory entry. Update memory entry API to include photo references. Implement proper cleanup of orphaned photos when entries are deleted.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test the full workflow from upload to display in memory entries. Verify proper association between photos and entries. Test deletion and orphan cleanup."
         }
       ]

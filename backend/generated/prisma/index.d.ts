@@ -1143,10 +1143,12 @@ export namespace Prisma {
 
   export type MemoryCountOutputType = {
     people: number
+    photos: number
   }
 
   export type MemoryCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     people?: boolean | MemoryCountOutputTypeCountPeopleArgs
+    photos?: boolean | MemoryCountOutputTypeCountPhotosArgs
   }
 
   // Custom InputTypes
@@ -1165,6 +1167,13 @@ export namespace Prisma {
    */
   export type MemoryCountOutputTypeCountPeopleArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MemoryPersonWhereInput
+  }
+
+  /**
+   * MemoryCountOutputType without action
+   */
+  export type MemoryCountOutputTypeCountPhotosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PhotoWhereInput
   }
 
 
@@ -1418,6 +1427,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     people?: boolean | Memory$peopleArgs<ExtArgs>
+    photos?: boolean | Memory$photosArgs<ExtArgs>
     _count?: boolean | MemoryCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["memory"]>
 
@@ -1454,6 +1464,7 @@ export namespace Prisma {
   export type MemoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "date" | "description" | "photoUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["memory"]>
   export type MemoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     people?: boolean | Memory$peopleArgs<ExtArgs>
+    photos?: boolean | Memory$photosArgs<ExtArgs>
     _count?: boolean | MemoryCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type MemoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1463,6 +1474,7 @@ export namespace Prisma {
     name: "Memory"
     objects: {
       people: Prisma.$MemoryPersonPayload<ExtArgs>[]
+      photos: Prisma.$PhotoPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -1867,6 +1879,7 @@ export namespace Prisma {
   export interface Prisma__MemoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     people<T extends Memory$peopleArgs<ExtArgs> = {}>(args?: Subset<T, Memory$peopleArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MemoryPersonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    photos<T extends Memory$photosArgs<ExtArgs> = {}>(args?: Subset<T, Memory$photosArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PhotoPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2310,6 +2323,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: MemoryPersonScalarFieldEnum | MemoryPersonScalarFieldEnum[]
+  }
+
+  /**
+   * Memory.photos
+   */
+  export type Memory$photosArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Photo
+     */
+    select?: PhotoSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Photo
+     */
+    omit?: PhotoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhotoInclude<ExtArgs> | null
+    where?: PhotoWhereInput
+    orderBy?: PhotoOrderByWithRelationInput | PhotoOrderByWithRelationInput[]
+    cursor?: PhotoWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PhotoScalarFieldEnum | PhotoScalarFieldEnum[]
   }
 
   /**
@@ -4529,12 +4566,14 @@ export namespace Prisma {
     size: number | null
     width: number | null
     height: number | null
+    memoryId: number | null
   }
 
   export type PhotoSumAggregateOutputType = {
     size: number | null
     width: number | null
     height: number | null
+    memoryId: number | null
   }
 
   export type PhotoMinAggregateOutputType = {
@@ -4547,6 +4586,7 @@ export namespace Prisma {
     width: number | null
     height: number | null
     createdAt: Date | null
+    memoryId: number | null
   }
 
   export type PhotoMaxAggregateOutputType = {
@@ -4559,6 +4599,7 @@ export namespace Prisma {
     width: number | null
     height: number | null
     createdAt: Date | null
+    memoryId: number | null
   }
 
   export type PhotoCountAggregateOutputType = {
@@ -4571,6 +4612,7 @@ export namespace Prisma {
     width: number
     height: number
     createdAt: number
+    memoryId: number
     _all: number
   }
 
@@ -4579,12 +4621,14 @@ export namespace Prisma {
     size?: true
     width?: true
     height?: true
+    memoryId?: true
   }
 
   export type PhotoSumAggregateInputType = {
     size?: true
     width?: true
     height?: true
+    memoryId?: true
   }
 
   export type PhotoMinAggregateInputType = {
@@ -4597,6 +4641,7 @@ export namespace Prisma {
     width?: true
     height?: true
     createdAt?: true
+    memoryId?: true
   }
 
   export type PhotoMaxAggregateInputType = {
@@ -4609,6 +4654,7 @@ export namespace Prisma {
     width?: true
     height?: true
     createdAt?: true
+    memoryId?: true
   }
 
   export type PhotoCountAggregateInputType = {
@@ -4621,6 +4667,7 @@ export namespace Prisma {
     width?: true
     height?: true
     createdAt?: true
+    memoryId?: true
     _all?: true
   }
 
@@ -4720,6 +4767,7 @@ export namespace Prisma {
     width: number
     height: number
     createdAt: Date
+    memoryId: number | null
     _count: PhotoCountAggregateOutputType | null
     _avg: PhotoAvgAggregateOutputType | null
     _sum: PhotoSumAggregateOutputType | null
@@ -4751,6 +4799,8 @@ export namespace Prisma {
     width?: boolean
     height?: boolean
     createdAt?: boolean
+    memoryId?: boolean
+    memory?: boolean | Photo$memoryArgs<ExtArgs>
   }, ExtArgs["result"]["photo"]>
 
   export type PhotoSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -4763,6 +4813,8 @@ export namespace Prisma {
     width?: boolean
     height?: boolean
     createdAt?: boolean
+    memoryId?: boolean
+    memory?: boolean | Photo$memoryArgs<ExtArgs>
   }, ExtArgs["result"]["photo"]>
 
   export type PhotoSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -4775,6 +4827,8 @@ export namespace Prisma {
     width?: boolean
     height?: boolean
     createdAt?: boolean
+    memoryId?: boolean
+    memory?: boolean | Photo$memoryArgs<ExtArgs>
   }, ExtArgs["result"]["photo"]>
 
   export type PhotoSelectScalar = {
@@ -4787,13 +4841,25 @@ export namespace Prisma {
     width?: boolean
     height?: boolean
     createdAt?: boolean
+    memoryId?: boolean
   }
 
-  export type PhotoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "originalFilename" | "folder" | "baseFilename" | "mimeType" | "size" | "width" | "height" | "createdAt", ExtArgs["result"]["photo"]>
+  export type PhotoOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "originalFilename" | "folder" | "baseFilename" | "mimeType" | "size" | "width" | "height" | "createdAt" | "memoryId", ExtArgs["result"]["photo"]>
+  export type PhotoInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    memory?: boolean | Photo$memoryArgs<ExtArgs>
+  }
+  export type PhotoIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    memory?: boolean | Photo$memoryArgs<ExtArgs>
+  }
+  export type PhotoIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    memory?: boolean | Photo$memoryArgs<ExtArgs>
+  }
 
   export type $PhotoPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Photo"
-    objects: {}
+    objects: {
+      memory: Prisma.$MemoryPayload<ExtArgs> | null
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       originalFilename: string
@@ -4804,6 +4870,7 @@ export namespace Prisma {
       width: number
       height: number
       createdAt: Date
+      memoryId: number | null
     }, ExtArgs["result"]["photo"]>
     composites: {}
   }
@@ -5198,6 +5265,7 @@ export namespace Prisma {
    */
   export interface Prisma__PhotoClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    memory<T extends Photo$memoryArgs<ExtArgs> = {}>(args?: Subset<T, Photo$memoryArgs<ExtArgs>>): Prisma__MemoryClient<$Result.GetResult<Prisma.$MemoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5236,6 +5304,7 @@ export namespace Prisma {
     readonly width: FieldRef<"Photo", 'Int'>
     readonly height: FieldRef<"Photo", 'Int'>
     readonly createdAt: FieldRef<"Photo", 'DateTime'>
+    readonly memoryId: FieldRef<"Photo", 'Int'>
   }
     
 
@@ -5252,6 +5321,10 @@ export namespace Prisma {
      * Omit specific fields from the Photo
      */
     omit?: PhotoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhotoInclude<ExtArgs> | null
     /**
      * Filter, which Photo to fetch.
      */
@@ -5271,6 +5344,10 @@ export namespace Prisma {
      */
     omit?: PhotoOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhotoInclude<ExtArgs> | null
+    /**
      * Filter, which Photo to fetch.
      */
     where: PhotoWhereUniqueInput
@@ -5288,6 +5365,10 @@ export namespace Prisma {
      * Omit specific fields from the Photo
      */
     omit?: PhotoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhotoInclude<ExtArgs> | null
     /**
      * Filter, which Photo to fetch.
      */
@@ -5337,6 +5418,10 @@ export namespace Prisma {
      */
     omit?: PhotoOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhotoInclude<ExtArgs> | null
+    /**
      * Filter, which Photo to fetch.
      */
     where?: PhotoWhereInput
@@ -5385,6 +5470,10 @@ export namespace Prisma {
      */
     omit?: PhotoOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhotoInclude<ExtArgs> | null
+    /**
      * Filter, which Photos to fetch.
      */
     where?: PhotoWhereInput
@@ -5428,6 +5517,10 @@ export namespace Prisma {
      */
     omit?: PhotoOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhotoInclude<ExtArgs> | null
+    /**
      * The data needed to create a Photo.
      */
     data: XOR<PhotoCreateInput, PhotoUncheckedCreateInput>
@@ -5459,6 +5552,10 @@ export namespace Prisma {
      * The data used to create many Photos.
      */
     data: PhotoCreateManyInput | PhotoCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhotoIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -5473,6 +5570,10 @@ export namespace Prisma {
      * Omit specific fields from the Photo
      */
     omit?: PhotoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhotoInclude<ExtArgs> | null
     /**
      * The data needed to update a Photo.
      */
@@ -5525,6 +5626,10 @@ export namespace Prisma {
      * Limit how many Photos to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhotoIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -5539,6 +5644,10 @@ export namespace Prisma {
      * Omit specific fields from the Photo
      */
     omit?: PhotoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhotoInclude<ExtArgs> | null
     /**
      * The filter to search for the Photo to update in case it exists.
      */
@@ -5566,6 +5675,10 @@ export namespace Prisma {
      */
     omit?: PhotoOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhotoInclude<ExtArgs> | null
+    /**
      * Filter which Photo to delete.
      */
     where: PhotoWhereUniqueInput
@@ -5586,6 +5699,25 @@ export namespace Prisma {
   }
 
   /**
+   * Photo.memory
+   */
+  export type Photo$memoryArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Memory
+     */
+    select?: MemorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Memory
+     */
+    omit?: MemoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MemoryInclude<ExtArgs> | null
+    where?: MemoryWhereInput
+  }
+
+  /**
    * Photo without action
    */
   export type PhotoDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5597,6 +5729,10 @@ export namespace Prisma {
      * Omit specific fields from the Photo
      */
     omit?: PhotoOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PhotoInclude<ExtArgs> | null
   }
 
 
@@ -5653,7 +5789,8 @@ export namespace Prisma {
     size: 'size',
     width: 'width',
     height: 'height',
-    createdAt: 'createdAt'
+    createdAt: 'createdAt',
+    memoryId: 'memoryId'
   };
 
   export type PhotoScalarFieldEnum = (typeof PhotoScalarFieldEnum)[keyof typeof PhotoScalarFieldEnum]
@@ -5723,6 +5860,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Memory"> | Date | string
     updatedAt?: DateTimeFilter<"Memory"> | Date | string
     people?: MemoryPersonListRelationFilter
+    photos?: PhotoListRelationFilter
   }
 
   export type MemoryOrderByWithRelationInput = {
@@ -5734,6 +5872,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     people?: MemoryPersonOrderByRelationAggregateInput
+    photos?: PhotoOrderByRelationAggregateInput
   }
 
   export type MemoryWhereUniqueInput = Prisma.AtLeast<{
@@ -5748,6 +5887,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Memory"> | Date | string
     updatedAt?: DateTimeFilter<"Memory"> | Date | string
     people?: MemoryPersonListRelationFilter
+    photos?: PhotoListRelationFilter
   }, "id">
 
   export type MemoryOrderByWithAggregationInput = {
@@ -5899,6 +6039,8 @@ export namespace Prisma {
     width?: IntFilter<"Photo"> | number
     height?: IntFilter<"Photo"> | number
     createdAt?: DateTimeFilter<"Photo"> | Date | string
+    memoryId?: IntNullableFilter<"Photo"> | number | null
+    memory?: XOR<MemoryNullableScalarRelationFilter, MemoryWhereInput> | null
   }
 
   export type PhotoOrderByWithRelationInput = {
@@ -5911,6 +6053,8 @@ export namespace Prisma {
     width?: SortOrder
     height?: SortOrder
     createdAt?: SortOrder
+    memoryId?: SortOrderInput | SortOrder
+    memory?: MemoryOrderByWithRelationInput
   }
 
   export type PhotoWhereUniqueInput = Prisma.AtLeast<{
@@ -5926,6 +6070,8 @@ export namespace Prisma {
     width?: IntFilter<"Photo"> | number
     height?: IntFilter<"Photo"> | number
     createdAt?: DateTimeFilter<"Photo"> | Date | string
+    memoryId?: IntNullableFilter<"Photo"> | number | null
+    memory?: XOR<MemoryNullableScalarRelationFilter, MemoryWhereInput> | null
   }, "id">
 
   export type PhotoOrderByWithAggregationInput = {
@@ -5938,6 +6084,7 @@ export namespace Prisma {
     width?: SortOrder
     height?: SortOrder
     createdAt?: SortOrder
+    memoryId?: SortOrderInput | SortOrder
     _count?: PhotoCountOrderByAggregateInput
     _avg?: PhotoAvgOrderByAggregateInput
     _max?: PhotoMaxOrderByAggregateInput
@@ -5958,6 +6105,7 @@ export namespace Prisma {
     width?: IntWithAggregatesFilter<"Photo"> | number
     height?: IntWithAggregatesFilter<"Photo"> | number
     createdAt?: DateTimeWithAggregatesFilter<"Photo"> | Date | string
+    memoryId?: IntNullableWithAggregatesFilter<"Photo"> | number | null
   }
 
   export type MemoryCreateInput = {
@@ -5968,6 +6116,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     people?: MemoryPersonCreateNestedManyWithoutMemoryInput
+    photos?: PhotoCreateNestedManyWithoutMemoryInput
   }
 
   export type MemoryUncheckedCreateInput = {
@@ -5979,6 +6128,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     people?: MemoryPersonUncheckedCreateNestedManyWithoutMemoryInput
+    photos?: PhotoUncheckedCreateNestedManyWithoutMemoryInput
   }
 
   export type MemoryUpdateInput = {
@@ -5989,6 +6139,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     people?: MemoryPersonUpdateManyWithoutMemoryNestedInput
+    photos?: PhotoUpdateManyWithoutMemoryNestedInput
   }
 
   export type MemoryUncheckedUpdateInput = {
@@ -6000,6 +6151,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     people?: MemoryPersonUncheckedUpdateManyWithoutMemoryNestedInput
+    photos?: PhotoUncheckedUpdateManyWithoutMemoryNestedInput
   }
 
   export type MemoryCreateManyInput = {
@@ -6136,6 +6288,7 @@ export namespace Prisma {
     width: number
     height: number
     createdAt?: Date | string
+    memory?: MemoryCreateNestedOneWithoutPhotosInput
   }
 
   export type PhotoUncheckedCreateInput = {
@@ -6148,6 +6301,7 @@ export namespace Prisma {
     width: number
     height: number
     createdAt?: Date | string
+    memoryId?: number | null
   }
 
   export type PhotoUpdateInput = {
@@ -6160,6 +6314,7 @@ export namespace Prisma {
     width?: IntFieldUpdateOperationsInput | number
     height?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memory?: MemoryUpdateOneWithoutPhotosNestedInput
   }
 
   export type PhotoUncheckedUpdateInput = {
@@ -6172,6 +6327,7 @@ export namespace Prisma {
     width?: IntFieldUpdateOperationsInput | number
     height?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memoryId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type PhotoCreateManyInput = {
@@ -6184,6 +6340,7 @@ export namespace Prisma {
     width: number
     height: number
     createdAt?: Date | string
+    memoryId?: number | null
   }
 
   export type PhotoUpdateManyMutationInput = {
@@ -6208,6 +6365,7 @@ export namespace Prisma {
     width?: IntFieldUpdateOperationsInput | number
     height?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    memoryId?: NullableIntFieldUpdateOperationsInput | number | null
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -6252,7 +6410,17 @@ export namespace Prisma {
     none?: MemoryPersonWhereInput
   }
 
+  export type PhotoListRelationFilter = {
+    every?: PhotoWhereInput
+    some?: PhotoWhereInput
+    none?: PhotoWhereInput
+  }
+
   export type MemoryPersonOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type PhotoOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -6454,6 +6622,22 @@ export namespace Prisma {
     personId?: SortOrder
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type MemoryNullableScalarRelationFilter = {
+    is?: MemoryWhereInput | null
+    isNot?: MemoryWhereInput | null
+  }
+
   export type PhotoCountOrderByAggregateInput = {
     id?: SortOrder
     originalFilename?: SortOrder
@@ -6464,12 +6648,14 @@ export namespace Prisma {
     width?: SortOrder
     height?: SortOrder
     createdAt?: SortOrder
+    memoryId?: SortOrder
   }
 
   export type PhotoAvgOrderByAggregateInput = {
     size?: SortOrder
     width?: SortOrder
     height?: SortOrder
+    memoryId?: SortOrder
   }
 
   export type PhotoMaxOrderByAggregateInput = {
@@ -6482,6 +6668,7 @@ export namespace Prisma {
     width?: SortOrder
     height?: SortOrder
     createdAt?: SortOrder
+    memoryId?: SortOrder
   }
 
   export type PhotoMinOrderByAggregateInput = {
@@ -6494,12 +6681,30 @@ export namespace Prisma {
     width?: SortOrder
     height?: SortOrder
     createdAt?: SortOrder
+    memoryId?: SortOrder
   }
 
   export type PhotoSumOrderByAggregateInput = {
     size?: SortOrder
     width?: SortOrder
     height?: SortOrder
+    memoryId?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type MemoryPersonCreateNestedManyWithoutMemoryInput = {
@@ -6509,11 +6714,25 @@ export namespace Prisma {
     connect?: MemoryPersonWhereUniqueInput | MemoryPersonWhereUniqueInput[]
   }
 
+  export type PhotoCreateNestedManyWithoutMemoryInput = {
+    create?: XOR<PhotoCreateWithoutMemoryInput, PhotoUncheckedCreateWithoutMemoryInput> | PhotoCreateWithoutMemoryInput[] | PhotoUncheckedCreateWithoutMemoryInput[]
+    connectOrCreate?: PhotoCreateOrConnectWithoutMemoryInput | PhotoCreateOrConnectWithoutMemoryInput[]
+    createMany?: PhotoCreateManyMemoryInputEnvelope
+    connect?: PhotoWhereUniqueInput | PhotoWhereUniqueInput[]
+  }
+
   export type MemoryPersonUncheckedCreateNestedManyWithoutMemoryInput = {
     create?: XOR<MemoryPersonCreateWithoutMemoryInput, MemoryPersonUncheckedCreateWithoutMemoryInput> | MemoryPersonCreateWithoutMemoryInput[] | MemoryPersonUncheckedCreateWithoutMemoryInput[]
     connectOrCreate?: MemoryPersonCreateOrConnectWithoutMemoryInput | MemoryPersonCreateOrConnectWithoutMemoryInput[]
     createMany?: MemoryPersonCreateManyMemoryInputEnvelope
     connect?: MemoryPersonWhereUniqueInput | MemoryPersonWhereUniqueInput[]
+  }
+
+  export type PhotoUncheckedCreateNestedManyWithoutMemoryInput = {
+    create?: XOR<PhotoCreateWithoutMemoryInput, PhotoUncheckedCreateWithoutMemoryInput> | PhotoCreateWithoutMemoryInput[] | PhotoUncheckedCreateWithoutMemoryInput[]
+    connectOrCreate?: PhotoCreateOrConnectWithoutMemoryInput | PhotoCreateOrConnectWithoutMemoryInput[]
+    createMany?: PhotoCreateManyMemoryInputEnvelope
+    connect?: PhotoWhereUniqueInput | PhotoWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -6538,6 +6757,20 @@ export namespace Prisma {
     deleteMany?: MemoryPersonScalarWhereInput | MemoryPersonScalarWhereInput[]
   }
 
+  export type PhotoUpdateManyWithoutMemoryNestedInput = {
+    create?: XOR<PhotoCreateWithoutMemoryInput, PhotoUncheckedCreateWithoutMemoryInput> | PhotoCreateWithoutMemoryInput[] | PhotoUncheckedCreateWithoutMemoryInput[]
+    connectOrCreate?: PhotoCreateOrConnectWithoutMemoryInput | PhotoCreateOrConnectWithoutMemoryInput[]
+    upsert?: PhotoUpsertWithWhereUniqueWithoutMemoryInput | PhotoUpsertWithWhereUniqueWithoutMemoryInput[]
+    createMany?: PhotoCreateManyMemoryInputEnvelope
+    set?: PhotoWhereUniqueInput | PhotoWhereUniqueInput[]
+    disconnect?: PhotoWhereUniqueInput | PhotoWhereUniqueInput[]
+    delete?: PhotoWhereUniqueInput | PhotoWhereUniqueInput[]
+    connect?: PhotoWhereUniqueInput | PhotoWhereUniqueInput[]
+    update?: PhotoUpdateWithWhereUniqueWithoutMemoryInput | PhotoUpdateWithWhereUniqueWithoutMemoryInput[]
+    updateMany?: PhotoUpdateManyWithWhereWithoutMemoryInput | PhotoUpdateManyWithWhereWithoutMemoryInput[]
+    deleteMany?: PhotoScalarWhereInput | PhotoScalarWhereInput[]
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -6558,6 +6791,20 @@ export namespace Prisma {
     update?: MemoryPersonUpdateWithWhereUniqueWithoutMemoryInput | MemoryPersonUpdateWithWhereUniqueWithoutMemoryInput[]
     updateMany?: MemoryPersonUpdateManyWithWhereWithoutMemoryInput | MemoryPersonUpdateManyWithWhereWithoutMemoryInput[]
     deleteMany?: MemoryPersonScalarWhereInput | MemoryPersonScalarWhereInput[]
+  }
+
+  export type PhotoUncheckedUpdateManyWithoutMemoryNestedInput = {
+    create?: XOR<PhotoCreateWithoutMemoryInput, PhotoUncheckedCreateWithoutMemoryInput> | PhotoCreateWithoutMemoryInput[] | PhotoUncheckedCreateWithoutMemoryInput[]
+    connectOrCreate?: PhotoCreateOrConnectWithoutMemoryInput | PhotoCreateOrConnectWithoutMemoryInput[]
+    upsert?: PhotoUpsertWithWhereUniqueWithoutMemoryInput | PhotoUpsertWithWhereUniqueWithoutMemoryInput[]
+    createMany?: PhotoCreateManyMemoryInputEnvelope
+    set?: PhotoWhereUniqueInput | PhotoWhereUniqueInput[]
+    disconnect?: PhotoWhereUniqueInput | PhotoWhereUniqueInput[]
+    delete?: PhotoWhereUniqueInput | PhotoWhereUniqueInput[]
+    connect?: PhotoWhereUniqueInput | PhotoWhereUniqueInput[]
+    update?: PhotoUpdateWithWhereUniqueWithoutMemoryInput | PhotoUpdateWithWhereUniqueWithoutMemoryInput[]
+    updateMany?: PhotoUpdateManyWithWhereWithoutMemoryInput | PhotoUpdateManyWithWhereWithoutMemoryInput[]
+    deleteMany?: PhotoScalarWhereInput | PhotoScalarWhereInput[]
   }
 
   export type MemoryPersonCreateNestedManyWithoutPersonInput = {
@@ -6632,6 +6879,30 @@ export namespace Prisma {
     upsert?: PersonUpsertWithoutMemoriesInput
     connect?: PersonWhereUniqueInput
     update?: XOR<XOR<PersonUpdateToOneWithWhereWithoutMemoriesInput, PersonUpdateWithoutMemoriesInput>, PersonUncheckedUpdateWithoutMemoriesInput>
+  }
+
+  export type MemoryCreateNestedOneWithoutPhotosInput = {
+    create?: XOR<MemoryCreateWithoutPhotosInput, MemoryUncheckedCreateWithoutPhotosInput>
+    connectOrCreate?: MemoryCreateOrConnectWithoutPhotosInput
+    connect?: MemoryWhereUniqueInput
+  }
+
+  export type MemoryUpdateOneWithoutPhotosNestedInput = {
+    create?: XOR<MemoryCreateWithoutPhotosInput, MemoryUncheckedCreateWithoutPhotosInput>
+    connectOrCreate?: MemoryCreateOrConnectWithoutPhotosInput
+    upsert?: MemoryUpsertWithoutPhotosInput
+    disconnect?: MemoryWhereInput | boolean
+    delete?: MemoryWhereInput | boolean
+    connect?: MemoryWhereUniqueInput
+    update?: XOR<XOR<MemoryUpdateToOneWithWhereWithoutPhotosInput, MemoryUpdateWithoutPhotosInput>, MemoryUncheckedUpdateWithoutPhotosInput>
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -6770,6 +7041,33 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type MemoryPersonCreateWithoutMemoryInput = {
     person: PersonCreateNestedOneWithoutMemoriesInput
   }
@@ -6786,6 +7084,39 @@ export namespace Prisma {
 
   export type MemoryPersonCreateManyMemoryInputEnvelope = {
     data: MemoryPersonCreateManyMemoryInput | MemoryPersonCreateManyMemoryInput[]
+  }
+
+  export type PhotoCreateWithoutMemoryInput = {
+    id?: string
+    originalFilename: string
+    folder: string
+    baseFilename: string
+    mimeType: string
+    size: number
+    width: number
+    height: number
+    createdAt?: Date | string
+  }
+
+  export type PhotoUncheckedCreateWithoutMemoryInput = {
+    id?: string
+    originalFilename: string
+    folder: string
+    baseFilename: string
+    mimeType: string
+    size: number
+    width: number
+    height: number
+    createdAt?: Date | string
+  }
+
+  export type PhotoCreateOrConnectWithoutMemoryInput = {
+    where: PhotoWhereUniqueInput
+    create: XOR<PhotoCreateWithoutMemoryInput, PhotoUncheckedCreateWithoutMemoryInput>
+  }
+
+  export type PhotoCreateManyMemoryInputEnvelope = {
+    data: PhotoCreateManyMemoryInput | PhotoCreateManyMemoryInput[]
   }
 
   export type MemoryPersonUpsertWithWhereUniqueWithoutMemoryInput = {
@@ -6811,6 +7142,38 @@ export namespace Prisma {
     id?: IntFilter<"MemoryPerson"> | number
     memoryId?: IntFilter<"MemoryPerson"> | number
     personId?: IntFilter<"MemoryPerson"> | number
+  }
+
+  export type PhotoUpsertWithWhereUniqueWithoutMemoryInput = {
+    where: PhotoWhereUniqueInput
+    update: XOR<PhotoUpdateWithoutMemoryInput, PhotoUncheckedUpdateWithoutMemoryInput>
+    create: XOR<PhotoCreateWithoutMemoryInput, PhotoUncheckedCreateWithoutMemoryInput>
+  }
+
+  export type PhotoUpdateWithWhereUniqueWithoutMemoryInput = {
+    where: PhotoWhereUniqueInput
+    data: XOR<PhotoUpdateWithoutMemoryInput, PhotoUncheckedUpdateWithoutMemoryInput>
+  }
+
+  export type PhotoUpdateManyWithWhereWithoutMemoryInput = {
+    where: PhotoScalarWhereInput
+    data: XOR<PhotoUpdateManyMutationInput, PhotoUncheckedUpdateManyWithoutMemoryInput>
+  }
+
+  export type PhotoScalarWhereInput = {
+    AND?: PhotoScalarWhereInput | PhotoScalarWhereInput[]
+    OR?: PhotoScalarWhereInput[]
+    NOT?: PhotoScalarWhereInput | PhotoScalarWhereInput[]
+    id?: StringFilter<"Photo"> | string
+    originalFilename?: StringFilter<"Photo"> | string
+    folder?: StringFilter<"Photo"> | string
+    baseFilename?: StringFilter<"Photo"> | string
+    mimeType?: StringFilter<"Photo"> | string
+    size?: IntFilter<"Photo"> | number
+    width?: IntFilter<"Photo"> | number
+    height?: IntFilter<"Photo"> | number
+    createdAt?: DateTimeFilter<"Photo"> | Date | string
+    memoryId?: IntNullableFilter<"Photo"> | number | null
   }
 
   export type MemoryPersonCreateWithoutPersonInput = {
@@ -6854,6 +7217,7 @@ export namespace Prisma {
     photoUrl: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    photos?: PhotoCreateNestedManyWithoutMemoryInput
   }
 
   export type MemoryUncheckedCreateWithoutPeopleInput = {
@@ -6864,6 +7228,7 @@ export namespace Prisma {
     photoUrl: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    photos?: PhotoUncheckedCreateNestedManyWithoutMemoryInput
   }
 
   export type MemoryCreateOrConnectWithoutPeopleInput = {
@@ -6909,6 +7274,7 @@ export namespace Prisma {
     photoUrl?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    photos?: PhotoUpdateManyWithoutMemoryNestedInput
   }
 
   export type MemoryUncheckedUpdateWithoutPeopleInput = {
@@ -6919,6 +7285,7 @@ export namespace Prisma {
     photoUrl?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    photos?: PhotoUncheckedUpdateManyWithoutMemoryNestedInput
   }
 
   export type PersonUpsertWithoutMemoriesInput = {
@@ -6947,9 +7314,79 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type MemoryCreateWithoutPhotosInput = {
+    title: string
+    date: Date | string
+    description: string
+    photoUrl: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    people?: MemoryPersonCreateNestedManyWithoutMemoryInput
+  }
+
+  export type MemoryUncheckedCreateWithoutPhotosInput = {
+    id?: number
+    title: string
+    date: Date | string
+    description: string
+    photoUrl: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    people?: MemoryPersonUncheckedCreateNestedManyWithoutMemoryInput
+  }
+
+  export type MemoryCreateOrConnectWithoutPhotosInput = {
+    where: MemoryWhereUniqueInput
+    create: XOR<MemoryCreateWithoutPhotosInput, MemoryUncheckedCreateWithoutPhotosInput>
+  }
+
+  export type MemoryUpsertWithoutPhotosInput = {
+    update: XOR<MemoryUpdateWithoutPhotosInput, MemoryUncheckedUpdateWithoutPhotosInput>
+    create: XOR<MemoryCreateWithoutPhotosInput, MemoryUncheckedCreateWithoutPhotosInput>
+    where?: MemoryWhereInput
+  }
+
+  export type MemoryUpdateToOneWithWhereWithoutPhotosInput = {
+    where?: MemoryWhereInput
+    data: XOR<MemoryUpdateWithoutPhotosInput, MemoryUncheckedUpdateWithoutPhotosInput>
+  }
+
+  export type MemoryUpdateWithoutPhotosInput = {
+    title?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    description?: StringFieldUpdateOperationsInput | string
+    photoUrl?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    people?: MemoryPersonUpdateManyWithoutMemoryNestedInput
+  }
+
+  export type MemoryUncheckedUpdateWithoutPhotosInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    title?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    description?: StringFieldUpdateOperationsInput | string
+    photoUrl?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    people?: MemoryPersonUncheckedUpdateManyWithoutMemoryNestedInput
+  }
+
   export type MemoryPersonCreateManyMemoryInput = {
     id?: number
     personId: number
+  }
+
+  export type PhotoCreateManyMemoryInput = {
+    id?: string
+    originalFilename: string
+    folder: string
+    baseFilename: string
+    mimeType: string
+    size: number
+    width: number
+    height: number
+    createdAt?: Date | string
   }
 
   export type MemoryPersonUpdateWithoutMemoryInput = {
@@ -6964,6 +7401,42 @@ export namespace Prisma {
   export type MemoryPersonUncheckedUpdateManyWithoutMemoryInput = {
     id?: IntFieldUpdateOperationsInput | number
     personId?: IntFieldUpdateOperationsInput | number
+  }
+
+  export type PhotoUpdateWithoutMemoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    originalFilename?: StringFieldUpdateOperationsInput | string
+    folder?: StringFieldUpdateOperationsInput | string
+    baseFilename?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    width?: IntFieldUpdateOperationsInput | number
+    height?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PhotoUncheckedUpdateWithoutMemoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    originalFilename?: StringFieldUpdateOperationsInput | string
+    folder?: StringFieldUpdateOperationsInput | string
+    baseFilename?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    width?: IntFieldUpdateOperationsInput | number
+    height?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PhotoUncheckedUpdateManyWithoutMemoryInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    originalFilename?: StringFieldUpdateOperationsInput | string
+    folder?: StringFieldUpdateOperationsInput | string
+    baseFilename?: StringFieldUpdateOperationsInput | string
+    mimeType?: StringFieldUpdateOperationsInput | string
+    size?: IntFieldUpdateOperationsInput | number
+    width?: IntFieldUpdateOperationsInput | number
+    height?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MemoryPersonCreateManyPersonInput = {
