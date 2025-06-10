@@ -70,19 +70,54 @@ const resolvers = {
       return true;
     },
     createPerson: async (_, { input }) => {
+      // Validation: name is required and not empty after trimming
+      const name = input.name?.trim();
+      if (!name) {
+        throw new Error('Name is required and cannot be empty.');
+      }
+      // Duplicate detection (case-insensitive, trimmed)
+      const existing = await prisma.person.findFirst({
+        where: {
+          name: {
+            equals: name,
+            mode: 'insensitive',
+          },
+        },
+      });
+      if (existing) {
+        throw new Error('A person with this name already exists.');
+      }
       return prisma.person.create({
         data: {
-          name: input.name,
+          name,
           relationship: input.relationship,
         },
         include: { memories: true },
       });
     },
     updatePerson: async (_, { id, input }) => {
+      // Validation: name is required and not empty after trimming
+      const name = input.name?.trim();
+      if (!name) {
+        throw new Error('Name is required and cannot be empty.');
+      }
+      // Duplicate detection (case-insensitive, trimmed, exclude self)
+      const existing = await prisma.person.findFirst({
+        where: {
+          name: {
+            equals: name,
+            mode: 'insensitive',
+          },
+          NOT: { id: Number(id) },
+        },
+      });
+      if (existing) {
+        throw new Error('A person with this name already exists.');
+      }
       return prisma.person.update({
         where: { id: Number(id) },
         data: {
-          name: input.name,
+          name,
           relationship: input.relationship,
         },
         include: { memories: true },

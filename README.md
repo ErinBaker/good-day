@@ -49,3 +49,14 @@ All subtasks for this task are complete and implemented to specification:
 - Implement Relationship Mutation Resolvers
 
 See `src/graphql/typeDefs.js` and `src/graphql/resolvers.js` for details.
+
+### Task 6: Implement Person Management System
+
+**Status:** In Progress (feature/task-6-person-management-system branch)
+
+#### Subtask 6.1: Create Person Data Model and GraphQL Schema
+- The `Person` data model is defined in `prisma/schema.prisma`.
+- GraphQL type definitions and CRUD operations for `Person` are present in `src/graphql/typeDefs.js`.
+- Resolvers for creating, updating, deleting, and querying people are implemented in `src/graphql/resolvers.js`.
+- **New:** Duplicate detection and validation logic have been added to prevent creating or updating a person with the same name (case-insensitive, trimmed) and to ensure the name field is required and non-empty.
+- Next steps: Add or update tests for these features and continue with subsequent subtasks for the person management system.

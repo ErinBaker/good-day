@@ -1,6 +1,6 @@
 # Task ID: 6
 # Title: Implement Person Management System
-# Status: done
+# Status: pending
 # Dependencies: 4
 # Priority: high
 # Description: Create interfaces for adding, editing, and managing people profiles
@@ -17,3 +17,35 @@ Connect person management to GraphQL mutations for creating, updating, and delet
 
 # Test Strategy:
 Test person creation with various inputs. Verify that duplicate detection works correctly. Test editing and deleting people. Verify that person selection component works correctly in memory creation and editing contexts.
+
+# Subtasks:
+## 1. Create Person Data Model and GraphQL Schema [in-progress]
+### Dependencies: None
+### Description: Define the data model for Person entities and implement the GraphQL schema with queries and mutations for CRUD operations.
+### Details:
+Create a Person interface with required fields (id, name) and optional fields (relationships). Define GraphQL types, queries for fetching people (getAllPeople, getPersonById), and mutations (createPerson, updatePerson, deletePerson). Implement validation rules for required fields and duplicate detection logic based on name matching.
+
+## 2. Implement Person Creation Form Component [pending]
+### Dependencies: 6.1
+### Description: Develop a form component for adding new people with name and optional relationship fields.
+### Details:
+Create a reusable form component with input validation for required fields. Include name field (required) and relationship selector (optional). Implement form submission handler that calls the createPerson GraphQL mutation. Add duplicate detection by checking against existing people before submission. Show appropriate error messages for validation failures.
+
+## 3. Build Person List View with Search and Filtering [pending]
+### Dependencies: 6.1
+### Description: Create a list view component that displays all people with search and filtering capabilities.
+### Details:
+Implement a list component that fetches people using the getAllPeople query. Add search functionality that filters by name. Implement sorting options (e.g., by name, date added). Create filter controls for relationship types. Each list item should display person name and relationship status with options to edit or delete. Include pagination if the list becomes large.
+
+## 4. Develop Person Edit and Delete Functionality [pending]
+### Dependencies: 6.1, 6.3
+### Description: Create interfaces for editing person details and implementing deletion with confirmation and impact assessment.
+### Details:
+Build an edit form component that pre-populates with existing person data. Implement form submission that calls the updatePerson mutation. For deletion, create a confirmation modal that shows potential impacts (e.g., memories this person is tagged in). Implement the deletePerson mutation call after confirmation. Add appropriate success and error notifications for both operations.
+
+## 5. Create Reusable Person Selection Component for Memory Tagging [pending]
+### Dependencies: 6.1, 6.3
+### Description: Develop a reusable component for selecting people to tag in memories, integrating with the person management system.
+### Details:
+Build a dropdown or autocomplete component that fetches and displays people for selection. Implement search within the component to quickly find people. Allow multiple selections for tagging multiple people in a memory. Include an inline option to create a new person if not found. Ensure the component can be easily integrated into the memory creation and editing interfaces.
+
