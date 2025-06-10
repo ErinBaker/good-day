@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { Box, TextField, Button, Alert, CircularProgress, Typography } from '@mui/material';
 
 export default function PersonCreationForm() {
   const [name, setName] = useState('');
@@ -44,31 +45,39 @@ export default function PersonCreationForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 400, margin: '1em 0' }}>
-      <div>
-        <label htmlFor="name">Name *</label><br />
-        <input
-          id="name"
-          type="text"
-          value={name}
-          onChange={e => setName(e.target.value)}
-          required
-        />
-      </div>
-      <div style={{ marginTop: 8 }}>
-        <label htmlFor="relationship">Relationship</label><br />
-        <input
-          id="relationship"
-          type="text"
-          value={relationship}
-          onChange={e => setRelationship(e.target.value)}
-        />
-      </div>
-      <button type="submit" disabled={loading} style={{ marginTop: 12 }}>
-        {loading ? 'Creating...' : 'Create Person'}
-      </button>
-      {error && <div style={{ color: 'red', marginTop: 8 }}>{error}</div>}
-      {success && <div style={{ color: 'green', marginTop: 8 }}>{success}</div>}
-    </form>
+    <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 400, my: 2, p: 2, borderRadius: 2, boxShadow: 1, bgcolor: 'background.paper' }}>
+      <Typography variant="h6" gutterBottom>Add a Person</Typography>
+      <TextField
+        id="name"
+        label="Name *"
+        value={name}
+        onChange={e => setName(e.target.value)}
+        required
+        fullWidth
+        margin="normal"
+        error={!!error && !name.trim()}
+        helperText={!!error && !name.trim() ? error : ''}
+        autoFocus
+      />
+      <TextField
+        id="relationship"
+        label="Relationship"
+        value={relationship}
+        onChange={e => setRelationship(e.target.value)}
+        fullWidth
+        margin="normal"
+      />
+      {error && name.trim() && (
+        <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>
+      )}
+      {success && (
+        <Alert severity="success" sx={{ mt: 2 }}>{success}</Alert>
+      )}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+        <Button type="submit" variant="contained" disabled={loading} startIcon={loading ? <CircularProgress size={18} /> : null}>
+          Create Person
+        </Button>
+      </Box>
+    </Box>
   );
 } 
