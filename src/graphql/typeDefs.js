@@ -52,7 +52,7 @@ const typeDefs = gql`
     memory(id: ID!): Memory
     memories(limit: Int, offset: Int, sortBy: String): [Memory]
     person(id: ID!): Person
-    people(limit: Int, offset: Int, sortBy: String): [Person]
+    people(search: String, limit: Int, offset: Int, sortBy: String): [Person]
   }
 
   type Mutation {

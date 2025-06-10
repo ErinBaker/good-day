@@ -24,8 +24,12 @@ const resolvers = {
         include: { memories: true },
       });
     },
-    people: async (_, { limit = 10, offset = 0, sortBy = 'name' }) => {
+    people: async (_, { search, limit = 50, offset = 0, sortBy = 'name' }) => {
+      const where = search
+        ? { name: { contains: search } }
+        : {};
       return prisma.person.findMany({
+        where,
         skip: offset,
         take: limit,
         orderBy: { [sortBy]: 'asc' },

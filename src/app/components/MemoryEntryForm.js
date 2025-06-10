@@ -6,14 +6,16 @@ import FileUpload from './FileUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import PersonSelection from './PersonSelection';
 
 const CREATE_MEMORY = gql`
-  mutation CreateMemory($title: String!, $date: String!, $description: String!) {
-    createMemory(title: $title, date: $date, description: $description) {
+  mutation CreateMemory($title: String!, $date: String!, $description: String!, $peopleIds: [ID!]) {
+    createMemory(input: { title: $title, date: $date, description: $description, peopleIds: $peopleIds }) {
       id
       title
       date
       description
+      people { id name relationship }
     }
   }
 `;
@@ -39,6 +41,7 @@ function MemoryEntryForm({ onMemoryCreated }) {
   const [uploadedPhotoIds, setUploadedPhotoIds] = useState([]);
   const [associatedPhotos, setAssociatedPhotos] = useState([]);
   const [alert, setAlert] = useState({ message: '', severity: 'success', open: false });
+  const [selectedPeople, setSelectedPeople] = useState([]);
 
   // Called by FileUpload after successful upload
   const handleFileUpload = (result) => {
@@ -51,7 +54,7 @@ function MemoryEntryForm({ onMemoryCreated }) {
   const onSubmit = async (data) => {
     try {
       // 1. Create the memory
-      const res = await createMemory({ variables: data });
+      const res = await createMemory({ variables: { ...data, peopleIds: selectedPeople.map(p => p.id) } });
       const memoryId = res.data.createMemory.id;
       // 2. Link all uploaded photos to this memory
       for (const photoId of uploadedPhotoIds) {
@@ -61,6 +64,7 @@ function MemoryEntryForm({ onMemoryCreated }) {
       reset();
       setUploadedPhotoIds([]);
       setAssociatedPhotos([]);
+      setSelectedPeople([]);
       setAlert({ message: 'Memory created successfully!', severity: 'success', open: true });
       if (onMemoryCreated) onMemoryCreated();
     } catch (err) {
@@ -123,6 +127,7 @@ function MemoryEntryForm({ onMemoryCreated }) {
         error={!!errors.description}
         helperText={errors.description && 'Description is required'}
       />
+      <PersonSelection value={selectedPeople} onChange={setSelectedPeople} label="Tag People" placeholder="Search or add a person..." />
       <FileUpload onFileSelect={handleFileUpload} />
       {associatedPhotos.length > 0 && (
         <Box mt={2}>
