@@ -73,7 +73,7 @@ function FileUpload({ onFileSelect }) {
       } else {
         setResult(data);
       }
-    } catch (err) {
+    } catch {
       setError('Network error.');
     } finally {
       setUploading(false);

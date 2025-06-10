@@ -232,7 +232,95 @@
         2
       ],
       "status": "pending",
-      "subtasks": []
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Define GraphQL Schema Types",
+          "description": "Create the core GraphQL schema type definitions for Memory, Person, MemoryInput, and PersonInput.",
+          "dependencies": [],
+          "details": "Create a schema.graphql file with type definitions for Memory (id, title, date, description, photoUrl, createdAt, updatedAt, people), Person (id, name, relationship, createdAt, updatedAt, memories), MemoryInput (title, date, description, photoUrl, peopleIds), and PersonInput (name, relationship). Ensure proper relationships between types using ID references.",
+          "status": "pending",
+          "testStrategy": "Validate schema using GraphQL tools to ensure it's syntactically correct and follows best practices."
+        },
+        {
+          "id": 2,
+          "title": "Implement Query Type Definitions",
+          "description": "Define the GraphQL Query type with all required query operations.",
+          "dependencies": [
+            1
+          ],
+          "details": "Add Query type to the schema with operations: memories(limit, offset, sortBy): [Memory], memory(id): Memory, people(limit, offset, sortBy): [Person], and person(id): Person. Include appropriate arguments and return types for each query.",
+          "status": "pending",
+          "testStrategy": "Verify query definitions with GraphQL schema validation tools."
+        },
+        {
+          "id": 3,
+          "title": "Implement Mutation Type Definitions",
+          "description": "Define the GraphQL Mutation type with all required mutation operations.",
+          "dependencies": [
+            1
+          ],
+          "details": "Add Mutation type to the schema with operations: createMemory, updateMemory, deleteMemory, createPerson, updatePerson, deletePerson, tagPersonInMemory, and removePersonFromMemory. Include appropriate input arguments and return types for each mutation.",
+          "status": "pending",
+          "testStrategy": "Verify mutation definitions with GraphQL schema validation tools."
+        },
+        {
+          "id": 4,
+          "title": "Implement Memory Query Resolvers",
+          "description": "Create resolver functions for Memory-related queries.",
+          "dependencies": [
+            2
+          ],
+          "details": "Implement resolver functions for 'memories' and 'memory' queries. The 'memories' resolver should handle pagination (limit, offset) and sorting (sortBy), while the 'memory' resolver should fetch a single memory by ID. Both should properly populate the 'people' field with related Person objects.",
+          "status": "pending",
+          "testStrategy": "Write unit tests for each resolver using mock database functions to verify correct data retrieval and error handling."
+        },
+        {
+          "id": 5,
+          "title": "Implement Person Query Resolvers",
+          "description": "Create resolver functions for Person-related queries.",
+          "dependencies": [
+            2
+          ],
+          "details": "Implement resolver functions for 'people' and 'person' queries. The 'people' resolver should handle pagination (limit, offset) and sorting (sortBy), while the 'person' resolver should fetch a single person by ID. Both should properly populate the 'memories' field with related Memory objects.",
+          "status": "pending",
+          "testStrategy": "Write unit tests for each resolver using mock database functions to verify correct data retrieval and error handling."
+        },
+        {
+          "id": 6,
+          "title": "Implement Memory Mutation Resolvers",
+          "description": "Create resolver functions for Memory-related mutations.",
+          "dependencies": [
+            3
+          ],
+          "details": "Implement resolver functions for 'createMemory', 'updateMemory', and 'deleteMemory' mutations. Each resolver should validate input data, interact with the database appropriately, and return the expected results. Handle error cases gracefully.",
+          "status": "pending",
+          "testStrategy": "Write unit tests for each resolver to verify correct database interactions, input validation, and error handling."
+        },
+        {
+          "id": 7,
+          "title": "Implement Person Mutation Resolvers",
+          "description": "Create resolver functions for Person-related mutations.",
+          "dependencies": [
+            3
+          ],
+          "details": "Implement resolver functions for 'createPerson', 'updatePerson', and 'deletePerson' mutations. Each resolver should validate input data, interact with the database appropriately, and return the expected results. Handle error cases gracefully.",
+          "status": "pending",
+          "testStrategy": "Write unit tests for each resolver to verify correct database interactions, input validation, and error handling."
+        },
+        {
+          "id": 8,
+          "title": "Implement Relationship Mutation Resolvers",
+          "description": "Create resolver functions for mutations that manage relationships between Memories and People.",
+          "dependencies": [
+            6,
+            7
+          ],
+          "details": "Implement resolver functions for 'tagPersonInMemory' and 'removePersonFromMemory' mutations. These should handle the many-to-many relationship between memories and people, updating the appropriate database records. Include validation to ensure both entities exist before attempting to create or remove relationships.",
+          "status": "pending",
+          "testStrategy": "Write integration tests that verify the relationship mutations correctly update the database and return updated Memory objects with the proper relationship changes reflected."
+        }
+      ]
     },
     {
       "id": 5,
@@ -245,7 +333,7 @@
         3,
         4
       ],
-      "status": "pending",
+      "status": "done",
       "subtasks": []
     },
     {
@@ -258,7 +346,7 @@
       "dependencies": [
         4
       ],
-      "status": "pending",
+      "status": "done",
       "subtasks": []
     },
     {

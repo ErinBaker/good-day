@@ -14,22 +14,56 @@ const typeDefs = gql`
   }
 
   type Memory {
-    id: Int!
+    id: ID!
     title: String!
     date: String!
     description: String!
     photoUrl: String
     createdAt: String!
     updatedAt: String!
+    people: [Person!]!
     photos: [Photo!]!
+  }
+
+  type Person {
+    id: ID!
+    name: String!
+    relationship: String
+    createdAt: String!
+    updatedAt: String!
+    memories: [Memory!]!
+  }
+
+  input MemoryInput {
+    title: String!
+    date: String!
+    description: String!
+    photoUrl: String
+    peopleIds: [ID!]
+  }
+
+  input PersonInput {
+    name: String!
+    relationship: String
   }
 
   type Query {
     hello: String
-    memory(id: Int!): Memory
+    memory(id: ID!): Memory
+    memories(limit: Int, offset: Int, sortBy: String): [Memory]
+    person(id: ID!): Person
+    people(limit: Int, offset: Int, sortBy: String): [Person]
   }
+
   type Mutation {
-    deleteMemory(id: Int!): Boolean!
+    createMemory(input: MemoryInput!): Memory
+    updateMemory(id: ID!, input: MemoryInput!): Memory
+    deleteMemory(id: ID!): Boolean!
+    createPerson(input: PersonInput!): Person
+    updatePerson(id: ID!, input: PersonInput!): Person
+    deletePerson(id: ID!): Boolean!
+    tagPersonInMemory(memoryId: ID!, personId: ID!): Memory
+    removePersonFromMemory(memoryId: ID!, personId: ID!): Memory
   }
 `;
 

@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     try {
       const photos = await prisma.photo.findMany({ where: { memoryId: parseInt(memoryId, 10) } });
       res.json(photos);
-    } catch (err) {
+    } catch {
       res.status(400).json({ error: 'Could not retrieve photos for memory.' });
     }
     return;
@@ -43,7 +43,7 @@ export default async function handler(req, res) {
       // Delete the memory
       await prisma.memory.delete({ where: { id: parseInt(memoryId, 10) } });
       res.json({ success: true });
-    } catch (err) {
+    } catch {
       res.status(400).json({ error: 'Could not delete memory and associated photos.' });
     }
     return;

@@ -4,7 +4,7 @@ import fs from 'fs';
 import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaClient } from '@prisma/client';
-import { fileTypeFromFile } from 'file-type';
+
 const prisma = new PrismaClient();
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
@@ -70,22 +70,36 @@ export default function handler(req, res) {
     }
     // File content validation using file-type
     try {
-      const fileType = await fileTypeFromFile(req.file.path);
-      if (!fileType || !ACCEPTED_TYPES.includes(fileType.mime)) {
+      console.log('File path:', req.file.path);
+      console.log('File exists:', fs.existsSync(req.file.path));
+      const fileType = await import('file-type');
+      console.log('Dynamic import fileType:', fileType);
+      console.log('Dynamic import fileType.default:', fileType.default);
+      let fileTypeResult;
+      if (fileType.fromFile) {
+        fileTypeResult = await fileType.fromFile(req.file.path);
+      } else if (fileType.default && fileType.default.fromFile) {
+        fileTypeResult = await fileType.default.fromFile(req.file.path);
+      } else {
+        throw new Error('fromFile not found in file-type import');
+      }
+      console.log('fileType result:', fileTypeResult);
+      if (!fileTypeResult || !ACCEPTED_TYPES.includes(fileTypeResult.mime)) {
         fs.unlinkSync(req.file.path);
         return res.status(400).json({ error: 'File content does not match allowed image types.' });
       }
       // Optionally, check extension matches content
       const ext = path.extname(req.file.filename).toLowerCase();
       let allowedExts = [];
-      if (fileType.mime === 'image/jpeg') allowedExts = ['.jpg', '.jpeg'];
-      else if (fileType.mime === 'image/png') allowedExts = ['.png'];
-      else if (fileType.mime === 'image/webp') allowedExts = ['.webp'];
+      if (fileTypeResult.mime === 'image/jpeg') allowedExts = ['.jpg', '.jpeg'];
+      else if (fileTypeResult.mime === 'image/png') allowedExts = ['.png'];
+      else if (fileTypeResult.mime === 'image/webp') allowedExts = ['.webp'];
       if (!allowedExts.includes(ext)) {
         fs.unlinkSync(req.file.path);
         return res.status(400).json({ error: `File extension (${ext}) does not match file content (${allowedExts.join(' or ')})` });
       }
-    } catch (err) {
+    } catch (e) {
+      console.error('Error during file-type validation:', e);
       if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
       return res.status(400).json({ error: 'Could not validate file content.' });
     }
@@ -145,7 +159,7 @@ export default function handler(req, res) {
         medium: mediumName,
         thumbnail: thumbName
       });
-    } catch (err) {
+    } catch {
       if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
       if (fs.existsSync(originalPath)) fs.unlinkSync(originalPath);
       if (fs.existsSync(mediumPath)) fs.unlinkSync(mediumPath);

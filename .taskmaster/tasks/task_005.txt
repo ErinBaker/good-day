@@ -1,6 +1,6 @@
 # Task ID: 5
 # Title: Develop Memory Creation Interface
-# Status: pending
+# Status: done
 # Dependencies: 3, 4
 # Priority: high
 # Description: Create the user interface for adding new memory entries with photos, details, and person tagging

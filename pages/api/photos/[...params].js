@@ -50,7 +50,7 @@ export default async function handler(req, res) {
         data: { memoryId: parseInt(memoryId, 10) },
       });
       res.json(photo);
-    } catch (err) {
+    } catch {
       res.status(400).json({ error: 'Could not link photo to memory.' });
     }
     return;
@@ -64,7 +64,7 @@ export default async function handler(req, res) {
         data: { memoryId: null },
       });
       res.json(photo);
-    } catch (err) {
+    } catch {
       res.status(400).json({ error: 'Could not unlink photo.' });
     }
     return;
@@ -85,7 +85,7 @@ export default async function handler(req, res) {
       });
       await prisma.photo.delete({ where: { id: photoId } });
       res.json({ success: true });
-    } catch (err) {
+    } catch {
       res.status(400).json({ error: 'Could not delete photo.' });
     }
     return;
