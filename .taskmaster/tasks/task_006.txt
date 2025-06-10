@@ -25,7 +25,7 @@ Test person creation with various inputs. Verify that duplicate detection works 
 ### Details:
 Create a Person interface with required fields (id, name) and optional fields (relationships). Define GraphQL types, queries for fetching people (getAllPeople, getPersonById), and mutations (createPerson, updatePerson, deletePerson). Implement validation rules for required fields and duplicate detection logic based on name matching.
 
-## 2. Implement Person Creation Form Component [pending]
+## 2. Implement Person Creation Form Component [in-progress]
 ### Dependencies: 6.1
 ### Description: Develop a form component for adding new people with name and optional relationship fields.
 ### Details:

@@ -75,16 +75,14 @@ const resolvers = {
       if (!name) {
         throw new Error('Name is required and cannot be empty.');
       }
-      // Duplicate detection (case-insensitive, trimmed)
-      const existing = await prisma.person.findFirst({
+      // Duplicate detection (case-insensitive, trimmed) in JS
+      const possible = await prisma.person.findMany({
         where: {
-          name: {
-            equals: name,
-            mode: 'insensitive',
-          },
+          // Optionally, you could use 'contains' for partial match, but here we fetch all
         },
       });
-      if (existing) {
+      const exists = possible.some(p => p.name.trim().toLowerCase() === name.toLowerCase());
+      if (exists) {
         throw new Error('A person with this name already exists.');
       }
       return prisma.person.create({
@@ -101,17 +99,14 @@ const resolvers = {
       if (!name) {
         throw new Error('Name is required and cannot be empty.');
       }
-      // Duplicate detection (case-insensitive, trimmed, exclude self)
-      const existing = await prisma.person.findFirst({
+      // Duplicate detection (case-insensitive, trimmed, exclude self) in JS
+      const possible = await prisma.person.findMany({
         where: {
-          name: {
-            equals: name,
-            mode: 'insensitive',
-          },
-          NOT: { id: Number(id) },
+          // Optionally, you could use 'contains' for partial match, but here we fetch all
         },
       });
-      if (existing) {
+      const exists = possible.some(p => p.id !== Number(id) && p.name.trim().toLowerCase() === name.toLowerCase());
+      if (exists) {
         throw new Error('A person with this name already exists.');
       }
       return prisma.person.update({
