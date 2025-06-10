@@ -1,131 +1,36 @@
-```# Good Day Project
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-This project uses a monorepo structure with separate frontend and backend applications.
+## Getting Started
 
-## Structure
-
-- `frontend/` - React application (Material-UI)
-- `backend/` - Node.js + Express + Apollo GraphQL API
-
-## Setup
-
-1. Install dependencies for both apps:
-   - `cd frontend && npm install`
-   - `cd ../backend && npm install`
-2. See each directory's README for more details.
-
-## Development
-
-- To run both frontend and backend concurrently from the project root:
-  ```bash
-  npm run dev
-  ```
-  This will start the React frontend and the Node.js backend together.
-
-- The frontend is configured to proxy API requests to the backend at http://localhost:4000.
-- Apollo Client is set up in the frontend to connect to the GraphQL API. You can set the API URL with the `REACT_APP_GRAPHQL_API_URL` environment variable if needed.
-
-- You can still run frontend and backend separately in their respective directories if desired.
-- Use the root `.gitignore` to exclude node_modules, build, dist, and .env files.
-
-## Usage
-
-To use taskmaster-ai, you can run commands like:
+First, run the development server:
 
 ```bash
-npx task-master-ai <command>
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-For more information about available commands and features, visit the [taskmaster-ai documentation](https://github.com/taskmaster-ai/taskmaster-ai).
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Database & Prisma ORM
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [Prisma ORM](https://www.prisma.io/) with SQLite for the backend database.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-### Database Location
-- The SQLite database file is located at `backend/prisma/dev.db`.
+## Learn More
 
-### Managing the Database Schema
-- The schema is defined in `backend/prisma/schema.prisma`.
-- Migrations are stored in `backend/prisma/migrations/` and are automatically generated when you change the schema.
+To learn more about Next.js, take a look at the following resources:
 
-### Common Commands
-- **Run migrations and update the database:**
-  ```bash
-  npx --prefix backend prisma migrate dev --name <migration-name> --schema=backend/prisma/schema.prisma
-  ```
-- **Generate the Prisma client after schema changes:**
-  ```bash
-  npx --prefix backend prisma generate --schema=backend/prisma/schema.prisma
-  ```
-- **Open the Prisma Studio (GUI for DB):**
-  ```bash
-  npx --prefix backend prisma studio --schema=backend/prisma/schema.prisma
-  ```
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-### Cascade Deletes
-- The `MemoryPerson` table uses `ON DELETE CASCADE` for both `memoryId` and `personId` foreign keys.
-- Deleting a `Person` or `Memory` will automatically remove related links in `MemoryPerson`.
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-### Migration History
-- Initial migration creates all tables and relationships.
-- A follow-up migration added cascade delete behavior to the `MemoryPerson` table.
+## Deploy on Vercel
 
-## Database Schema & Relationships
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-### Entity-Relationship Diagram
-
-```mermaid
-erDiagram
-  Memory ||--o{ MemoryPerson : contains
-  Person ||--o{ MemoryPerson : linked_to
-  Memory {
-    int id PK
-    string title
-    datetime date
-    string description
-    string photoUrl
-    datetime createdAt
-    datetime updatedAt
-  }
-  Person {
-    int id PK
-    string name
-    string relationship
-    datetime createdAt
-    datetime updatedAt
-  }
-  MemoryPerson {
-    int id PK
-    int memoryId FK
-    int personId FK
-  }
-```
-
-### Table & Field Descriptions
-
-- **Memory**: Represents a memory or event.
-  - `id`: Primary key
-  - `title`: Title of the memory
-  - `date`: Date of the memory/event
-  - `description`: Description/details
-  - `photoUrl`: Link to a photo
-  - `createdAt`: Timestamp when created
-  - `updatedAt`: Timestamp when last updated
-
-- **Person**: Represents a person who can be linked to memories.
-  - `id`: Primary key
-  - `name`: Person's name
-  - `relationship`: Relationship to the user (optional)
-  - `createdAt`: Timestamp when created
-  - `updatedAt`: Timestamp when last updated
-
-- **MemoryPerson**: Junction table for many-to-many relationship between Memory and Person.
-  - `id`: Primary key
-  - `memoryId`: Foreign key to Memory
-  - `personId`: Foreign key to Person
-
-### Relationships
-- Each Memory can be linked to multiple People (via MemoryPerson).
-- Each Person can be linked to multiple Memories (via MemoryPerson).
-- Deleting a Memory or Person will automatically remove related links in MemoryPerson (cascade delete). 
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
