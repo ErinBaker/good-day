@@ -1,0 +1,38 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Cursor Rule: UI/UX Standards
+
+## UI/UX Requirements
+- **All user interfaces must be built using Material-UI (MUI) v7 components and compatible libraries.**
+- **Custom components must follow MUI design language and integrate seamlessly with MUI theming and styling.**
+- **UI must be modern, attractive, and visually consistent across the application.**
+- **All screens and components must be fully responsive, providing an optimal experience on desktop, tablet, and mobile devices.**
+- **Accessibility is mandatory:**
+  - Follow WCAG 2.1 guidelines for color contrast, keyboard navigation, and screen reader compatibility.
+  - Use semantic HTML and ARIA attributes as appropriate.
+- **User experience must prioritize clarity, ease of use, and emotional engagement,** as described in the PRD:
+  - Provide clear feedback for all user actions (success, error, loading states).
+  - Use intuitive navigation, logical flows, and helpful empty states.
+  - Ensure forms and interactive elements have real-time validation and actionable error messages.
+- **Performance and polish are not optional:**
+  - UI interactions should be smooth and fast, with loading states and transitions where appropriate.
+  - Optimize for fast load times and minimal layout shift.
+
+## Enforcement
+- **All new UI code must use MUI v7 and follow these standards.**
+- **No alternative UI frameworks or design systems** may be introduced unless:
+  - There is a clear, documented technical need.
+  - The change is discussed and approved by the team.
+  - The rationale is added to this file with a reference to the relevant PRD section.
+- **All UI/UX work must be reviewed for adherence to these standards before merging.**
+
+## Rationale
+- The Product Requirements Document (PRD) in `.taskmaster/docs/prd.txt` specifies Material-UI, accessibility, and modern UX as core requirements for a beautiful, user-friendly, and inclusive product.
+- Consistent use of MUI and these standards ensures maintainability, scalability, and a high-quality user experience.
+
+## Exceptions
+- Any deviation from these UI/UX standards must be justified in writing, reviewed, and approved before implementation.
+- All exceptions must be documented in this file with a link to the relevant discussion and PRD section. 

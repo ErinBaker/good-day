@@ -1,0 +1,36 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Cursor Rule: Tech Stack Enforcement
+
+## Tech Stack Definition
+This project must use the following technologies for all new features, enhancements, and code changes:
+
+- **Frontend:** React (v19), Material-UI (MUI v7), Next.js (v15)
+- **State Management:** React hooks and context API (no external state libraries)
+- **API Layer:** GraphQL (Apollo Client/Server)
+- **Backend:** Node.js, GraphQL server (Apollo), REST endpoints for file upload
+- **Database:** Prisma ORM (v6) with SQLite (for local/dev)
+- **Testing:** Testing Library (React, DOM, User Event), Jest
+- **Styling:** CSS Modules, Material-UI, and project-specific CSS
+- **File Upload/Storage:** Multer (for REST endpoints), local file storage (MVP)
+
+## Enforcement
+- **All new code must use the above tech stack.**
+- **No additional frameworks or libraries** may be introduced for core functionality (UI, state, API, DB, etc.) unless:
+  - There is a clear, documented technical need.
+  - The change is discussed and approved by the team.
+  - The rationale is added to this file with a reference to the relevant PRD section.
+- **Stick to the architectural and UX principles** outlined in the PRD (see `.taskmaster/docs/prd.txt`).
+- **UI/UX must follow Material-UI and accessibility best practices** as described in the PRD.
+
+## Rationale
+This rule is based on:
+- The current dependencies in `package.json`.
+- The Product Requirements Document (PRD) in `.taskmaster/docs/prd.txt`, which specifies React, Material-UI, GraphQL, and Node.js as the core stack for maintainability, accessibility, and a modern user experience.
+
+## Exceptions
+- Any deviation from this tech stack must be justified in writing, reviewed, and approved before implementation.
+- All exceptions must be documented in this file with a link to the relevant discussion and PRD section. 

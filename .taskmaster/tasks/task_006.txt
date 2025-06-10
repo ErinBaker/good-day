@@ -37,7 +37,7 @@ Create a reusable form component with input validation for required fields. Incl
 ### Details:
 Implement a list component that fetches people using the getAllPeople query. Add search functionality that filters by name. Implement sorting options (e.g., by name, date added). Create filter controls for relationship types. Each list item should display person name and relationship status with options to edit or delete. Include pagination if the list becomes large.
 
-## 4. Develop Person Edit and Delete Functionality [pending]
+## 4. Develop Person Edit and Delete Functionality [done]
 ### Dependencies: 6.1, 6.3
 ### Description: Create interfaces for editing person details and implementing deletion with confirmation and impact assessment.
 ### Details:

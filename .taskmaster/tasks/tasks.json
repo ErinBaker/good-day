@@ -388,7 +388,7 @@
             3
           ],
           "details": "Build an edit form component that pre-populates with existing person data. Implement form submission that calls the updatePerson mutation. For deletion, create a confirmation modal that shows potential impacts (e.g., memories this person is tagged in). Implement the deletePerson mutation call after confirmation. Add appropriate success and error notifications for both operations.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test edit form with various input changes. Verify deletion confirmation shows correct impact assessment. Test both operations with successful and error GraphQL responses. Create unit tests for edit form component with pre-populated data. Test validation during editing, including preventing duplicate names. For deletion, test the confirmation modal rendering with different impact scenarios. Verify that the impact assessment correctly shows all affected memories. Test cancellation of both edit and delete operations. Verify that success and error notifications display correctly after operations complete."
         },
         {
