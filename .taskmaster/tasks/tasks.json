@@ -354,7 +354,7 @@
           "description": "Define the data model for Person entities and implement the GraphQL schema with queries and mutations for CRUD operations.",
           "dependencies": [],
           "details": "Create a Person interface with required fields (id, name) and optional fields (relationships). Define GraphQL types, queries for fetching people (getAllPeople, getPersonById), and mutations (createPerson, updatePerson, deletePerson). Implement validation rules for required fields and duplicate detection logic based on name matching.",
-          "status": "in-progress",
+          "status": "done",
           "testStrategy": "Write unit tests for the GraphQL schema validation and resolver functions. Test edge cases like empty names and duplicate detection. Create integration tests to verify that the GraphQL API correctly handles CRUD operations for Person entities. Test validation rules by attempting to create invalid Person entities. Verify that the duplicate detection logic correctly identifies matching names with different capitalizations or extra spaces."
         },
         {
@@ -365,7 +365,7 @@
             1
           ],
           "details": "Create a reusable form component with input validation for required fields. Include name field (required) and relationship selector (optional). Implement form submission handler that calls the createPerson GraphQL mutation. Add duplicate detection by checking against existing people before submission. Show appropriate error messages for validation failures.",
-          "status": "in-progress",
+          "status": "done",
           "testStrategy": "Test form validation logic, submission handling, and error states. Mock GraphQL responses to test successful creation and error handling. Create unit tests for form component rendering and validation logic. Test user interactions including typing in fields, submitting with valid and invalid data, and handling of validation errors. Verify that duplicate detection works correctly by mocking existing people data. Test accessibility of form elements including keyboard navigation and screen reader compatibility."
         },
         {
@@ -376,7 +376,7 @@
             1
           ],
           "details": "Implement a list component that fetches people using the getAllPeople query. Add search functionality that filters by name. Implement sorting options (e.g., by name, date added). Create filter controls for relationship types. Each list item should display person name and relationship status with options to edit or delete. Include pagination if the list becomes large.",
-          "status": "pending",
+          "status": "in-progress",
           "testStrategy": "Test search and filtering functionality with various inputs. Verify correct rendering of list items and pagination controls. Create unit tests for list component rendering with different data sets. Test search functionality with partial matches, case insensitivity, and special characters. Verify that filtering and sorting work correctly with different criteria. Test pagination with large data sets to ensure correct page navigation. Test empty state rendering when no results match search criteria."
         },
         {

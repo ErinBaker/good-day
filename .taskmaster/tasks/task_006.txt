@@ -19,19 +19,19 @@ Connect person management to GraphQL mutations for creating, updating, and delet
 Test person creation with various inputs. Verify that duplicate detection works correctly. Test editing and deleting people. Verify that person selection component works correctly in memory creation and editing contexts.
 
 # Subtasks:
-## 1. Create Person Data Model and GraphQL Schema [in-progress]
+## 1. Create Person Data Model and GraphQL Schema [done]
 ### Dependencies: None
 ### Description: Define the data model for Person entities and implement the GraphQL schema with queries and mutations for CRUD operations.
 ### Details:
 Create a Person interface with required fields (id, name) and optional fields (relationships). Define GraphQL types, queries for fetching people (getAllPeople, getPersonById), and mutations (createPerson, updatePerson, deletePerson). Implement validation rules for required fields and duplicate detection logic based on name matching.
 
-## 2. Implement Person Creation Form Component [in-progress]
+## 2. Implement Person Creation Form Component [done]
 ### Dependencies: 6.1
 ### Description: Develop a form component for adding new people with name and optional relationship fields.
 ### Details:
 Create a reusable form component with input validation for required fields. Include name field (required) and relationship selector (optional). Implement form submission handler that calls the createPerson GraphQL mutation. Add duplicate detection by checking against existing people before submission. Show appropriate error messages for validation failures.
 
-## 3. Build Person List View with Search and Filtering [pending]
+## 3. Build Person List View with Search and Filtering [in-progress]
 ### Dependencies: 6.1
 ### Description: Create a list view component that displays all people with search and filtering capabilities.
 ### Details:
