@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Box, Button, TextField, Typography, Alert, Snackbar, IconButton, Grid } from '@mui/material';
 import { useMutation, gql } from '@apollo/client';
 import FileUpload from './FileUpload';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 const CREATE_MEMORY = gql`
   mutation CreateMemory($title: String!, $date: String!, $description: String!) {
@@ -35,6 +38,7 @@ function MemoryEntryForm({ onMemoryCreated }) {
   const [linkPhoto] = useMutation(LINK_PHOTO);
   const [uploadedPhotoIds, setUploadedPhotoIds] = useState([]);
   const [associatedPhotos, setAssociatedPhotos] = useState([]);
+  const [alert, setAlert] = useState({ message: '', severity: 'success', open: false });
 
   // Called by FileUpload after successful upload
   const handleFileUpload = (result) => {
@@ -57,9 +61,10 @@ function MemoryEntryForm({ onMemoryCreated }) {
       reset();
       setUploadedPhotoIds([]);
       setAssociatedPhotos([]);
+      setAlert({ message: 'Memory created successfully!', severity: 'success', open: true });
       if (onMemoryCreated) onMemoryCreated();
     } catch (err) {
-      alert('Error creating memory: ' + err.message);
+      setAlert({ message: 'Error creating memory: ' + err.message, severity: 'error', open: true });
     }
   };
 
@@ -88,8 +93,8 @@ function MemoryEntryForm({ onMemoryCreated }) {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-      <Typography variant="h6">Create Memory</Typography>
+    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ maxWidth: 600, my: 2, p: 3, borderRadius: 2, boxShadow: 1, bgcolor: 'background.paper' }}>
+      <Typography variant="h6" gutterBottom>Create Memory</Typography>
       <TextField
         label="Title"
         fullWidth
@@ -122,37 +127,49 @@ function MemoryEntryForm({ onMemoryCreated }) {
       {associatedPhotos.length > 0 && (
         <Box mt={2}>
           <Typography variant="subtitle1">Photos to be associated:</Typography>
-          <Box display="flex" gap={2} mt={1}>
+          <Grid container spacing={2} mt={1}>
             {associatedPhotos.map((photo, idx) => (
-              <Box key={photo.id}>
-                <img
-                  src={`/api/photos/${photo.folder}/${photo.baseFilename}?size=thumbnail`}
-                  alt="Memory"
-                  style={{ maxWidth: 80, borderRadius: 8, display: 'block' }}
-                />
-                <Box display="flex" flexDirection="column" alignItems="center" mt={1}>
-                  <Button size="small" color="error" onClick={() => handleRemovePhoto(photo.id)}>
-                    Remove
-                  </Button>
-                  <Button size="small" disabled={idx === 0} onClick={() => movePhoto(idx, -1)}>
-                    Up
-                  </Button>
-                  <Button
-                    size="small"
-                    disabled={idx === associatedPhotos.length - 1}
-                    onClick={() => movePhoto(idx, 1)}
-                  >
-                    Down
-                  </Button>
+              <Grid item key={photo.id}>
+                <Box display="flex" flexDirection="column" alignItems="center">
+                  <img
+                    src={`/api/photos/${photo.folder}/${photo.baseFilename}?size=thumbnail`}
+                    alt="Memory"
+                    style={{ maxWidth: 80, borderRadius: 8, display: 'block' }}
+                  />
+                  <Box display="flex" gap={1} mt={1}>
+                    <IconButton aria-label="Remove photo" color="error" onClick={() => handleRemovePhoto(photo.id)} size="small">
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton aria-label="Move photo up" disabled={idx === 0} onClick={() => movePhoto(idx, -1)} size="small">
+                      <ArrowUpwardIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton aria-label="Move photo down" disabled={idx === associatedPhotos.length - 1} onClick={() => movePhoto(idx, 1)} size="small">
+                      <ArrowDownwardIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
                 </Box>
-              </Box>
+              </Grid>
             ))}
-          </Box>
+          </Grid>
         </Box>
       )}
-      <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
-        Create Memory
-      </Button>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+        <Button type="submit" variant="contained" color="primary">
+          Create Memory
+        </Button>
+      </Box>
+      <Snackbar
+        open={alert.open}
+        autoHideDuration={4000}
+        onClose={() => setAlert(a => ({ ...a, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        {alert.message && (
+          <Alert onClose={() => setAlert(a => ({ ...a, open: false }))} severity={alert.severity} sx={{ width: '100%' }}>
+            {alert.message}
+          </Alert>
+        )}
+      </Snackbar>
     </Box>
   );
 }

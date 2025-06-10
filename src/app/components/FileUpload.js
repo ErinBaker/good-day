@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Box, Button, Typography, Paper, CircularProgress } from '@mui/material';
+import { Box, Button, Typography, Paper, CircularProgress, Alert } from '@mui/material';
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -97,6 +97,7 @@ function FileUpload({ onFileSelect }) {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onClick={() => inputRef.current.click()}
+        aria-label="File upload dropzone"
       >
         <Typography variant="body1" gutterBottom>
           Drag & drop an image here, or click to select
@@ -107,6 +108,7 @@ function FileUpload({ onFileSelect }) {
           accept="image/jpeg,image/png,image/webp"
           style={{ display: 'none' }}
           onChange={handleChange}
+          aria-label="Choose image file"
         />
         {selectedFile && (
           <Box mt={2}>
@@ -121,9 +123,7 @@ function FileUpload({ onFileSelect }) {
           </Box>
         )}
         {error && (
-          <Typography color="error" variant="body2" mt={2}>
-            {error}
-          </Typography>
+          <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>
         )}
       </Paper>
       <Box display="flex" alignItems="center" gap={2}>
@@ -132,6 +132,7 @@ function FileUpload({ onFileSelect }) {
           color="primary"
           onClick={() => inputRef.current.click()}
           disabled={uploading}
+          aria-label="Choose image"
         >
           Choose Image
         </Button>
@@ -140,6 +141,7 @@ function FileUpload({ onFileSelect }) {
           color="success"
           onClick={handleUpload}
           disabled={!selectedFile || uploading}
+          aria-label="Upload image"
         >
           {uploading ? <CircularProgress size={24} /> : 'Upload'}
         </Button>
