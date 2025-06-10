@@ -376,7 +376,7 @@
             1
           ],
           "details": "Implement a list component that fetches people using the getAllPeople query. Add search functionality that filters by name. Implement sorting options (e.g., by name, date added). Create filter controls for relationship types. Each list item should display person name and relationship status with options to edit or delete. Include pagination if the list becomes large.",
-          "status": "in-progress",
+          "status": "done",
           "testStrategy": "Test search and filtering functionality with various inputs. Verify correct rendering of list items and pagination controls. Create unit tests for list component rendering with different data sets. Test search functionality with partial matches, case insensitivity, and special characters. Verify that filtering and sorting work correctly with different criteria. Test pagination with large data sets to ensure correct page navigation. Test empty state rendering when no results match search criteria."
         },
         {

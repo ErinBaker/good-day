@@ -31,7 +31,7 @@ Create a Person interface with required fields (id, name) and optional fields (r
 ### Details:
 Create a reusable form component with input validation for required fields. Include name field (required) and relationship selector (optional). Implement form submission handler that calls the createPerson GraphQL mutation. Add duplicate detection by checking against existing people before submission. Show appropriate error messages for validation failures.
 
-## 3. Build Person List View with Search and Filtering [in-progress]
+## 3. Build Person List View with Search and Filtering [done]
 ### Dependencies: 6.1
 ### Description: Create a list view component that displays all people with search and filtering capabilities.
 ### Details:
