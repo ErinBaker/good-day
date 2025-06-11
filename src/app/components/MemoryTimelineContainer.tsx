@@ -92,6 +92,36 @@ const MemoryTimelineContainer: React.FC = () => {
     }
   }, [allMemories, memories, startDate, endDate]);
 
+  // Refs for each memory card
+  const memoryRefs = useRef<(HTMLDivElement | null)[]>([]);
+  useEffect(() => {
+    memoryRefs.current = allMemories.map((_, i) => memoryRefs.current[i] || null);
+  }, [allMemories]);
+
+  // Scroll to memory card when slider changes
+  useEffect(() => {
+    if (memoryRefs.current[sliderValue]) {
+      memoryRefs.current[sliderValue]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [sliderValue]);
+
+  // Helper to format date label for slider (reversed order: newest on top)
+  const getSliderDateLabel = (idx: number) => {
+    const reversedIdx = allMemories.length - 1 - idx;
+    const mem = allMemories[reversedIdx];
+    if (!mem) return '';
+    return dayjs(Number(mem.date)).format('MMM D, YYYY');
+  };
+
+  // Adjust slider value to match reversed order
+  const sliderMax = allMemories.length > 0 ? allMemories.length - 1 : 0;
+  const reversedSliderValue = sliderMax - sliderValue;
+
+  // When slider changes, update sliderValue to match reversed order
+  const handleSliderChange = (_: Event, v: number | number[]) => {
+    setSliderValue(sliderMax - Number(v));
+  };
+
   return (
     <Box
       sx={{
@@ -120,19 +150,6 @@ const MemoryTimelineContainer: React.FC = () => {
         />
       </Box>
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'flex-start' }}>
-        {/* Vertical Slider */}
-        <Box sx={{ minHeight: 400, height: '100%', mr: { sm: 3, xs: 0 }, mb: { xs: 2, sm: 0 }, display: 'flex', alignItems: 'center' }}>
-          <Slider
-            orientation="vertical"
-            min={0}
-            max={allMemories.length > 0 ? allMemories.length - 1 : 0}
-            value={sliderValue}
-            onChange={(_, v) => setSliderValue(Number(v))}
-            sx={{ height: 400 }}
-            aria-label="Timeline Scrubber"
-            disabled={allMemories.length === 0}
-          />
-        </Box>
         {/* Timeline and infinite scroll logic remain unchanged */}
         <Box sx={{ flex: 1 }}>
           {initialLoad && loading && (
@@ -186,12 +203,14 @@ const MemoryTimelineContainer: React.FC = () => {
                       {idx < allMemories.length - 1 && <TimelineConnector />}
                     </TimelineSeparator>
                     <TimelineContent sx={{ py: 2 }}>
-                      <MemoryCard
-                        id={memory.id}
-                        photoUrl={memory.photoUrl}
-                        people={memory.people}
-                        description={memory.description}
-                      />
+                      <div ref={el => { memoryRefs.current[idx] = el; }}>
+                        <MemoryCard
+                          id={memory.id}
+                          photoUrl={memory.photoUrl}
+                          people={memory.people}
+                          description={memory.description}
+                        />
+                      </div>
                     </TimelineContent>
                   </TimelineItem>
                 );
@@ -225,6 +244,49 @@ const MemoryTimelineContainer: React.FC = () => {
             </Typography>
           )}
         </Box>
+      </Box>
+      {/* Vertical Slider floating on the far right (desktop) */}
+      <Box
+        sx={{
+          display: { xs: 'none', sm: 'flex' },
+          position: 'fixed',
+          right: 0,
+          top: 120,
+          zIndex: 1200,
+          width: 80,
+          height: 400,
+          alignItems: 'center',
+          justifyContent: 'center',
+          pointerEvents: 'auto',
+        }}
+      >
+        <Slider
+          orientation="vertical"
+          min={0}
+          max={sliderMax}
+          value={reversedSliderValue}
+          onChange={handleSliderChange}
+          sx={{ height: 400, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3, p: 2 }}
+          aria-label="Timeline Scrubber"
+          disabled={allMemories.length === 0}
+          valueLabelDisplay="on"
+          valueLabelFormat={getSliderDateLabel}
+        />
+      </Box>
+      {/* On mobile, show slider below timeline */}
+      <Box sx={{ display: { xs: 'flex', sm: 'none' }, width: '100%', mt: 2, justifyContent: 'center' }}>
+        <Slider
+          orientation="horizontal"
+          min={0}
+          max={sliderMax}
+          value={reversedSliderValue}
+          onChange={handleSliderChange}
+          sx={{ width: '90%' }}
+          aria-label="Timeline Scrubber"
+          disabled={allMemories.length === 0}
+          valueLabelDisplay="on"
+          valueLabelFormat={getSliderDateLabel}
+        />
       </Box>
     </Box>
   );
