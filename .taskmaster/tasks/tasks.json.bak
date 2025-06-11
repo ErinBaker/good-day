@@ -340,135 +340,189 @@
       "id": 6,
       "title": "Implement Person Management System",
       "description": "Create interfaces for adding, editing, and managing people profiles",
-      "details": "Develop person management functionality with the following features:\n\n1. Person creation form with name and optional relationship fields\n2. Person list view with search and filtering\n3. Person edit interface for updating information\n4. Person deletion with confirmation and impact assessment\n5. Duplicate detection to prevent creating the same person multiple times\n\nConnect person management to GraphQL mutations for creating, updating, and deleting people. Implement validation for required fields and duplicate detection. Create a reusable person selection component for memory tagging.",
-      "testStrategy": "Test person creation with various inputs. Verify that duplicate detection works correctly. Test editing and deleting people. Verify that person selection component works correctly in memory creation and editing contexts.",
-      "priority": "high",
+      "status": "done",
       "dependencies": [
         4
       ],
-      "status": "pending",
-      "subtasks": []
+      "priority": "high",
+      "details": "Develop person management functionality with the following features:\n\n1. Person creation form with name and optional relationship fields\n2. Person list view with search and filtering\n3. Person edit interface for updating information\n4. Person deletion with confirmation and impact assessment\n5. Duplicate detection to prevent creating the same person multiple times\n\nConnect person management to GraphQL mutations for creating, updating, and deleting people. Implement validation for required fields and duplicate detection. Create a reusable person selection component for memory tagging.",
+      "testStrategy": "Test person creation with various inputs. Verify that duplicate detection works correctly. Test editing and deleting people. Verify that person selection component works correctly in memory creation and editing contexts.",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Create Person Data Model and GraphQL Schema",
+          "description": "Define the data model for Person entities and implement the GraphQL schema with queries and mutations for CRUD operations.",
+          "dependencies": [],
+          "details": "Create a Person interface with required fields (id, name) and optional fields (relationships). Define GraphQL types, queries for fetching people (getAllPeople, getPersonById), and mutations (createPerson, updatePerson, deletePerson). Implement validation rules for required fields and duplicate detection logic based on name matching.",
+          "status": "done",
+          "testStrategy": "Write unit tests for the GraphQL schema validation and resolver functions. Test edge cases like empty names and duplicate detection. Create integration tests to verify that the GraphQL API correctly handles CRUD operations for Person entities. Test validation rules by attempting to create invalid Person entities. Verify that the duplicate detection logic correctly identifies matching names with different capitalizations or extra spaces."
+        },
+        {
+          "id": 2,
+          "title": "Implement Person Creation Form Component",
+          "description": "Develop a form component for adding new people with name and optional relationship fields.",
+          "dependencies": [
+            1
+          ],
+          "details": "Create a reusable form component with input validation for required fields. Include name field (required) and relationship selector (optional). Implement form submission handler that calls the createPerson GraphQL mutation. Add duplicate detection by checking against existing people before submission. Show appropriate error messages for validation failures.",
+          "status": "done",
+          "testStrategy": "Test form validation logic, submission handling, and error states. Mock GraphQL responses to test successful creation and error handling. Create unit tests for form component rendering and validation logic. Test user interactions including typing in fields, submitting with valid and invalid data, and handling of validation errors. Verify that duplicate detection works correctly by mocking existing people data. Test accessibility of form elements including keyboard navigation and screen reader compatibility."
+        },
+        {
+          "id": 3,
+          "title": "Build Person List View with Search and Filtering",
+          "description": "Create a list view component that displays all people with search and filtering capabilities.",
+          "dependencies": [
+            1
+          ],
+          "details": "Implement a list component that fetches people using the getAllPeople query. Add search functionality that filters by name. Implement sorting options (e.g., by name, date added). Create filter controls for relationship types. Each list item should display person name and relationship status with options to edit or delete. Include pagination if the list becomes large.",
+          "status": "done",
+          "testStrategy": "Test search and filtering functionality with various inputs. Verify correct rendering of list items and pagination controls. Create unit tests for list component rendering with different data sets. Test search functionality with partial matches, case insensitivity, and special characters. Verify that filtering and sorting work correctly with different criteria. Test pagination with large data sets to ensure correct page navigation. Test empty state rendering when no results match search criteria."
+        },
+        {
+          "id": 4,
+          "title": "Develop Person Edit and Delete Functionality",
+          "description": "Create interfaces for editing person details and implementing deletion with confirmation and impact assessment.",
+          "dependencies": [
+            1,
+            3
+          ],
+          "details": "Build an edit form component that pre-populates with existing person data. Implement form submission that calls the updatePerson mutation. For deletion, create a confirmation modal that shows potential impacts (e.g., memories this person is tagged in). Implement the deletePerson mutation call after confirmation. Add appropriate success and error notifications for both operations.",
+          "status": "done",
+          "testStrategy": "Test edit form with various input changes. Verify deletion confirmation shows correct impact assessment. Test both operations with successful and error GraphQL responses. Create unit tests for edit form component with pre-populated data. Test validation during editing, including preventing duplicate names. For deletion, test the confirmation modal rendering with different impact scenarios. Verify that the impact assessment correctly shows all affected memories. Test cancellation of both edit and delete operations. Verify that success and error notifications display correctly after operations complete."
+        },
+        {
+          "id": 5,
+          "title": "Create Reusable Person Selection Component for Memory Tagging",
+          "description": "Develop a reusable component for selecting people to tag in memories, integrating with the person management system.",
+          "dependencies": [
+            1,
+            3
+          ],
+          "details": "Build a dropdown or autocomplete component that fetches and displays people for selection. Implement search within the component to quickly find people. Allow multiple selections for tagging multiple people in a memory. Include an inline option to create a new person if not found. Ensure the component can be easily integrated into the memory creation and editing interfaces.",
+          "status": "done",
+          "testStrategy": "Test selection behavior with keyboard and mouse interactions. Verify search functionality returns correct results. Test the create new person flow within the component. Create unit tests for component rendering with different data sets. Test search functionality with various inputs including partial matches and special characters. Verify multiple selection behavior including adding and removing selections. Test the inline person creation flow, ensuring it correctly adds the new person to the selection and persists it. Test keyboard accessibility including navigation through options, selection, and removal using only keyboard."
+        }
+      ]
     },
     {
       "id": 7,
       "title": "Develop Memory Timeline View",
       "description": "Create a chronological timeline view for browsing memory entries",
-      "details": "Implement a memory timeline with the following features:\n\n1. Chronological display of memory cards\n2. Infinite scrolling or pagination for large collections\n3. Memory cards showing photo, title, date, and tagged people\n4. Date-based navigation and filtering\n5. Loading states and empty states\n\nConnect timeline to GraphQL query for retrieving memories with sorting and pagination. Implement lazy loading for images to improve performance. Create smooth scrolling experience with proper loading indicators.",
-      "testStrategy": "Test timeline with various numbers of memories. Verify that chronological ordering is correct. Test pagination or infinite scrolling with large collections. Verify that memory cards display all relevant information correctly.",
-      "priority": "medium",
+      "status": "pending",
       "dependencies": [
         5
       ],
-      "status": "pending",
+      "priority": "medium",
+      "details": "Implement a memory timeline with the following features:\n\n1. Chronological display of memory cards\n2. Infinite scrolling or pagination for large collections\n3. Memory cards showing photo, title, date, and tagged people\n4. Date-based navigation and filtering\n5. Loading states and empty states\n\nConnect timeline to GraphQL query for retrieving memories with sorting and pagination. Implement lazy loading for images to improve performance. Create smooth scrolling experience with proper loading indicators.",
+      "testStrategy": "Test timeline with various numbers of memories. Verify that chronological ordering is correct. Test pagination or infinite scrolling with large collections. Verify that memory cards display all relevant information correctly.",
       "subtasks": []
     },
     {
       "id": 8,
       "title": "Create Memory Detail View",
       "description": "Implement detailed view for individual memory entries with full context and navigation",
-      "details": "Develop a memory detail view with the following components:\n\n1. Full-resolution photo display\n2. Memory metadata (title, date, creation time)\n3. Rich text description display\n4. Tagged people with links to person profiles\n5. Edit and delete actions with confirmation\n6. Navigation to previous/next memories\n\nConnect detail view to GraphQL query for retrieving a single memory with all associated data. Implement navigation between related memories. Create edit and delete functionality with proper confirmation dialogs.",
-      "testStrategy": "Test memory detail view with various memory data. Verify that all information is displayed correctly. Test navigation between memories. Verify that edit and delete actions work correctly with proper confirmation.",
-      "priority": "medium",
+      "status": "pending",
       "dependencies": [
         5,
         6
       ],
-      "status": "pending",
+      "priority": "medium",
+      "details": "Develop a memory detail view with the following components:\n\n1. Full-resolution photo display\n2. Memory metadata (title, date, creation time)\n3. Rich text description display\n4. Tagged people with links to person profiles\n5. Edit and delete actions with confirmation\n6. Navigation to previous/next memories\n\nConnect detail view to GraphQL query for retrieving a single memory with all associated data. Implement navigation between related memories. Create edit and delete functionality with proper confirmation dialogs.",
+      "testStrategy": "Test memory detail view with various memory data. Verify that all information is displayed correctly. Test navigation between memories. Verify that edit and delete actions work correctly with proper confirmation.",
       "subtasks": []
     },
     {
       "id": 9,
       "title": "Implement Person Profile View",
       "description": "Create person profile pages showing all associated memories in chronological order",
-      "details": "Develop person profile views with the following features:\n\n1. Person information display\n2. Chronological list of associated memories\n3. Memory cards similar to timeline view\n4. Edit and delete person actions with confirmation\n5. Statistics about memory frequency and date ranges\n\nConnect person profile to GraphQL query for retrieving a person with all associated memories. Implement memory filtering and sorting within the person context. Create edit and delete functionality with proper confirmation and impact assessment.",
-      "testStrategy": "Test person profile with various numbers of associated memories. Verify that memories are displayed in chronological order. Test edit and delete functionality with proper confirmation. Verify that statistics are calculated and displayed correctly.",
-      "priority": "medium",
+      "status": "pending",
       "dependencies": [
         6,
         7
       ],
-      "status": "pending",
+      "priority": "medium",
+      "details": "Develop person profile views with the following features:\n\n1. Person information display\n2. Chronological list of associated memories\n3. Memory cards similar to timeline view\n4. Edit and delete person actions with confirmation\n5. Statistics about memory frequency and date ranges\n\nConnect person profile to GraphQL query for retrieving a person with all associated memories. Implement memory filtering and sorting within the person context. Create edit and delete functionality with proper confirmation and impact assessment.",
+      "testStrategy": "Test person profile with various numbers of associated memories. Verify that memories are displayed in chronological order. Test edit and delete functionality with proper confirmation. Verify that statistics are calculated and displayed correctly.",
       "subtasks": []
     },
     {
       "id": 10,
       "title": "Develop Search and Filtering System",
       "description": "Implement search functionality for finding memories by title, description, or tagged people",
-      "details": "Create a search system with the following capabilities:\n\n1. Search input with auto-suggestions\n2. Results display with highlighting of matched terms\n3. Filtering by date ranges\n4. Filtering by tagged people\n5. Combined filtering with multiple criteria\n\nImplement GraphQL query for searching memories with various parameters. Create a search interface with real-time feedback. Implement filtering controls for refining search results.",
-      "testStrategy": "Test search with various keywords and combinations. Verify that results are relevant and properly ranked. Test filtering with different criteria. Verify that combined filtering works correctly with multiple parameters.",
-      "priority": "medium",
+      "status": "pending",
       "dependencies": [
         7,
         8
       ],
-      "status": "pending",
+      "priority": "medium",
+      "details": "Create a search system with the following capabilities:\n\n1. Search input with auto-suggestions\n2. Results display with highlighting of matched terms\n3. Filtering by date ranges\n4. Filtering by tagged people\n5. Combined filtering with multiple criteria\n\nImplement GraphQL query for searching memories with various parameters. Create a search interface with real-time feedback. Implement filtering controls for refining search results.",
+      "testStrategy": "Test search with various keywords and combinations. Verify that results are relevant and properly ranked. Test filtering with different criteria. Verify that combined filtering works correctly with multiple parameters.",
       "subtasks": []
     },
     {
       "id": 11,
       "title": "Implement Memory Editing and Deletion",
       "description": "Create functionality for editing and deleting existing memory entries",
-      "details": "Develop memory editing and deletion features with the following components:\n\n1. Edit form based on memory creation form\n2. Pre-populated fields with existing memory data\n3. Photo replacement or removal options\n4. Person tag management for adding/removing people\n5. Delete confirmation with clear warnings\n6. Update tracking with modified timestamps\n\nConnect edit functionality to GraphQL mutation for updating memories. Implement delete functionality with proper confirmation and data cleanup. Handle edge cases like partial updates and concurrent edits.",
-      "testStrategy": "Test editing various aspects of a memory. Verify that photos can be replaced or removed. Test adding and removing person tags. Verify that deletion works correctly with proper confirmation. Test edge cases like canceling edits and handling validation errors.",
-      "priority": "medium",
+      "status": "pending",
       "dependencies": [
         5,
         8
       ],
-      "status": "pending",
+      "priority": "medium",
+      "details": "Develop memory editing and deletion features with the following components:\n\n1. Edit form based on memory creation form\n2. Pre-populated fields with existing memory data\n3. Photo replacement or removal options\n4. Person tag management for adding/removing people\n5. Delete confirmation with clear warnings\n6. Update tracking with modified timestamps\n\nConnect edit functionality to GraphQL mutation for updating memories. Implement delete functionality with proper confirmation and data cleanup. Handle edge cases like partial updates and concurrent edits.",
+      "testStrategy": "Test editing various aspects of a memory. Verify that photos can be replaced or removed. Test adding and removing person tags. Verify that deletion works correctly with proper confirmation. Test edge cases like canceling edits and handling validation errors.",
       "subtasks": []
     },
     {
       "id": 12,
       "title": "Implement First-Time User Experience",
       "description": "Create onboarding flow and empty states for new users",
-      "details": "Develop first-time user experience with the following elements:\n\n1. Welcome screen explaining the purpose of Good Times\n2. Guided tour of key features\n3. Empty state for timeline with clear call-to-action\n4. Empty state for people list with guidance\n5. Sample memory creation walkthrough\n\nImplement conditional rendering based on user state (new vs. returning). Create engaging and informative empty states that guide users to appropriate actions. Design a cohesive onboarding flow that introduces core concepts.",
-      "testStrategy": "Test onboarding flow as a new user. Verify that empty states provide clear guidance. Test sample memory creation walkthrough. Verify that the experience is cohesive and informative.",
-      "priority": "medium",
+      "status": "pending",
       "dependencies": [
         7,
         9
       ],
-      "status": "pending",
+      "priority": "medium",
+      "details": "Develop first-time user experience with the following elements:\n\n1. Welcome screen explaining the purpose of Good Times\n2. Guided tour of key features\n3. Empty state for timeline with clear call-to-action\n4. Empty state for people list with guidance\n5. Sample memory creation walkthrough\n\nImplement conditional rendering based on user state (new vs. returning). Create engaging and informative empty states that guide users to appropriate actions. Design a cohesive onboarding flow that introduces core concepts.",
+      "testStrategy": "Test onboarding flow as a new user. Verify that empty states provide clear guidance. Test sample memory creation walkthrough. Verify that the experience is cohesive and informative.",
       "subtasks": []
     },
     {
       "id": 13,
       "title": "Implement Memory Statistics and Insights",
       "description": "Create a dashboard with statistics about memory collection and relationships",
-      "details": "Develop a statistics dashboard with the following metrics:\n\n1. Total memories and people counts\n2. Memory creation frequency over time\n3. Most frequently tagged people\n4. Date range coverage of memories\n5. Visual representations of memory patterns\n\nImplement GraphQL queries for aggregating statistics data. Create visual components for displaying metrics in an engaging way. Design a dashboard layout that provides meaningful insights.",
-      "testStrategy": "Test statistics calculations with various memory collections. Verify that visualizations accurately represent the data. Test dashboard with different screen sizes to ensure responsive design.",
-      "priority": "low",
+      "status": "pending",
       "dependencies": [
         7,
         9
       ],
-      "status": "pending",
+      "priority": "low",
+      "details": "Develop a statistics dashboard with the following metrics:\n\n1. Total memories and people counts\n2. Memory creation frequency over time\n3. Most frequently tagged people\n4. Date range coverage of memories\n5. Visual representations of memory patterns\n\nImplement GraphQL queries for aggregating statistics data. Create visual components for displaying metrics in an engaging way. Design a dashboard layout that provides meaningful insights.",
+      "testStrategy": "Test statistics calculations with various memory collections. Verify that visualizations accurately represent the data. Test dashboard with different screen sizes to ensure responsive design.",
       "subtasks": []
     },
     {
       "id": 14,
       "title": "Optimize Performance and Responsiveness",
       "description": "Improve application performance for large memory collections and different devices",
-      "details": "Implement performance optimizations including:\n\n1. Image lazy loading and progressive enhancement\n2. Virtualized lists for large memory collections\n3. GraphQL query optimization and caching\n4. Code splitting for faster initial load\n5. Responsive design adjustments for mobile devices\n6. Touch interaction optimization for mobile users\n\nUse React performance tools to identify and fix bottlenecks. Implement proper caching strategies for GraphQL queries. Optimize image delivery for different screen sizes and network conditions.",
-      "testStrategy": "Measure performance metrics before and after optimizations. Test with large memory collections to verify scalability. Test on various devices to ensure responsive design works correctly. Verify that mobile interactions are smooth and intuitive.",
-      "priority": "medium",
+      "status": "pending",
       "dependencies": [
         7,
         8,
         9,
         10
       ],
-      "status": "pending",
+      "priority": "medium",
+      "details": "Implement performance optimizations including:\n\n1. Image lazy loading and progressive enhancement\n2. Virtualized lists for large memory collections\n3. GraphQL query optimization and caching\n4. Code splitting for faster initial load\n5. Responsive design adjustments for mobile devices\n6. Touch interaction optimization for mobile users\n\nUse React performance tools to identify and fix bottlenecks. Implement proper caching strategies for GraphQL queries. Optimize image delivery for different screen sizes and network conditions.",
+      "testStrategy": "Measure performance metrics before and after optimizations. Test with large memory collections to verify scalability. Test on various devices to ensure responsive design works correctly. Verify that mobile interactions are smooth and intuitive.",
       "subtasks": []
     },
     {
       "id": 15,
       "title": "Implement Accessibility Features",
       "description": "Ensure application is accessible to users with disabilities",
-      "details": "Implement accessibility features including:\n\n1. Proper semantic HTML structure\n2. ARIA labels and roles for interactive elements\n3. Keyboard navigation support\n4. Screen reader compatibility\n5. Sufficient color contrast ratios\n6. Focus management for modals and dialogs\n\nUse accessibility testing tools to identify and fix issues. Implement keyboard navigation for all interactive elements. Ensure that all content is accessible to screen readers.",
-      "testStrategy": "Test with accessibility audit tools like Lighthouse or axe. Verify keyboard navigation for all interactive elements. Test with screen readers to ensure content is properly announced. Verify that color contrast meets WCAG 2.1 guidelines.",
-      "priority": "medium",
+      "status": "pending",
       "dependencies": [
         5,
         6,
@@ -476,7 +530,9 @@
         8,
         9
       ],
-      "status": "pending",
+      "priority": "medium",
+      "details": "Implement accessibility features including:\n\n1. Proper semantic HTML structure\n2. ARIA labels and roles for interactive elements\n3. Keyboard navigation support\n4. Screen reader compatibility\n5. Sufficient color contrast ratios\n6. Focus management for modals and dialogs\n\nUse accessibility testing tools to identify and fix issues. Implement keyboard navigation for all interactive elements. Ensure that all content is accessible to screen readers.",
+      "testStrategy": "Test with accessibility audit tools like Lighthouse or axe. Verify keyboard navigation for all interactive elements. Test with screen readers to ensure content is properly announced. Verify that color contrast meets WCAG 2.1 guidelines.",
       "subtasks": []
     }
   ]

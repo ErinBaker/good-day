@@ -1,6 +1,6 @@
 # Task ID: 6
 # Title: Implement Person Management System
-# Status: pending
+# Status: done
 # Dependencies: 4
 # Priority: high
 # Description: Create interfaces for adding, editing, and managing people profiles
@@ -43,7 +43,7 @@ Implement a list component that fetches people using the getAllPeople query. Add
 ### Details:
 Build an edit form component that pre-populates with existing person data. Implement form submission that calls the updatePerson mutation. For deletion, create a confirmation modal that shows potential impacts (e.g., memories this person is tagged in). Implement the deletePerson mutation call after confirmation. Add appropriate success and error notifications for both operations.
 
-## 5. Create Reusable Person Selection Component for Memory Tagging [pending]
+## 5. Create Reusable Person Selection Component for Memory Tagging [done]
 ### Dependencies: 6.1, 6.3
 ### Description: Develop a reusable component for selecting people to tag in memories, integrating with the person management system.
 ### Details:

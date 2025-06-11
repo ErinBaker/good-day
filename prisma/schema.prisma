@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Memory {
-  id          Int           @id @default(autoincrement())
+  id          String        @id @default(uuid())
   title       String
   date        DateTime
   description String
@@ -23,20 +23,20 @@ model Memory {
 }
 
 model Person {
-  id          Int           @id @default(autoincrement())
+  id          String   @id @default(uuid())
   name        String
   relationship String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   memories    MemoryPerson[]
 }
 
 model MemoryPerson {
-  id        Int     @id @default(autoincrement())
+  id        String   @id @default(uuid())
   memory    Memory  @relation(fields: [memoryId], references: [id], onDelete: Cascade)
-  memoryId  Int
+  memoryId  String
   person    Person  @relation(fields: [personId], references: [id], onDelete: Cascade)
-  personId  Int
+  personId  String
   @@unique([memoryId, personId])
 }
 
@@ -50,6 +50,6 @@ model Photo {
   width            Int
   height           Int
   createdAt        DateTime @default(now())
-  memoryId         Int?
+  memoryId         String?
   memory           Memory? @relation(fields: [memoryId], references: [id], onDelete: Cascade)
 }

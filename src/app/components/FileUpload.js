@@ -21,7 +21,6 @@ function FileUpload({ onFileSelect }) {
     setError('');
     setSelectedFile(file);
     setResult(null);
-    if (onFileSelect) onFileSelect(file);
   };
 
   const handleDrop = (e) => {
@@ -72,6 +71,7 @@ function FileUpload({ onFileSelect }) {
         setError(msg);
       } else {
         setResult(data);
+        if (onFileSelect) onFileSelect(data);
       }
     } catch {
       setError('Network error.');

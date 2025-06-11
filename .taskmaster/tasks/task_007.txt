@@ -17,3 +17,47 @@ Connect timeline to GraphQL query for retrieving memories with sorting and pagin
 
 # Test Strategy:
 Test timeline with various numbers of memories. Verify that chronological ordering is correct. Test pagination or infinite scrolling with large collections. Verify that memory cards display all relevant information correctly.
+
+# Subtasks:
+## 1. Create GraphQL query for memory timeline data [pending]
+### Dependencies: None
+### Description: Implement the GraphQL query to fetch memory entries with pagination, sorting, and filtering capabilities
+### Details:
+Define a GraphQL query that retrieves memory entries with parameters for pagination (limit, offset), sorting (by date), and filtering (by date range or tags). Include fields for memory ID, title, creation date, photo URL, and tagged people. Implement proper error handling and loading states in the query. Consider using Apollo Client for GraphQL integration.
+
+## 2. Implement basic timeline container with Material-UI [pending]
+### Dependencies: None
+### Description: Create the timeline container component using @mui/lab/Timeline that will hold the memory cards
+### Details:
+Set up a responsive timeline container using @mui/lab/Timeline component. Configure the timeline to display memories from newest (top) to oldest (bottom). Implement the basic layout structure that will hold memory cards. Ensure the container is responsive and follows the project's UI/UX guidelines. Add proper accessibility attributes.
+
+## 3. Design and implement memory card component [pending]
+### Dependencies: None
+### Description: Create a reusable memory card component that displays photo, title, date, and tagged people
+### Details:
+Design a memory card component that displays the memory's photo, title, creation date, and tagged people. Implement lazy loading for images using a library like react-lazyload or Intersection Observer API. Style the card according to the project's design system using Material-UI v7. Ensure the card is responsive and accessible.
+
+## 4. Implement infinite scrolling or pagination [pending]
+### Dependencies: None
+### Description: Add infinite scrolling or pagination functionality to load more memories as the user scrolls down
+### Details:
+Implement either infinite scrolling using Intersection Observer API or pagination controls. For infinite scrolling, detect when the user approaches the bottom of the timeline and trigger loading of additional memories. For pagination, add UI controls to navigate between pages. Update the GraphQL query to fetch the appropriate page of results. Add loading indicators during data fetching.
+
+## 5. Add date-based navigation and filtering [pending]
+### Dependencies: None
+### Description: Implement controls for navigating and filtering memories by date
+### Details:
+Create date-based navigation controls that allow users to jump to specific time periods or filter memories by date range. Implement a date picker or timeline scrubber component. Update the GraphQL query parameters based on the selected date range. Consider adding quick filters for common time periods (last week, last month, last year).
+
+## 6. Implement loading and empty states [pending]
+### Dependencies: None
+### Description: Create loading indicators and empty state displays for the timeline
+### Details:
+Design and implement loading indicators that appear during initial data fetch and when loading more memories. Create an empty state display that appears when no memories match the current filters or when the user has no memories. Use skeleton loaders for a better user experience during loading. Ensure all states are accessible and provide clear feedback to the user.
+
+## 7. Optimize performance and implement final polish [pending]
+### Dependencies: None
+### Description: Optimize the timeline for performance and add final UI polish
+### Details:
+Optimize the timeline for performance by implementing virtualization for large lists (consider react-window or react-virtualized). Add smooth animations and transitions between states. Implement memoization for expensive components using React.memo. Add final UI polish including hover states, focus indicators, and subtle animations. Ensure the timeline meets all accessibility requirements and performs well on mobile devices.
+

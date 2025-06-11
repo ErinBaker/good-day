@@ -60,3 +60,20 @@ See `src/graphql/typeDefs.js` and `src/graphql/resolvers.js` for details.
 - Resolvers for creating, updating, deleting, and querying people are implemented in `src/graphql/resolvers.js`.
 - **New:** Duplicate detection and validation logic have been added to prevent creating or updating a person with the same name (case-insensitive, trimmed) and to ensure the name field is required and non-empty.
 - Next steps: Add or update tests for these features and continue with subsequent subtasks for the person management system.
+
+### UI/UX Improvements
+
+- The memory entry form and file upload components have been refactored to use Material-UI (MUI) v7 components and design principles.
+- All feedback (errors, success) now uses MUI Alert and Snackbar for clarity and accessibility.
+- Photo management actions (remove, up, down) use MUI IconButton with icons and ARIA labels for accessibility.
+- Layout and spacing are handled with MUI Box, Grid, and Typography for a modern, consistent look.
+- File upload dropzone and buttons are accessible and visually polished.
+- The app now provides a modern, accessible, and visually consistent memory creation experience.
+
+## Schema Change: Person IDs are now UUIDs
+
+- The `Person` model now uses `id String @id @default(uuid())` instead of an autoincrementing integer.
+- All relations to `Person` (e.g., `MemoryPerson.personId`) are now `String` (UUID).
+- After this migration/reset, all existing people must be recreated, as old numeric IDs are no longer valid.
+- All code (frontend and backend) now uses string UUIDs for person IDs—do not convert to numbers.
+- This change improves global uniqueness and future-proofs the data model.
