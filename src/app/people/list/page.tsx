@@ -18,6 +18,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import DateCell from '@/components/DateCell';
 
 type Person = {
   id: string | number;
@@ -162,8 +163,8 @@ export default function PeopleListPage() {
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Name', flex: 1, minWidth: 120 },
     { field: 'relationship', headerName: 'Relationship', flex: 1, minWidth: 120 },
-    { field: 'createdAt', headerName: 'Created At', flex: 1, minWidth: 160, valueFormatter: ({ value }) => new Date(value).toLocaleString() },
-    { field: 'updatedAt', headerName: 'Updated At', flex: 1, minWidth: 160, valueFormatter: ({ value }) => new Date(value).toLocaleString() },
+    { field: 'createdAt', headerName: 'Created At', flex: 1, minWidth: 160, renderCell: (params) => <DateCell value={params.value} /> },
+    { field: 'updatedAt', headerName: 'Updated At', flex: 1, minWidth: 160, renderCell: (params) => <DateCell value={params.value} /> },
     {
       field: 'actions',
       headerName: 'Actions',
