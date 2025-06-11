@@ -423,7 +423,7 @@
           "description": "Implement the GraphQL query to fetch memory entries with pagination, sorting, and filtering capabilities",
           "dependencies": [],
           "details": "Define a GraphQL query that retrieves memory entries with parameters for pagination (limit, offset), sorting (by date), and filtering (by date range or tags). Include fields for memory ID, title, creation date, photo URL, and tagged people. Implement proper error handling and loading states in the query. Consider using Apollo Client for GraphQL integration.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test the query with various pagination, sorting, and filtering parameters to ensure correct data is returned. Verify error handling for network issues and empty results."
         },
         {
@@ -432,7 +432,7 @@
           "description": "Create the timeline container component using @mui/lab/Timeline that will hold the memory cards",
           "dependencies": [],
           "details": "Set up a responsive timeline container using @mui/lab/Timeline component. Configure the timeline to display memories from newest (top) to oldest (bottom). Implement the basic layout structure that will hold memory cards. Ensure the container is responsive and follows the project's UI/UX guidelines. Add proper accessibility attributes.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test the timeline container's responsiveness across different screen sizes. Verify that accessibility requirements are met using tools like Lighthouse or axe."
         },
         {

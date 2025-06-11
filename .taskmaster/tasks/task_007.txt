@@ -19,13 +19,13 @@ Connect timeline to GraphQL query for retrieving memories with sorting and pagin
 Test timeline with various numbers of memories. Verify that chronological ordering is correct. Test pagination or infinite scrolling with large collections. Verify that memory cards display all relevant information correctly.
 
 # Subtasks:
-## 1. Create GraphQL query for memory timeline data [pending]
+## 1. Create GraphQL query for memory timeline data [done]
 ### Dependencies: None
 ### Description: Implement the GraphQL query to fetch memory entries with pagination, sorting, and filtering capabilities
 ### Details:
 Define a GraphQL query that retrieves memory entries with parameters for pagination (limit, offset), sorting (by date), and filtering (by date range or tags). Include fields for memory ID, title, creation date, photo URL, and tagged people. Implement proper error handling and loading states in the query. Consider using Apollo Client for GraphQL integration.
 
-## 2. Implement basic timeline container with Material-UI [pending]
+## 2. Implement basic timeline container with Material-UI [done]
 ### Dependencies: None
 ### Description: Create the timeline container component using @mui/lab/Timeline that will hold the memory cards
 ### Details:
