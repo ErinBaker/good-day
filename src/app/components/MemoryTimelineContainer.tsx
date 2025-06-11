@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useCallback, useEffect, useState } from 'react';
 import Timeline from '@mui/lab/Timeline';
 import TimelineItem from '@mui/lab/TimelineItem';
 import TimelineSeparator from '@mui/lab/TimelineSeparator';
@@ -12,12 +12,59 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import Tooltip from '@mui/material/Tooltip';
 import moment from 'moment';
-import { useMemories } from './useMemories';
+import { useMemories, Memory } from './useMemories';
 import MemoryCard from './MemoryCard';
 import RelativeTime from './RelativeTime';
 
+const PAGE_SIZE = 20;
+
 const MemoryTimelineContainer: React.FC = () => {
-  const { memories, loading, error } = useMemories({ sortBy: 'date', limit: 20 });
+  const [offset, setOffset] = useState(0);
+  const [allMemories, setAllMemories] = useState<Memory[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [initialLoad, setInitialLoad] = useState(true);
+
+  const { memories, loading, error } = useMemories({
+    sortBy: 'date',
+    limit: PAGE_SIZE,
+    offset,
+  });
+
+  // Append new memories to the list
+  useEffect(() => {
+    if (memories.length > 0) {
+      setAllMemories((prev) => {
+        // Avoid duplicates
+        const ids = new Set(prev.map((m) => m.id));
+        return [...prev, ...memories.filter((m) => !ids.has(m.id))];
+      });
+      if (memories.length < PAGE_SIZE) setHasMore(false);
+    } else if (offset > 0) {
+      setHasMore(false);
+    }
+    if (initialLoad && !loading) setInitialLoad(false);
+  }, [memories, offset, loading, initialLoad]);
+
+  // Intersection Observer for infinite scroll
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+  const handleObserver = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (target.isIntersecting && hasMore && !loading && !initialLoad) {
+        setOffset((prev) => prev + PAGE_SIZE);
+      }
+    },
+    [hasMore, loading, initialLoad]
+  );
+
+  useEffect(() => {
+    const option = { root: null, rootMargin: '20px', threshold: 1.0 };
+    const observer = new IntersectionObserver(handleObserver, option);
+    if (loaderRef.current) observer.observe(loaderRef.current);
+    return () => {
+      if (loaderRef.current) observer.unobserve(loaderRef.current);
+    };
+  }, [handleObserver]);
 
   return (
     <Box
@@ -31,7 +78,7 @@ const MemoryTimelineContainer: React.FC = () => {
       role="region"
       aria-label="Memory timeline"
     >
-      {loading && (
+      {initialLoad && loading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
           <CircularProgress />
         </Box>
@@ -42,8 +89,8 @@ const MemoryTimelineContainer: React.FC = () => {
         </Alert>
       )}
       <Timeline position="alternate" sx={{ p: 0 }}>
-        {memories.length > 0 ? (
-          memories.map((memory, idx) => {
+        {allMemories.length > 0 ? (
+          allMemories.map((memory, idx) => {
             // Convert stringified timestamp to number if needed
             let dateValue: string | number = memory.date;
             if (typeof memory.date === 'string' && !isNaN(Number(memory.date))) {
@@ -79,7 +126,7 @@ const MemoryTimelineContainer: React.FC = () => {
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                   <TimelineDot color="primary" />
-                  {idx < memories.length - 1 && <TimelineConnector />}
+                  {idx < allMemories.length - 1 && <TimelineConnector />}
                 </TimelineSeparator>
                 <TimelineContent sx={{ py: 2 }}>
                   <MemoryCard
@@ -92,7 +139,7 @@ const MemoryTimelineContainer: React.FC = () => {
               </TimelineItem>
             );
           })
-        ) : !loading && !error ? (
+        ) : !initialLoad && !loading && !error ? (
           <TimelineItem>
             <TimelineOppositeContent sx={{ color: 'text.secondary' }}>
               &nbsp;
@@ -109,6 +156,17 @@ const MemoryTimelineContainer: React.FC = () => {
           </TimelineItem>
         ) : null}
       </Timeline>
+      <div ref={loaderRef} />
+      {loading && !initialLoad && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+          <CircularProgress />
+        </Box>
+      )}
+      {!hasMore && !loading && allMemories.length > 0 && (
+        <Typography align="center" color="text.secondary" sx={{ my: 2 }}>
+          No more memories to load.
+        </Typography>
+      )}
     </Box>
   );
 };

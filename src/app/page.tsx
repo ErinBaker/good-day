@@ -8,7 +8,7 @@ import MemoryTimelineContainer from "./components/MemoryTimelineContainer";
 export default function Home() {
   return (
     <ApolloProvider client={client}>
-      <div style={{ padding: 32 }}>
+      <div>
         <h1>Good Day App</h1>
         <Hello />
         <MemoryEntryForm onMemoryCreated={() => {}} />

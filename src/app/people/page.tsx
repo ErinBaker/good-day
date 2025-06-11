@@ -7,7 +7,7 @@ export default function PeoplePage() {
       <h1>Person Management</h1>
       <PersonCreationForm />
       <Link href="/people/list">
-        <button style={{ marginTop: 16 }}>View All People</button>
+        <button>View All People</button>
       </Link>
       {/* Future: Add person list and management features here */}
     </main>
