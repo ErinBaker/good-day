@@ -14,6 +14,7 @@ import {
   TextField,
   Typography,
   CircularProgress,
+  Skeleton,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -21,7 +22,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import DateCell from '@/components/DateCell';
 
 type Person = {
-  id: string | number;
+  id: string;
   name: string;
   relationship?: string | null;
   createdAt: string;
@@ -242,8 +243,11 @@ export default function PeopleListPage() {
         />
       </Box>
       {loading ? (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight={200}>
-          <CircularProgress />
+        <Box>
+          <Skeleton variant="rectangular" height={40} sx={{ mb: 1 }} />
+          {[...Array(10)].map((_, i) => (
+            <Skeleton key={i} variant="rectangular" height={32} sx={{ mb: 0.5 }} />
+          ))}
         </Box>
       ) : error ? (
         <Alert severity="error">{error}</Alert>
