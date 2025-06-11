@@ -441,7 +441,7 @@
           "description": "Create a reusable memory card component that displays photo, title, date, and tagged people",
           "dependencies": [],
           "details": "Design a memory card component that displays the memory's photo, title, creation date, and tagged people. Implement lazy loading for images using a library like react-lazyload or Intersection Observer API. Style the card according to the project's design system using Material-UI v7. Ensure the card is responsive and accessible.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test the memory card with various content lengths and image sizes. Verify that lazy loading works correctly and that the component is accessible."
         },
         {

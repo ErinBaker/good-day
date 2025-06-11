@@ -31,7 +31,7 @@ Define a GraphQL query that retrieves memory entries with parameters for paginat
 ### Details:
 Set up a responsive timeline container using @mui/lab/Timeline component. Configure the timeline to display memories from newest (top) to oldest (bottom). Implement the basic layout structure that will hold memory cards. Ensure the container is responsive and follows the project's UI/UX guidelines. Add proper accessibility attributes.
 
-## 3. Design and implement memory card component [pending]
+## 3. Design and implement memory card component [done]
 ### Dependencies: None
 ### Description: Create a reusable memory card component that displays photo, title, date, and tagged people
 ### Details:

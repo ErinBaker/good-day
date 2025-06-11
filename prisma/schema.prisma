@@ -18,7 +18,7 @@ model Memory {
   photoUrl    String
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
-  people      MemoryPerson[]
+  people      Person[]
   photos      Photo[]
 }
 
@@ -28,16 +28,7 @@ model Person {
   relationship String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  memories    MemoryPerson[]
-}
-
-model MemoryPerson {
-  id        String   @id @default(uuid())
-  memory    Memory  @relation(fields: [memoryId], references: [id], onDelete: Cascade)
-  memoryId  String
-  person    Person  @relation(fields: [personId], references: [id], onDelete: Cascade)
-  personId  String
-  @@unique([memoryId, personId])
+  memories    Memory[]
 }
 
 model Photo {

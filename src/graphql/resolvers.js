@@ -21,7 +21,7 @@ const resolvers = {
         // Filter memories that have ALL the specified people tagged
         where.people = {
           every: {
-            personId: { in: peopleIds }
+            id: { in: peopleIds }
           }
         };
       }
@@ -182,6 +182,8 @@ const resolvers = {
   },
   Memory: {
     people: async (parent) => {
+      // Direct many-to-many: just return parent.people if available, else query
+      if (parent.people) return parent.people;
       return prisma.person.findMany({
         where: { memories: { some: { id: parent.id } } },
       });
@@ -194,6 +196,8 @@ const resolvers = {
   },
   Person: {
     memories: async (parent) => {
+      // Direct many-to-many: just return parent.memories if available, else query
+      if (parent.memories) return parent.memories;
       return prisma.memory.findMany({
         where: { people: { some: { id: parent.id } } },
       });
