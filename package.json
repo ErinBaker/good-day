@@ -40,6 +40,8 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.57.0",
     "react-router-dom": "^7.6.2",
+    "react-virtualized-auto-sizer": "^1.0.26",
+    "react-window": "^1.8.11",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
@@ -47,6 +49,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-window": "^1.8.8",
     "cross-env": "^7.0.3",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",

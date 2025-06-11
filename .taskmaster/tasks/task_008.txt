@@ -18,3 +18,35 @@ Connect detail view to GraphQL query for retrieving a single memory with all ass
 
 # Test Strategy:
 Test memory detail view with various memory data. Verify that all information is displayed correctly. Test navigation between memories. Verify that edit and delete actions work correctly with proper confirmation.
+
+# Subtasks:
+## 1. Create GraphQL query for memory detail data [pending]
+### Dependencies: None
+### Description: Implement a GraphQL query to fetch a single memory with all associated data including full-resolution photo, metadata, description, and tagged people.
+### Details:
+Define a GraphQL query that retrieves a memory by ID. Include fields for image URL, title, date, creation time, description text, and an array of tagged people with their IDs and names. Also include fields needed for navigation such as previousMemoryId and nextMemoryId.
+
+## 2. Implement memory detail UI layout and photo display [pending]
+### Dependencies: 8.1
+### Description: Create the basic layout for the memory detail view with focus on the full-resolution photo display and container structure.
+### Details:
+Design a responsive layout that prominently displays the memory photo. Implement image loading with placeholders and error states. Ensure the photo can be viewed in full resolution with appropriate zooming capabilities if needed. Structure the container to accommodate all the other components that will be added in subsequent tasks.
+
+## 3. Add metadata, description, and tagged people sections [pending]
+### Dependencies: 8.2
+### Description: Implement the display of memory metadata (title, date, creation time), rich text description, and tagged people with links to their profiles.
+### Details:
+Create styled components for displaying the memory title, formatted date and time. Implement a rich text renderer for the description that preserves formatting. For tagged people, create a component that displays profile thumbnails with names and makes them clickable links to person profiles.
+
+## 4. Implement edit and delete functionality with confirmation [pending]
+### Dependencies: 8.3
+### Description: Add edit and delete actions to the memory detail view with appropriate confirmation dialogs.
+### Details:
+Create edit and delete buttons in an appropriate location (e.g., top-right corner). For edit, implement navigation to the edit form pre-populated with current memory data. For delete, implement a confirmation dialog that warns about permanent deletion and requires explicit confirmation. On confirmed deletion, remove the memory and navigate back to the memory list view.
+
+## 5. Add navigation between related memories [pending]
+### Dependencies: 8.3
+### Description: Implement navigation controls to move between previous and next memories in the collection.
+### Details:
+Create previous/next navigation buttons that use the previousMemoryId and nextMemoryId from the GraphQL query. Implement smooth transitions between memories, preserving scroll position where appropriate. Handle edge cases where there is no previous or next memory by disabling the respective navigation button. Update the URL to reflect the current memory ID without requiring a full page reload.
+

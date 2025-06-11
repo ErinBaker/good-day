@@ -416,7 +416,80 @@
       "priority": "medium",
       "details": "Implement a memory timeline with the following features:\n\n1. Chronological display of memory cards\n2. Infinite scrolling or pagination for large collections\n3. Memory cards showing photo, title, date, and tagged people\n4. Date-based navigation and filtering\n5. Loading states and empty states\n\nConnect timeline to GraphQL query for retrieving memories with sorting and pagination. Implement lazy loading for images to improve performance. Create smooth scrolling experience with proper loading indicators.",
       "testStrategy": "Test timeline with various numbers of memories. Verify that chronological ordering is correct. Test pagination or infinite scrolling with large collections. Verify that memory cards display all relevant information correctly.",
-      "subtasks": []
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Create GraphQL query for memory timeline data",
+          "description": "Implement the GraphQL query to fetch memory entries with pagination, sorting, and filtering capabilities",
+          "dependencies": [],
+          "details": "Define a GraphQL query that retrieves memory entries with parameters for pagination (limit, offset), sorting (by date), and filtering (by date range or tags). Include fields for memory ID, title, creation date, photo URL, and tagged people. Implement proper error handling and loading states in the query. Consider using Apollo Client for GraphQL integration.",
+          "status": "done",
+          "testStrategy": "Test the query with various pagination, sorting, and filtering parameters to ensure correct data is returned. Verify error handling for network issues and empty results."
+        },
+        {
+          "id": 2,
+          "title": "Implement basic timeline container with Material-UI",
+          "description": "Create the timeline container component using @mui/lab/Timeline that will hold the memory cards",
+          "dependencies": [],
+          "details": "Set up a responsive timeline container using @mui/lab/Timeline component. Configure the timeline to display memories from newest (top) to oldest (bottom). Implement the basic layout structure that will hold memory cards. Ensure the container is responsive and follows the project's UI/UX guidelines. Add proper accessibility attributes.",
+          "status": "done",
+          "testStrategy": "Test the timeline container's responsiveness across different screen sizes. Verify that accessibility requirements are met using tools like Lighthouse or axe."
+        },
+        {
+          "id": 3,
+          "title": "Design and implement memory card component",
+          "description": "Create a reusable memory card component that displays photo, title, date, and tagged people",
+          "dependencies": [],
+          "details": "Design a memory card component that displays the memory's photo, title, creation date, and tagged people. Implement lazy loading for images using a library like react-lazyload or Intersection Observer API. Style the card according to the project's design system using Material-UI v7. Ensure the card is responsive and accessible.",
+          "status": "done",
+          "testStrategy": "Test the memory card with various content lengths and image sizes. Verify that lazy loading works correctly and that the component is accessible."
+        },
+        {
+          "id": 4,
+          "title": "Implement infinite scrolling or pagination",
+          "description": "Add infinite scrolling or pagination functionality to load more memories as the user scrolls down",
+          "dependencies": [],
+          "details": "Implement either infinite scrolling using Intersection Observer API or pagination controls. For infinite scrolling, detect when the user approaches the bottom of the timeline and trigger loading of additional memories. For pagination, add UI controls to navigate between pages. Update the GraphQL query to fetch the appropriate page of results. Add loading indicators during data fetching.",
+          "status": "done",
+          "testStrategy": "Test scrolling behavior with various dataset sizes. Verify that new data loads correctly and that the UI remains responsive during loading. Test edge cases like reaching the end of available data."
+        },
+        {
+          "id": 5,
+          "title": "Add date-based navigation and filtering",
+          "description": "Implement controls for navigating and filtering memories by date",
+          "dependencies": [],
+          "details": "Create date-based navigation controls that allow users to jump to specific time periods or filter memories by date range. Implement a date picker or timeline scrubber component. Update the GraphQL query parameters based on the selected date range. Consider adding quick filters for common time periods (last week, last month, last year).",
+          "status": "done",
+          "testStrategy": "Test date filtering with various date ranges. Verify that the timeline updates correctly when filters are applied. Test edge cases like empty results for a date range."
+        },
+        {
+          "id": 6,
+          "title": "Implement loading and empty states",
+          "description": "Create loading indicators and empty state displays for the timeline",
+          "dependencies": [],
+          "details": "Design and implement loading indicators that appear during initial data fetch and when loading more memories. Create an empty state display that appears when no memories match the current filters or when the user has no memories. Use skeleton loaders for a better user experience during loading. Ensure all states are accessible and provide clear feedback to the user.",
+          "status": "done",
+          "testStrategy": "Test loading states by simulating slow network connections. Verify that empty states display correctly when no data is available. Check that loading indicators are accessible and provide clear feedback."
+        },
+        {
+          "id": 7,
+          "title": "Optimize performance and implement final polish",
+          "description": "Optimize the timeline for performance and add final UI polish",
+          "dependencies": [],
+          "details": "Optimize the timeline for performance by implementing virtualization for large lists (consider react-window or react-virtualized). Add smooth animations and transitions between states. Implement memoization for expensive components using React.memo. Add final UI polish including hover states, focus indicators, and subtle animations. Ensure the timeline meets all accessibility requirements and performs well on mobile devices.",
+          "status": "pending",
+          "testStrategy": "Conduct performance testing with large datasets to ensure smooth scrolling and responsive UI. Test on various devices and browsers to verify cross-platform compatibility. Perform a final accessibility audit."
+        },
+        {
+          "id": 8,
+          "title": "Optimize performance and implement final polish",
+          "description": "Optimize the timeline for performance and add final UI polish.",
+          "details": "Optimize the timeline for performance by implementing virtualization for large lists (consider react-window or react-virtualized). Add smooth animations and transitions between states. Implement memoization for expensive components using React.memo. Add final UI polish including hover states, focus indicators, and subtle animations. Ensure the timeline meets all accessibility requirements and performs well on mobile devices.",
+          "status": "done",
+          "dependencies": [],
+          "parentTaskId": 7
+        }
+      ]
     },
     {
       "id": 8,
