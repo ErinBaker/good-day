@@ -20,6 +20,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs, { Dayjs } from 'dayjs';
 import { Stack, Button } from '@mui/material';
+import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
+import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
+import Skeleton from '@mui/material/Skeleton';
 
 const PAGE_SIZE = 5;
 
@@ -211,17 +214,61 @@ const MemoryTimelineContainer: React.FC = () => {
         {/* Timeline and infinite scroll logic remain unchanged */}
         <Box sx={{ flex: 1 }}>
           {initialLoad && loading && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-              <CircularProgress />
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 4 }} aria-busy="true" aria-live="polite">
+              {[...Array(2)].map((_, i) => (
+                <Skeleton key={i} variant="rectangular" width={600} height={180} sx={{ mb: 2, borderRadius: 2 }} />
+              ))}
+              <CircularProgress sx={{ mt: 2 }} aria-label="Loading memories" />
             </Box>
           )}
           {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
+            <Alert severity="error" sx={{ mb: 2 }} role="alert">
               Error loading memories: {error.message}
             </Alert>
           )}
           <Timeline position="alternate" sx={{ p: 0 }}>
-            {allMemories.length > 0 ? (
+            {(!loading && allMemories.length === 0 && !error) ? (
+              <TimelineItem>
+                <TimelineOppositeContent sx={{ color: 'text.secondary' }}>
+                  &nbsp;
+                </TimelineOppositeContent>
+                <TimelineSeparator>
+                  <TimelineDot color="grey" />
+                  <TimelineConnector />
+                </TimelineSeparator>
+                <TimelineContent>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 4 }} role="status" aria-live="polite">
+                    {userChangedDate || (dateRange[0] && dateRange[1]) ? (
+                      <>
+                        <SentimentDissatisfiedIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} aria-hidden="true" />
+                        <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                          No memories found for this time period.
+                        </Typography>
+                        <Button variant="outlined" onClick={() => {
+                          setDateRange([minDate ? dayjs(minDate) : null, maxDate ? dayjs(maxDate) : null]);
+                          setUserChangedDate(false);
+                        }}>
+                          Reset Filters
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <SentimentVerySatisfiedIcon sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} aria-hidden="true" />
+                        <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                          You haven&apos;t added any memories yet.
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                          Start by adding your first memory!
+                        </Typography>
+                        <Button variant="contained" color="primary" href="#memory-entry-form">
+                          Add Memory
+                        </Button>
+                      </>
+                    )}
+                  </Box>
+                </TimelineContent>
+              </TimelineItem>
+            ) : allMemories.length > 0 ? (
               allMemories.map((memory, idx) => {
                 // Convert stringified timestamp to number if needed
                 let dateValue: string | number = memory.date;
@@ -271,27 +318,12 @@ const MemoryTimelineContainer: React.FC = () => {
                   </TimelineItem>
                 );
               })
-            ) : !initialLoad && !loading && !error ? (
-              <TimelineItem>
-                <TimelineOppositeContent sx={{ color: 'text.secondary' }}>
-                  &nbsp;
-                </TimelineOppositeContent>
-                <TimelineSeparator>
-                  <TimelineDot color="grey" />
-                  <TimelineConnector />
-                </TimelineSeparator>
-                <TimelineContent>
-                  <Typography variant="body2" color="text.secondary">
-                    No memories to display yet.
-                  </Typography>
-                </TimelineContent>
-              </TimelineItem>
             ) : null}
           </Timeline>
           <div ref={loaderRef} />
           {loading && !initialLoad && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-              <CircularProgress />
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }} aria-busy="true" aria-live="polite">
+              <CircularProgress aria-label="Loading more memories" />
             </Box>
           )}
           {!hasMore && !loading && allMemories.length > 0 && (
