@@ -13,6 +13,7 @@ import { Stack, Button } from '@mui/material';
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import Skeleton from '@mui/material/Skeleton';
+import Fade from '@mui/material/Fade';
 
 const PAGE_SIZE = 5;
 
@@ -146,8 +147,6 @@ const MemoryTimelineContainer: React.FC = () => {
     dateRange[1] ? dateRange[1].valueOf() : null
   ]);
 
-  const MemoizedMemoryCard = React.memo(MemoryCard);
-
   return (
     <Box
       sx={{
@@ -218,40 +217,42 @@ const MemoryTimelineContainer: React.FC = () => {
               Error loading memories: {error.message}
             </Alert>
           )}
-          <Stack spacing={3}>
+          <Stack spacing={3} sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
             {(!loading && allMemories.length === 0 && !error) ? (
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 4 }} role="status" aria-live="polite">
-                {userChangedDate || (dateRange[0] && dateRange[1]) ? (
-                  <>
-                    <SentimentDissatisfiedIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} aria-hidden="true" />
-                    <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-                      No memories found for this time period.
-                    </Typography>
-                    <Button variant="outlined" onClick={() => {
-                      setDateRange([minDate ? dayjs(minDate) : null, maxDate ? dayjs(maxDate) : null]);
-                      setUserChangedDate(false);
-                    }}>
-                      Reset Filters
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <SentimentVerySatisfiedIcon sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} aria-hidden="true" />
-                    <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-                      You haven&apos;t added any memories yet.
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                      Start by adding your first memory!
-                    </Typography>
-                    <Button variant="contained" color="primary" href="#memory-entry-form">
-                      Add Memory
-                    </Button>
-                  </>
-                )}
-              </Box>
+              <Fade in timeout={400} appear>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 4, width: '100%' }} role="status" aria-live="polite">
+                  {userChangedDate || (dateRange[0] && dateRange[1]) ? (
+                    <>
+                      <SentimentDissatisfiedIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} aria-hidden="true" />
+                      <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                        No memories found for this time period.
+                      </Typography>
+                      <Button variant="outlined" onClick={() => {
+                        setDateRange([minDate ? dayjs(minDate) : null, maxDate ? dayjs(maxDate) : null]);
+                        setUserChangedDate(false);
+                      }}>
+                        Reset Filters
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <SentimentVerySatisfiedIcon sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} aria-hidden="true" />
+                      <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                        You haven&apos;t added any memories yet.
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        Start by adding your first memory!
+                      </Typography>
+                      <Button variant="contained" color="primary" href="#memory-entry-form">
+                        Add Memory
+                      </Button>
+                    </>
+                  )}
+                </Box>
+              </Fade>
             ) : allMemories.length > 0 ? (
               allMemories.map((memory) => (
-                <MemoizedMemoryCard
+                <MemoryCard
                   key={memory.id}
                   id={memory.id}
                   title={memory.title}
@@ -259,6 +260,7 @@ const MemoryTimelineContainer: React.FC = () => {
                   people={memory.people}
                   description={memory.description}
                   date={memory.date}
+                  animate={true}
                 />
               ))
             ) : null}

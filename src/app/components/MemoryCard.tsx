@@ -1,3 +1,4 @@
+"use client";
 import React, { useRef, useState, useEffect } from 'react';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -6,6 +7,8 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
+import Fade from '@mui/material/Fade';
+import { useTheme } from '@mui/material/styles';
 
 export interface MemoryCardProps {
   id: string;
@@ -14,37 +17,59 @@ export interface MemoryCardProps {
   people: { id: string; name: string; relationship?: string }[];
   description: string;
   date?: string;
+  animate?: boolean;
 }
 
 const AVATAR_PLACEHOLDER =
   'https://mui.com/static/images/avatar/1.jpg'; // MUI demo placeholder
 const PHOTO_PLACEHOLDER =
-  'https://placehold.co/450x600?text=No+Image&font=roboto&size=32&bg=ececec&fg=888&format=webp'; // 3:4 portrait placeholder
+  'https://placehold.co/600x400?text=No+Image&font=roboto&size=32&bg=ececec&fg=888&format=webp'; // 3:4 portrait placeholder
 
-export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, people, description, date }) => {
+export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, people, description, date, animate = true }) => {
   const [imgSrc, setImgSrc] = useState<string | undefined>(undefined);
   const imgRef = useRef<HTMLImageElement | null>(null);
+  const [mounted, setMounted] = useState(false);
+  const theme = useTheme();
 
-  // Lazy load image using Intersection Observer
   useEffect(() => {
-    // Set image source immediately, no lazy loading
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     const resolvedUrl = photoUrl && photoUrl.trim() !== '' ? photoUrl : PHOTO_PLACEHOLDER;
     setImgSrc(resolvedUrl);
   }, [photoUrl]);
 
-  return (
+  const card = (
     <Card
       sx={{
+        width: '100%',
+        maxWidth: 600,
+        mx: 'auto',
         display: 'flex',
         flexDirection: 'column',
         mb: 2,
         boxShadow: 3,
         borderRadius: 2,
-        maxWidth: 600,
-        mx: 'auto',
+        transition: 'box-shadow 0.2s, transform 0.2s, background 0.2s',
+        outline: 'none',
+        bgcolor: 'background.paper',
+        p: { xs: 1, sm: 2 },
+        '&:hover': {
+          boxShadow: 8,
+          transform: 'scale(1.01)',
+          background: theme.palette.action.hover,
+        },
+        '&:focus-visible': {
+          boxShadow: 12,
+          border: '2px solid',
+          borderColor: 'primary.main',
+          transform: 'scale(1.01)',
+        },
       }}
       aria-labelledby={`memory-title-${id}`}
       role="article"
+      tabIndex={0}
     >
       <CardMedia
         component="img"
@@ -53,12 +78,12 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, peo
         alt={title}
         sx={{
           width: '100%',
-          height: 340,
+          height: { xs: 200, sm: 340 },
           objectFit: 'cover',
           borderRadius: '8px 8px 0 0',
         }}
       />
-      <CardContent sx={{ flex: 1, minWidth: 0 }}>
+      <CardContent sx={{ flex: 1, minWidth: 0, p: { xs: 1, sm: 2 } }}>
         {title && (
           <Typography id={`memory-title-${id}`} variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
             {title}
@@ -93,6 +118,14 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, peo
         </Stack>
       </CardContent>
     </Card>
+  );
+
+  return animate ? (
+    <Fade in={mounted} timeout={500} appear>
+      <div style={{ width: '100%' }}>{card}</div>
+    </Fade>
+  ) : (
+    card
   );
 };
 
