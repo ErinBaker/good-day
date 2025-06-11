@@ -58,7 +58,7 @@ const typeDefs = gql`
   type Query {
     hello: String
     memory(id: ID!): Memory
-    memories(limit: Int, offset: Int, sortBy: String): [Memory]
+    memories(limit: Int, offset: Int, sortBy: String, dateFrom: String, dateTo: String, peopleIds: [ID!]): [Memory]
     person(id: ID!): Person
     people(search: String, limit: Int, offset: Int, sortBy: String): [Person]
   }

@@ -10,8 +10,23 @@ const resolvers = {
         include: { people: true, photos: true },
       });
     },
-    memories: async (_, { limit = 10, offset = 0, sortBy = 'date' }) => {
+    memories: async (_, { limit = 10, offset = 0, sortBy = 'date', dateFrom, dateTo, peopleIds }) => {
+      const where = {};
+      if (dateFrom || dateTo) {
+        where.date = {};
+        if (dateFrom) where.date.gte = new Date(dateFrom);
+        if (dateTo) where.date.lte = new Date(dateTo);
+      }
+      if (peopleIds && peopleIds.length > 0) {
+        // Filter memories that have ALL the specified people tagged
+        where.people = {
+          every: {
+            personId: { in: peopleIds }
+          }
+        };
+      }
       return prisma.memory.findMany({
+        where,
         skip: offset,
         take: limit,
         orderBy: { [sortBy]: 'desc' },
