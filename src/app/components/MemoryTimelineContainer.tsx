@@ -146,6 +146,8 @@ const MemoryTimelineContainer: React.FC = () => {
     dateRange[1] ? dateRange[1].valueOf() : null
   ]);
 
+  const MemoizedMemoryCard = React.memo(MemoryCard);
+
   return (
     <Box
       sx={{
@@ -202,7 +204,7 @@ const MemoryTimelineContainer: React.FC = () => {
       </Box>
       <Box sx={{ display: { xs: 'column', sm: 'row' }, flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'flex-start' }}>
         {/* Feed of MemoryCards */}
-        <Box sx={{ flex: 1 }}>
+        <Box sx={{ flex: 1, minHeight: 400, height: '70vh' }}>
           {initialLoad && loading && (
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 4 }} aria-busy="true" aria-live="polite">
               {[...Array(2)].map((_, i) => (
@@ -249,7 +251,7 @@ const MemoryTimelineContainer: React.FC = () => {
               </Box>
             ) : allMemories.length > 0 ? (
               allMemories.map((memory) => (
-                <MemoryCard
+                <MemoizedMemoryCard
                   key={memory.id}
                   id={memory.id}
                   title={memory.title}
