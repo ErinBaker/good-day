@@ -12,23 +12,77 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import Tooltip from '@mui/material/Tooltip';
 import moment from 'moment';
-import { useMemories, Memory } from './useMemories';
+import { useMemories, Memory, useMemoryDateRange } from './useMemories';
 import MemoryCard from './MemoryCard';
 import RelativeTime from './RelativeTime';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers';
-import Slider from '@mui/material/Slider';
 import dayjs, { Dayjs } from 'dayjs';
+import { Stack, Button } from '@mui/material';
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 5;
 
 const MemoryTimelineContainer: React.FC = () => {
   const [offset, setOffset] = useState(0);
   const [allMemories, setAllMemories] = useState<Memory[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [initialLoad, setInitialLoad] = useState(true);
-  const [startDate, setStartDate] = useState<Dayjs | null>(null);
-  const [endDate, setEndDate] = useState<Dayjs | null>(null);
-  const [sliderValue, setSliderValue] = useState<number>(0);
+  const { minDate, maxDate } = useMemoryDateRange();
+  const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
+  const [userChangedDate, setUserChangedDate] = useState(false);
+
+  // Move shortcutOptions here so minDate/maxDate are in scope
+  const shortcutOptions = [
+    {
+      label: 'This Week',
+      getValue: () => {
+        const today = dayjs();
+        return [today.startOf('week'), today.endOf('week')];
+      },
+    },
+    {
+      label: 'Last Week',
+      getValue: () => {
+        const today = dayjs();
+        const prevWeek = today.subtract(7, 'day');
+        return [prevWeek.startOf('week'), prevWeek.endOf('week')];
+      },
+    },
+    {
+      label: 'Last 7 Days',
+      getValue: () => {
+        const today = dayjs();
+        return [today.subtract(7, 'day'), today];
+      },
+    },
+    {
+      label: 'Current Month',
+      getValue: () => {
+        const today = dayjs();
+        return [today.startOf('month'), today.endOf('month')];
+      },
+    },
+    {
+      label: 'Next Month',
+      getValue: () => {
+        const today = dayjs();
+        const startOfNextMonth = today.endOf('month').add(1, 'day');
+        return [startOfNextMonth, startOfNextMonth.endOf('month')];
+      },
+    },
+    {
+      label: 'Reset',
+      getValue: () => [minDate ? dayjs(minDate) : null, maxDate ? dayjs(maxDate) : null],
+    },
+  ];
+
+  // Set initial dateRange from backend only if user hasn't changed them
+  useEffect(() => {
+    if (!userChangedDate && minDate && maxDate) {
+      setDateRange([dayjs(minDate), dayjs(maxDate)]);
+    }
+  }, [minDate, maxDate, userChangedDate]);
 
   // Reset memories and offset when date filter changes
   useEffect(() => {
@@ -36,14 +90,14 @@ const MemoryTimelineContainer: React.FC = () => {
     setOffset(0);
     setHasMore(true);
     setInitialLoad(true);
-  }, [startDate, endDate]);
+  }, [dateRange[0], dateRange[1]]);
 
-  const { memories, loading, error } = useMemories({
+  const { memories, totalCount, loading, error } = useMemories({
     sortBy: 'date',
     limit: PAGE_SIZE,
     offset,
-    dateFrom: startDate ? startDate.toISOString() : undefined,
-    dateTo: endDate ? endDate.toISOString() : undefined,
+    dateFrom: dateRange[0] ? dateRange[0].toISOString() : undefined,
+    dateTo: dateRange[1] ? dateRange[1].toISOString() : undefined,
   });
 
   // Append new memories to the list
@@ -52,14 +106,15 @@ const MemoryTimelineContainer: React.FC = () => {
       setAllMemories((prev) => {
         // Avoid duplicates
         const ids = new Set(prev.map((m) => m.id));
-        return [...prev, ...memories.filter((m) => !ids.has(m.id))];
+        const newMemories = [...prev, ...memories.filter((m) => !ids.has(m.id))];
+        if (newMemories.length >= totalCount) setHasMore(false);
+        return newMemories;
       });
-      if (memories.length < PAGE_SIZE) setHasMore(false);
-    } else if (offset > 0) {
+    } else if (memories.length === 0 && allMemories.length > 0) {
       setHasMore(false);
     }
     if (initialLoad && !loading) setInitialLoad(false);
-  }, [memories, offset, loading, initialLoad]);
+  }, [memories, offset, loading, initialLoad, totalCount]);
 
   // Intersection Observer for infinite scroll
   const loaderRef = useRef<HTMLDivElement | null>(null);
@@ -85,42 +140,17 @@ const MemoryTimelineContainer: React.FC = () => {
   // Set initial startDate and endDate to the earliest and latest memory dates
   useEffect(() => {
     const memoriesToCheck = allMemories.length > 0 ? allMemories : memories;
-    if ((startDate === null || endDate === null) && memoriesToCheck.length > 0) {
+    if ((dateRange[0] === null || dateRange[1] === null) && memoriesToCheck.length > 0) {
       const sortedMemories = [...memoriesToCheck].sort((a, b) => Number(a.date) - Number(b.date));
-      if (startDate === null) setStartDate(dayjs(Number(sortedMemories[0].date)));
-      if (endDate === null) setEndDate(dayjs(Number(sortedMemories[sortedMemories.length - 1].date)));
+      if (dateRange[0] === null) setDateRange([dayjs(Number(sortedMemories[0].date)), dateRange[1]]);
+      if (dateRange[1] === null) setDateRange([dateRange[0], dayjs(Number(sortedMemories[sortedMemories.length - 1].date))]);
     }
-  }, [allMemories, memories, startDate, endDate]);
-
-  // Refs for each memory card
-  const memoryRefs = useRef<(HTMLDivElement | null)[]>([]);
-  useEffect(() => {
-    memoryRefs.current = allMemories.map((_, i) => memoryRefs.current[i] || null);
-  }, [allMemories]);
-
-  // Scroll to memory card when slider changes
-  useEffect(() => {
-    if (memoryRefs.current[sliderValue]) {
-      memoryRefs.current[sliderValue]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }, [sliderValue]);
-
-  // Helper to format date label for slider (reversed order: newest on top)
-  const getSliderDateLabel = (idx: number) => {
-    const reversedIdx = allMemories.length - 1 - idx;
-    const mem = allMemories[reversedIdx];
-    if (!mem) return '';
-    return dayjs(Number(mem.date)).format('MMM D, YYYY');
-  };
-
-  // Adjust slider value to match reversed order
-  const sliderMax = allMemories.length > 0 ? allMemories.length - 1 : 0;
-  const reversedSliderValue = sliderMax - sliderValue;
-
-  // When slider changes, update sliderValue to match reversed order
-  const handleSliderChange = (_: Event, v: number | number[]) => {
-    setSliderValue(sliderMax - Number(v));
-  };
+  }, [
+    allMemories.length,
+    memories.length,
+    dateRange[0] ? dateRange[0].valueOf() : null,
+    dateRange[1] ? dateRange[1].valueOf() : null
+  ]);
 
   return (
     <Box
@@ -135,21 +165,48 @@ const MemoryTimelineContainer: React.FC = () => {
       aria-label="Memory timeline"
     >
       {/* Date Range Filter */}
-      <Box sx={{ display: 'flex', gap: 2, mb: 3, flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center' }}>
-        <DatePicker
-          label="Start Date"
-          value={startDate}
-          onChange={setStartDate}
-          slotProps={{ textField: { size: 'small' } }}
-        />
-        <DatePicker
-          label="End Date"
-          value={endDate}
-          onChange={setEndDate}
-          slotProps={{ textField: { size: 'small' } }}
-        />
+      <Box sx={{ mb: 3 }}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap' }}>
+            {shortcutOptions.map((shortcut) => (
+              <Button
+                key={shortcut.label}
+                size="small"
+                variant="outlined"
+                onClick={() => {
+                  setDateRange(shortcut.getValue() as [Dayjs | null, Dayjs | null]);
+                  setUserChangedDate(true);
+                }}
+              >
+                {shortcut.label}
+              </Button>
+            ))}
+          </Stack>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+            <DatePicker
+              label="Start Date"
+              value={dateRange[0]}
+              onChange={(newValue) => {
+                setDateRange([newValue, dateRange[1]]);
+                setUserChangedDate(true);
+              }}
+              slotProps={{ textField: { size: 'small' } }}
+              maxDate={dateRange[1] || undefined}
+            />
+            <DatePicker
+              label="End Date"
+              value={dateRange[1]}
+              onChange={(newValue) => {
+                setDateRange([dateRange[0], newValue]);
+                setUserChangedDate(true);
+              }}
+              slotProps={{ textField: { size: 'small' } }}
+              minDate={dateRange[0] || undefined}
+            />
+          </Stack>
+        </LocalizationProvider>
       </Box>
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'flex-start' }}>
+      <Box sx={{ display: { xs: 'column', sm: 'row' }, flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'flex-start' }}>
         {/* Timeline and infinite scroll logic remain unchanged */}
         <Box sx={{ flex: 1 }}>
           {initialLoad && loading && (
@@ -203,14 +260,12 @@ const MemoryTimelineContainer: React.FC = () => {
                       {idx < allMemories.length - 1 && <TimelineConnector />}
                     </TimelineSeparator>
                     <TimelineContent sx={{ py: 2 }}>
-                      <div ref={el => { memoryRefs.current[idx] = el; }}>
-                        <MemoryCard
-                          id={memory.id}
-                          photoUrl={memory.photoUrl}
-                          people={memory.people}
-                          description={memory.description}
-                        />
-                      </div>
+                      <MemoryCard
+                        id={memory.id}
+                        photoUrl={memory.photoUrl}
+                        people={memory.people}
+                        description={memory.description}
+                      />
                     </TimelineContent>
                   </TimelineItem>
                 );
@@ -244,49 +299,6 @@ const MemoryTimelineContainer: React.FC = () => {
             </Typography>
           )}
         </Box>
-      </Box>
-      {/* Vertical Slider floating on the far right (desktop) */}
-      <Box
-        sx={{
-          display: { xs: 'none', sm: 'flex' },
-          position: 'fixed',
-          right: 0,
-          top: 120,
-          zIndex: 1200,
-          width: 80,
-          height: 400,
-          alignItems: 'center',
-          justifyContent: 'center',
-          pointerEvents: 'auto',
-        }}
-      >
-        <Slider
-          orientation="vertical"
-          min={0}
-          max={sliderMax}
-          value={reversedSliderValue}
-          onChange={handleSliderChange}
-          sx={{ height: 400, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 3, p: 2 }}
-          aria-label="Timeline Scrubber"
-          disabled={allMemories.length === 0}
-          valueLabelDisplay="on"
-          valueLabelFormat={getSliderDateLabel}
-        />
-      </Box>
-      {/* On mobile, show slider below timeline */}
-      <Box sx={{ display: { xs: 'flex', sm: 'none' }, width: '100%', mt: 2, justifyContent: 'center' }}>
-        <Slider
-          orientation="horizontal"
-          min={0}
-          max={sliderMax}
-          value={reversedSliderValue}
-          onChange={handleSliderChange}
-          sx={{ width: '90%' }}
-          aria-label="Timeline Scrubber"
-          disabled={allMemories.length === 0}
-          valueLabelDisplay="on"
-          valueLabelFormat={getSliderDateLabel}
-        />
       </Box>
     </Box>
   );
