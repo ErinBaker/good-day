@@ -55,12 +55,23 @@ const typeDefs = gql`
     relationship: String
   }
 
+  type MemoryDateRange {
+    minDate: String
+    maxDate: String
+  }
+
+  type MemoryConnection {
+    items: [Memory!]!
+    totalCount: Int!
+  }
+
   type Query {
     hello: String
     memory(id: ID!): Memory
-    memories(limit: Int, offset: Int, sortBy: String, dateFrom: String, dateTo: String, peopleIds: [ID!]): [Memory]
+    memories(limit: Int, offset: Int, sortBy: String, dateFrom: String, dateTo: String, peopleIds: [ID!]): MemoryConnection
     person(id: ID!): Person
     people(search: String, limit: Int, offset: Int, sortBy: String): [Person]
+    memoryDateRange: MemoryDateRange
   }
 
   type Mutation {

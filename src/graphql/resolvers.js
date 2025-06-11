@@ -18,20 +18,28 @@ const resolvers = {
         if (dateTo) where.date.lte = new Date(dateTo);
       }
       if (peopleIds && peopleIds.length > 0) {
-        // Filter memories that have ALL the specified people tagged
         where.people = {
           every: {
             id: { in: peopleIds }
           }
         };
       }
-      return prisma.memory.findMany({
-        where,
-        skip: offset,
-        take: limit,
-        orderBy: { [sortBy]: 'desc' },
-        include: { people: true, photos: true },
-      });
+      const orderBy = [
+        { [sortBy]: 'desc' },
+        { id: 'asc' }, // secondary sort for deterministic order
+      ];
+      const [items, totalCount] = await Promise.all([
+        prisma.memory.findMany({
+          where,
+          skip: offset,
+          take: limit,
+          orderBy,
+          include: { people: true, photos: true },
+        }),
+        prisma.memory.count({ where }),
+      ]);
+      console.log('memories query:', { offset, limit, count: items.length, totalCount, ids: items.map(i => i.id) });
+      return { items, totalCount };
     },
     person: async (_, { id }) => {
       return prisma.person.findUnique({
@@ -50,6 +58,14 @@ const resolvers = {
         orderBy: { [sortBy]: 'asc' },
         include: { memories: true },
       });
+    },
+    memoryDateRange: async () => {
+      const min = await prisma.memory.findFirst({ orderBy: { date: 'asc' }, select: { date: true } });
+      const max = await prisma.memory.findFirst({ orderBy: { date: 'desc' }, select: { date: true } });
+      return {
+        minDate: min?.date ? min.date.toISOString() : null,
+        maxDate: max?.date ? max.date.toISOString() : null,
+      };
     },
   },
   Mutation: {

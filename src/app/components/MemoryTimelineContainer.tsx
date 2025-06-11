@@ -102,16 +102,17 @@ const MemoryTimelineContainer: React.FC = () => {
 
   // Append new memories to the list
   useEffect(() => {
+    console.log('[InfiniteScroll] offset:', offset, 'memories.length:', memories.length, 'allMemories.length:', allMemories.length, 'hasMore:', hasMore);
     if (memories.length > 0) {
       setAllMemories((prev) => {
         // Avoid duplicates
         const ids = new Set(prev.map((m) => m.id));
         const newMemories = [...prev, ...memories.filter((m) => !ids.has(m.id))];
+        console.log('[InfiniteScroll] Appending memories:', memories.map(m => m.id), 'Resulting allMemories:', newMemories.map(m => m.id));
+        // Only set hasMore to false if we've loaded all items
         if (newMemories.length >= totalCount) setHasMore(false);
         return newMemories;
       });
-    } else if (memories.length === 0 && allMemories.length > 0) {
-      setHasMore(false);
     }
     if (initialLoad && !loading) setInitialLoad(false);
   }, [memories, offset, loading, initialLoad, totalCount]);

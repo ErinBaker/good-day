@@ -15,29 +15,41 @@ export interface Memory {
 const MEMORIES_QUERY = gql`
   query Memories($limit: Int, $offset: Int, $sortBy: String, $dateFrom: String, $dateTo: String, $peopleIds: [ID!]) {
     memories(limit: $limit, offset: $offset, sortBy: $sortBy, dateFrom: $dateFrom, dateTo: $dateTo, peopleIds: $peopleIds) {
-      id
-      title
-      date
-      description
-      photoUrl
-      createdAt
-      updatedAt
-      people {
+      items {
         id
-        name
-        relationship
-      }
-      photos {
-        id
-        originalFilename
-        folder
-        baseFilename
-        mimeType
-        size
-        width
-        height
+        title
+        date
+        description
+        photoUrl
         createdAt
+        updatedAt
+        people {
+          id
+          name
+          relationship
+        }
+        photos {
+          id
+          originalFilename
+          folder
+          baseFilename
+          mimeType
+          size
+          width
+          height
+          createdAt
+        }
       }
+      totalCount
+    }
+  }
+`;
+
+export const MEMORY_DATE_RANGE_QUERY = gql`
+  query MemoryDateRange {
+    memoryDateRange {
+      minDate
+      maxDate
     }
   }
 `;
@@ -52,14 +64,25 @@ interface UseMemoriesOptions {
 }
 
 export function useMemories(options: UseMemoriesOptions = {}) {
-  const { data, loading, error, refetch } = useQuery<{ memories: Memory[] }>(MEMORIES_QUERY, {
+  const { data, loading, error, refetch } = useQuery<{ memories: { items: Memory[]; totalCount: number } }>(MEMORIES_QUERY, {
     variables: options,
   });
 
   return {
-    memories: data?.memories ?? [],
+    memories: data?.memories?.items ?? [],
+    totalCount: data?.memories?.totalCount ?? 0,
     loading,
     error,
     refetch,
+  };
+}
+
+export function useMemoryDateRange() {
+  const { data, loading, error } = useQuery<{ memoryDateRange: { minDate: string | null; maxDate: string | null } }>(MEMORY_DATE_RANGE_QUERY);
+  return {
+    minDate: data?.memoryDateRange?.minDate ?? null,
+    maxDate: data?.memoryDateRange?.maxDate ?? null,
+    loading,
+    error,
   };
 } 
