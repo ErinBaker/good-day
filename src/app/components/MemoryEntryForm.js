@@ -1,168 +1,231 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Box, Button, TextField, Typography, Alert, Snackbar, IconButton, Grid } from '@mui/material';
+import { Box, Button, Typography, Stepper, Step, StepLabel, StepContent, Alert, Snackbar, CircularProgress } from '@mui/material';
 import { useMutation, gql } from '@apollo/client';
 import FileUpload from './FileUpload';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import PersonSelection from './PersonSelection';
 
 const CREATE_MEMORY = gql`
-  mutation CreateMemory($title: String!, $date: String!, $description: String!, $peopleIds: [ID!]) {
-    createMemory(input: { title: $title, date: $date, description: $description, peopleIds: $peopleIds }) {
+  mutation CreateMemory($title: String!, $date: String!, $description: String!, $photoUrl: String!) {
+    createMemory(input: { title: $title, date: $date, description: $description, photoUrl: $photoUrl }) {
       id
       title
       date
       description
+      photoUrl
+    }
+  }
+`;
+
+const ADD_PEOPLE = gql`
+  mutation AddPeople($memoryId: ID!, $input: MemoryUpdateInput!) {
+    updateMemory(id: $memoryId, input: $input) {
+      id
       people { id name relationship }
     }
   }
 `;
 
-const LINK_PHOTO = gql`
-  mutation LinkPhoto($photoId: String!, $memoryId: Int!) {
-    linkPhoto: linkPhoto(photoId: $photoId, memoryId: $memoryId) {
-      id
-      memoryId
-    }
-  }
-`;
-
 function MemoryEntryForm({ onMemoryCreated }) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
-  const [createMemory] = useMutation(CREATE_MEMORY);
-  const [linkPhoto] = useMutation(LINK_PHOTO);
-  const [uploadedPhotoIds, setUploadedPhotoIds] = useState([]);
-  const [associatedPhotos, setAssociatedPhotos] = useState([]);
-  const [alert, setAlert] = useState({ message: '', severity: 'success', open: false });
-  const [selectedPeople, setSelectedPeople] = useState([]);
+  // Stepper state
+  const [activeStep, setActiveStep] = useState(0);
 
-  // Called by FileUpload after successful upload
-  const handleFileUpload = (result) => {
-    if (result && result.id) {
-      setUploadedPhotoIds((ids) => [...ids, result.id]);
-      setAssociatedPhotos((photos) => [...photos, result]);
+  // Step 1: Photo upload
+  const [photoResult, setPhotoResult] = useState(null);
+  const [photoError, setPhotoError] = useState('');
+
+  // Step 2: Details
+  const [title, setTitle] = useState('');
+  const [date, setDate] = useState('');
+  const [description, setDescription] = useState('');
+  const [detailsError, setDetailsError] = useState('');
+  const [creatingMemory, setCreatingMemory] = useState(false);
+  const [memoryId, setMemoryId] = useState(null);
+
+  // Step 3: People
+  const [selectedPeople, setSelectedPeople] = useState([]);
+  const [peopleError, setPeopleError] = useState('');
+  const [addingPeople, setAddingPeople] = useState(false);
+
+  // General alert
+  const [alert, setAlert] = useState({ message: '', severity: 'success', open: false });
+
+  const [createMemory] = useMutation(CREATE_MEMORY);
+  const [addPeople] = useMutation(ADD_PEOPLE);
+
+  // Step 1: Handle photo upload
+  const handleFileSelect = async (result) => {
+    setPhotoError('');
+    setPhotoResult(null);
+    if (!result || !result.folder || !result.baseFilename) {
+      setPhotoError('Photo upload failed.');
+      return;
+    }
+    setPhotoResult(result);
+    setActiveStep(1);
+  };
+
+  // Step 2: Handle details submit
+  const handleDetailsSubmit = async (e) => {
+    e.preventDefault();
+    setDetailsError('');
+    if (!title.trim() || !date || !description.trim()) {
+      setDetailsError('All fields are required.');
+      return;
+    }
+    if (!photoResult) {
+      setDetailsError('Photo is required.');
+      return;
+    }
+    setCreatingMemory(true);
+    try {
+      const photoUrl = `/api/photos/${photoResult.folder}/${photoResult.baseFilename}`;
+      const res = await createMemory({
+        variables: {
+          title: title.trim(),
+          date: new Date(date).toISOString(),
+          description: description.trim(),
+          photoUrl,
+        },
+      });
+      setMemoryId(res.data.createMemory.id);
+      setActiveStep(2);
+    } catch (err) {
+      setDetailsError('Error creating memory: ' + err.message);
+    } finally {
+      setCreatingMemory(false);
     }
   };
 
-  const onSubmit = async (data) => {
+  // Step 3: Handle people submit
+  const handlePeopleSubmit = async (e) => {
+    e.preventDefault();
+    setPeopleError('');
+    if (!selectedPeople.length) {
+      setPeopleError('Please tag at least one person.');
+      return;
+    }
+    setAddingPeople(true);
     try {
-      // 1. Create the memory
-      const res = await createMemory({ variables: { ...data, peopleIds: selectedPeople.map(p => p.id) } });
-      const memoryId = res.data.createMemory.id;
-      // 2. Link all uploaded photos to this memory
-      for (const photoId of uploadedPhotoIds) {
-        await linkPhoto({ variables: { photoId, memoryId: parseInt(memoryId, 10) } });
-      }
-      // 3. Reset form and state
-      reset();
-      setUploadedPhotoIds([]);
-      setAssociatedPhotos([]);
-      setSelectedPeople([]);
+      await addPeople({
+        variables: {
+          memoryId,
+          input: {
+            peopleIds: selectedPeople.map((p) => p.id),
+          },
+        },
+      });
       setAlert({ message: 'Memory created successfully!', severity: 'success', open: true });
+      // Reset all state
+      setActiveStep(0);
+      setPhotoResult(null);
+      setTitle('');
+      setDate('');
+      setDescription('');
+      setSelectedPeople([]);
+      setMemoryId(null);
       if (onMemoryCreated) onMemoryCreated();
     } catch (err) {
-      setAlert({ message: 'Error creating memory: ' + err.message, severity: 'error', open: true });
+      setPeopleError('Error tagging people: ' + err.message);
+    } finally {
+      setAddingPeople(false);
     }
   };
 
-  const handleRemovePhoto = (photoId) => {
-    setUploadedPhotoIds((ids) => ids.filter((id) => id !== photoId));
-    setAssociatedPhotos((photos) => photos.filter((p) => p.id !== photoId));
-    // Optionally, call unlink or delete photo API here
-  };
-
-  // Move photo up or down in the list
-  const movePhoto = (index, direction) => {
-    setAssociatedPhotos((photos) => {
-      const newPhotos = [...photos];
-      const target = newPhotos[index];
-      newPhotos.splice(index, 1);
-      newPhotos.splice(index + direction, 0, target);
-      return newPhotos;
-    });
-    setUploadedPhotoIds((ids) => {
-      const newIds = [...ids];
-      const target = newIds[index];
-      newIds.splice(index, 1);
-      newIds.splice(index + direction, 0, target);
-      return newIds;
-    });
-  };
+  // Stepper steps
+  const steps = [
+    {
+      label: 'Upload Photo',
+      content: (
+        <Box>
+          <FileUpload
+            onFileSelect={handleFileSelect}
+          />
+          {photoError && <Alert severity="error" sx={{ mt: 2 }}>{photoError}</Alert>}
+        </Box>
+      ),
+    },
+    {
+      label: 'Add Title, Date, Description',
+      content: (
+        <Box component="form" onSubmit={handleDetailsSubmit} sx={{ mt: 1 }}>
+          <Typography variant="subtitle1" sx={{ mb: 1 }}>Enter details for your memory</Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <input
+              type="text"
+              placeholder="Title"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              aria-label="Title"
+              required
+              style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
+            />
+            <input
+              type="date"
+              value={date}
+              onChange={e => setDate(e.target.value)}
+              aria-label="Date"
+              required
+              style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
+            />
+            <textarea
+              placeholder="Description"
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              aria-label="Description"
+              required
+              rows={3}
+              style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
+            />
+          </Box>
+          {detailsError && <Alert severity="error" sx={{ mt: 2 }}>{detailsError}</Alert>}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={creatingMemory}
+              startIcon={creatingMemory ? <CircularProgress size={18} /> : null}
+            >
+              Next
+            </Button>
+          </Box>
+        </Box>
+      ),
+    },
+    {
+      label: 'Add People',
+      content: (
+        <Box component="form" onSubmit={handlePeopleSubmit} sx={{ mt: 1 }}>
+          <Typography variant="subtitle1" sx={{ mb: 1 }}>Tag people in this memory</Typography>
+          <PersonSelection value={selectedPeople} onChange={setSelectedPeople} />
+          {peopleError && <Alert severity="error" sx={{ mt: 2 }}>{peopleError}</Alert>}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={addingPeople}
+              startIcon={addingPeople ? <CircularProgress size={18} /> : null}
+            >
+              Finish
+            </Button>
+          </Box>
+        </Box>
+      ),
+    },
+  ];
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ maxWidth: 600, my: 2, p: 3, borderRadius: 2, boxShadow: 1, bgcolor: 'background.paper' }}>
+    <Box sx={{ maxWidth: 600, my: 2, p: 3, borderRadius: 2, boxShadow: 1, bgcolor: 'background.paper' }}>
       <Typography variant="h6" gutterBottom>Create Memory</Typography>
-      <TextField
-        label="Title"
-        fullWidth
-        margin="normal"
-        {...register('title', { required: true })}
-        error={!!errors.title}
-        helperText={errors.title && 'Title is required'}
-      />
-      <TextField
-        label="Date"
-        type="date"
-        fullWidth
-        margin="normal"
-        InputLabelProps={{ shrink: true }}
-        {...register('date', { required: true })}
-        error={!!errors.date}
-        helperText={errors.date && 'Date is required'}
-      />
-      <TextField
-        label="Description"
-        fullWidth
-        margin="normal"
-        multiline
-        minRows={3}
-        {...register('description', { required: true })}
-        error={!!errors.description}
-        helperText={errors.description && 'Description is required'}
-      />
-      <PersonSelection value={selectedPeople} onChange={setSelectedPeople} label="Tag People" placeholder="Search or add a person..." />
-      <FileUpload onFileSelect={handleFileUpload} />
-      {associatedPhotos.length > 0 && (
-        <Box mt={2}>
-          <Typography variant="subtitle1">Photos to be associated:</Typography>
-          <Grid container spacing={2} mt={1}>
-            {associatedPhotos.map((photo, idx) => (
-              <Grid item key={photo.id}>
-                <Box display="flex" flexDirection="column" alignItems="center">
-                  <img
-                    src={`/api/photos/${photo.folder}/${photo.baseFilename}?size=thumbnail`}
-                    alt="Memory"
-                    style={{ maxWidth: 80, borderRadius: 8, display: 'block' }}
-                  />
-                  <Box display="flex" gap={1} mt={1}>
-                    <IconButton aria-label="Remove photo" color="error" onClick={() => handleRemovePhoto(photo.id)} size="small">
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton aria-label="Move photo up" disabled={idx === 0} onClick={() => movePhoto(idx, -1)} size="small">
-                      <ArrowUpwardIcon fontSize="small" />
-                    </IconButton>
-                    <IconButton aria-label="Move photo down" disabled={idx === associatedPhotos.length - 1} onClick={() => movePhoto(idx, 1)} size="small">
-                      <ArrowDownwardIcon fontSize="small" />
-                    </IconButton>
-                  </Box>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
-      )}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-        <Button type="submit" variant="contained" color="primary">
-          Create Memory
-        </Button>
-      </Box>
+      <Stepper activeStep={activeStep} orientation="vertical" sx={{ mb: 2 }}>
+        {steps.map((step, idx) => (
+          <Step key={step.label} completed={activeStep > idx}>
+            <StepLabel>{step.label}</StepLabel>
+            <StepContent>{activeStep === idx && step.content}</StepContent>
+          </Step>
+        ))}
+      </Stepper>
       <Snackbar
         open={alert.open}
         autoHideDuration={4000}

@@ -42,6 +42,14 @@ const typeDefs = gql`
     peopleIds: [ID!]
   }
 
+  input MemoryUpdateInput {
+    title: String
+    date: String
+    description: String
+    photoUrl: String
+    peopleIds: [ID!]
+  }
+
   input PersonInput {
     name: String!
     relationship: String
@@ -57,7 +65,7 @@ const typeDefs = gql`
 
   type Mutation {
     createMemory(input: MemoryInput!): Memory
-    updateMemory(id: ID!, input: MemoryInput!): Memory
+    updateMemory(id: ID!, input: MemoryUpdateInput!): Memory
     deleteMemory(id: ID!): Boolean!
     createPerson(input: PersonInput!): Person
     updatePerson(id: ID!, input: PersonInput!): Person

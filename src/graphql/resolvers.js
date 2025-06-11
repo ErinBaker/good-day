@@ -6,7 +6,7 @@ const resolvers = {
     hello: () => 'Hello, world!',
     memory: async (_, { id }) => {
       return prisma.memory.findUnique({
-        where: { id: Number(id) },
+        where: { id },
         include: { people: true, photos: true },
       });
     },
@@ -20,7 +20,7 @@ const resolvers = {
     },
     person: async (_, { id }) => {
       return prisma.person.findUnique({
-        where: { id: Number(id) },
+        where: { id },
         include: { memories: true },
       });
     },
@@ -39,38 +39,54 @@ const resolvers = {
   },
   Mutation: {
     createMemory: async (_, { input }) => {
+      // Step 1: Create the memory without people
       const memory = await prisma.memory.create({
         data: {
           title: input.title,
           date: input.date,
           description: input.description,
           photoUrl: input.photoUrl,
-          people: {
-            connect: input.peopleIds?.map(id => ({ id: Number(id) })) || [],
-          },
         },
         include: { people: true, photos: true },
       });
-      return memory;
+
+      // Step 2: Connect people in a separate update
+      if (input.peopleIds && input.peopleIds.length > 0) {
+        await prisma.memory.update({
+          where: { id: memory.id },
+          data: {
+            people: {
+              connect: input.peopleIds.map(id => ({ id })),
+            },
+          },
+        });
+      }
+
+      // Step 3: Return the memory (optionally re-fetch with people)
+      return prisma.memory.findUnique({
+        where: { id: memory.id },
+        include: { people: true, photos: true },
+      });
     },
     updateMemory: async (_, { id, input }) => {
+      // Build update data object only with provided fields
+      const data = {};
+      if (typeof input.title !== 'undefined') data.title = input.title;
+      if (typeof input.date !== 'undefined') data.date = input.date;
+      if (typeof input.description !== 'undefined') data.description = input.description;
+      if (typeof input.photoUrl !== 'undefined') data.photoUrl = input.photoUrl;
+      if (typeof input.peopleIds !== 'undefined') {
+        data.people = { set: input.peopleIds.map(id => ({ id })) };
+      }
       const memory = await prisma.memory.update({
-        where: { id: Number(id) },
-        data: {
-          title: input.title,
-          date: input.date,
-          description: input.description,
-          photoUrl: input.photoUrl,
-          people: {
-            set: input.peopleIds?.map(id => ({ id: Number(id) })) || [],
-          },
-        },
+        where: { id },
+        data,
         include: { people: true, photos: true },
       });
       return memory;
     },
     deleteMemory: async (_, { id }) => {
-      await prisma.memory.delete({ where: { id: Number(id) } });
+      await prisma.memory.delete({ where: { id } });
       return true;
     },
     createPerson: async (_, { input }) => {
@@ -109,12 +125,12 @@ const resolvers = {
           // Optionally, you could use 'contains' for partial match, but here we fetch all
         },
       });
-      const exists = possible.some(p => p.id !== Number(id) && p.name.trim().toLowerCase() === name.toLowerCase());
+      const exists = possible.some(p => p.id !== id && p.name.trim().toLowerCase() === name.toLowerCase());
       if (exists) {
         throw new Error('A person with this name already exists.');
       }
       return prisma.person.update({
-        where: { id: Number(id) },
+        where: { id },
         data: {
           name,
           relationship: input.relationship,
@@ -123,15 +139,15 @@ const resolvers = {
       });
     },
     deletePerson: async (_, { id }) => {
-      await prisma.person.delete({ where: { id: Number(id) } });
+      await prisma.person.delete({ where: { id } });
       return true;
     },
     tagPersonInMemory: async (_, { memoryId, personId }) => {
       return prisma.memory.update({
-        where: { id: Number(memoryId) },
+        where: { id: memoryId },
         data: {
           people: {
-            connect: { id: Number(personId) },
+            connect: { id: personId },
           },
         },
         include: { people: true, photos: true },
@@ -139,10 +155,10 @@ const resolvers = {
     },
     removePersonFromMemory: async (_, { memoryId, personId }) => {
       return prisma.memory.update({
-        where: { id: Number(memoryId) },
+        where: { id: memoryId },
         data: {
           people: {
-            disconnect: { id: Number(personId) },
+            disconnect: { id: personId },
           },
         },
         include: { people: true, photos: true },
@@ -167,6 +183,8 @@ const resolvers = {
         where: { people: { some: { id: parent.id } } },
       });
     },
+    createdAt: (parent) => parent.createdAt instanceof Date ? parent.createdAt.toISOString() : parent.createdAt,
+    updatedAt: (parent) => parent.updatedAt instanceof Date ? parent.updatedAt.toISOString() : parent.updatedAt,
   },
 };
 
