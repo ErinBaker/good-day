@@ -6,7 +6,6 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
-import Skeleton from '@mui/material/Skeleton';
 
 export interface MemoryCardProps {
   id: string;
@@ -14,6 +13,7 @@ export interface MemoryCardProps {
   photoUrl?: string;
   people: { id: string; name: string; relationship?: string }[];
   description: string;
+  date?: string;
 }
 
 const AVATAR_PLACEHOLDER =
@@ -21,7 +21,7 @@ const AVATAR_PLACEHOLDER =
 const PHOTO_PLACEHOLDER =
   'https://placehold.co/450x600?text=No+Image&font=roboto&size=32&bg=ececec&fg=888&format=webp'; // 3:4 portrait placeholder
 
-export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, people, description }) => {
+export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, people, description, date }) => {
   const [imgSrc, setImgSrc] = useState<string | undefined>(undefined);
   const imgRef = useRef<HTMLImageElement | null>(null);
 
@@ -36,55 +36,61 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, peo
     <Card
       sx={{
         display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
-        alignItems: { sm: 'center' },
+        flexDirection: 'column',
         mb: 2,
         boxShadow: 3,
         borderRadius: 2,
         maxWidth: 600,
         mx: 'auto',
-        height: 600, // Fixed card height
       }}
       aria-labelledby={`memory-title-${id}`}
       role="article"
     >
-      <Box sx={{ width: { xs: '100%', sm: 180 }, height: 600, position: 'relative', flexShrink: 0 }}>
-        {!imgSrc && <Skeleton variant="rectangular" width="100%" height={600} />}
-        <CardMedia
-          component="img"
-          ref={imgRef}
-          src={imgSrc}
-          alt={title}
-          sx={{
-            width: '100%',
-            height: 600,
-            objectFit: 'cover',
-            display: imgSrc ? 'block' : 'none',
-            borderRadius: { xs: '8px 8px 0 0', sm: '8px 0 0 8px' },
-          }}
-        />
-      </Box>
-      <CardContent sx={{ flex: 1, minWidth: 0, height: 600, overflow: 'auto' }}>
-        <Stack direction="row" spacing={1} alignItems="center" sx={{ flexWrap: 'wrap' }}>
-          {people.length > 0 ? (
-            people.map((person) => (
-              <Box key={person.id} sx={{ display: 'flex', alignItems: 'center', mr: 1, mb: 0.5 }}>
-                <Avatar
-                  src={AVATAR_PLACEHOLDER}
-                  alt={person.name}
-                  sx={{ width: 28, height: 28, mr: 0.5 }}
-                  imgProps={{ 'aria-label': person.name }}
-                />
-                <Typography variant="body2" sx={{ mr: 1 }}>
-                  {person.name}
-                </Typography>
-              </Box>
-            ))
-          ) : null}
-        </Stack>
-        <Typography variant="body1" sx={{ mt: 1 }}>
+      <CardMedia
+        component="img"
+        ref={imgRef}
+        src={imgSrc}
+        alt={title}
+        sx={{
+          width: '100%',
+          height: 340,
+          objectFit: 'cover',
+          borderRadius: '8px 8px 0 0',
+        }}
+      />
+      <CardContent sx={{ flex: 1, minWidth: 0 }}>
+        {title && (
+          <Typography id={`memory-title-${id}`} variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
+            {title}
+          </Typography>
+        )}
+        <Typography variant="body1" sx={{ mb: 2 }}>
           {description}
         </Typography>
+        <Stack direction="row" spacing={2} alignItems="center" sx={{ mt: 2, flexWrap: 'wrap' }}>
+          {date && (
+            <Typography variant="caption" color="text.secondary">
+              {new Date(date).toLocaleDateString()}
+            </Typography>
+          )}
+          {people.length > 0 && (
+            <Stack direction="row" spacing={1} alignItems="center">
+              {people.map((person) => (
+                <Box key={person.id} sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
+                  <Avatar
+                    src={AVATAR_PLACEHOLDER}
+                    alt={person.name}
+                    sx={{ width: 24, height: 24, mr: 0.5 }}
+                    imgProps={{ 'aria-label': person.name }}
+                  />
+                  <Typography variant="caption" sx={{ mr: 1 }}>
+                    {person.name}
+                  </Typography>
+                </Box>
+              ))}
+            </Stack>
+          )}
+        </Stack>
       </CardContent>
     </Card>
   );

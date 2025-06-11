@@ -1,20 +1,10 @@
 import React, { useRef, useCallback, useEffect, useState } from 'react';
-import Timeline from '@mui/lab/Timeline';
-import TimelineItem from '@mui/lab/TimelineItem';
-import TimelineSeparator from '@mui/lab/TimelineSeparator';
-import TimelineConnector from '@mui/lab/TimelineConnector';
-import TimelineContent from '@mui/lab/TimelineContent';
-import TimelineDot from '@mui/lab/TimelineDot';
-import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
-import Tooltip from '@mui/material/Tooltip';
-import moment from 'moment';
 import { useMemories, Memory, useMemoryDateRange } from './useMemories';
 import MemoryCard from './MemoryCard';
-import RelativeTime from './RelativeTime';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers';
@@ -211,7 +201,7 @@ const MemoryTimelineContainer: React.FC = () => {
         </LocalizationProvider>
       </Box>
       <Box sx={{ display: { xs: 'column', sm: 'row' }, flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'flex-start' }}>
-        {/* Timeline and infinite scroll logic remain unchanged */}
+        {/* Feed of MemoryCards */}
         <Box sx={{ flex: 1 }}>
           {initialLoad && loading && (
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 4 }} aria-busy="true" aria-live="polite">
@@ -226,100 +216,51 @@ const MemoryTimelineContainer: React.FC = () => {
               Error loading memories: {error.message}
             </Alert>
           )}
-          <Timeline position="alternate" sx={{ p: 0 }}>
+          <Stack spacing={3}>
             {(!loading && allMemories.length === 0 && !error) ? (
-              <TimelineItem>
-                <TimelineOppositeContent sx={{ color: 'text.secondary' }}>
-                  &nbsp;
-                </TimelineOppositeContent>
-                <TimelineSeparator>
-                  <TimelineDot color="grey" />
-                  <TimelineConnector />
-                </TimelineSeparator>
-                <TimelineContent>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 4 }} role="status" aria-live="polite">
-                    {userChangedDate || (dateRange[0] && dateRange[1]) ? (
-                      <>
-                        <SentimentDissatisfiedIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} aria-hidden="true" />
-                        <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-                          No memories found for this time period.
-                        </Typography>
-                        <Button variant="outlined" onClick={() => {
-                          setDateRange([minDate ? dayjs(minDate) : null, maxDate ? dayjs(maxDate) : null]);
-                          setUserChangedDate(false);
-                        }}>
-                          Reset Filters
-                        </Button>
-                      </>
-                    ) : (
-                      <>
-                        <SentimentVerySatisfiedIcon sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} aria-hidden="true" />
-                        <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-                          You haven&apos;t added any memories yet.
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                          Start by adding your first memory!
-                        </Typography>
-                        <Button variant="contained" color="primary" href="#memory-entry-form">
-                          Add Memory
-                        </Button>
-                      </>
-                    )}
-                  </Box>
-                </TimelineContent>
-              </TimelineItem>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 4 }} role="status" aria-live="polite">
+                {userChangedDate || (dateRange[0] && dateRange[1]) ? (
+                  <>
+                    <SentimentDissatisfiedIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} aria-hidden="true" />
+                    <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                      No memories found for this time period.
+                    </Typography>
+                    <Button variant="outlined" onClick={() => {
+                      setDateRange([minDate ? dayjs(minDate) : null, maxDate ? dayjs(maxDate) : null]);
+                      setUserChangedDate(false);
+                    }}>
+                      Reset Filters
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <SentimentVerySatisfiedIcon sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} aria-hidden="true" />
+                    <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                      You haven&apos;t added any memories yet.
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      Start by adding your first memory!
+                    </Typography>
+                    <Button variant="contained" color="primary" href="#memory-entry-form">
+                      Add Memory
+                    </Button>
+                  </>
+                )}
+              </Box>
             ) : allMemories.length > 0 ? (
-              allMemories.map((memory, idx) => {
-                // Convert stringified timestamp to number if needed
-                let dateValue: string | number = memory.date;
-                if (typeof memory.date === 'string' && !isNaN(Number(memory.date))) {
-                  dateValue = Number(memory.date);
-                }
-                const dateObj = moment(dateValue);
-                const isValid = dateObj.isValid();
-                const fullDate = isValid ? dateObj.format('YYYY-MM-DD HH:mm:ss') : memory.date;
-                return (
-                  <TimelineItem key={memory.id}>
-                    <TimelineOppositeContent
-                      sx={{
-                        flex: 0.3,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: { xs: 'flex-start', sm: idx % 2 === 0 ? 'flex-end' : 'flex-start' },
-                        justifyContent: 'center',
-                        minWidth: 120,
-                        pr: { sm: idx % 2 === 0 ? 2 : 0 },
-                        pl: { sm: idx % 2 === 1 ? 2 : 0 },
-                        py: 2,
-                        color: 'text.secondary',
-                      }}
-                    >
-                      <Tooltip title={fullDate} arrow>
-                        <Typography variant="subtitle2" sx={{ fontWeight: 600, cursor: 'pointer' }}>
-                          <RelativeTime date={memory.date} />
-                        </Typography>
-                      </Tooltip>
-                      <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>
-                        {memory.title}
-                      </Typography>
-                    </TimelineOppositeContent>
-                    <TimelineSeparator>
-                      <TimelineDot color="primary" />
-                      {idx < allMemories.length - 1 && <TimelineConnector />}
-                    </TimelineSeparator>
-                    <TimelineContent sx={{ py: 2 }}>
-                      <MemoryCard
-                        id={memory.id}
-                        photoUrl={memory.photoUrl}
-                        people={memory.people}
-                        description={memory.description}
-                      />
-                    </TimelineContent>
-                  </TimelineItem>
-                );
-              })
+              allMemories.map((memory) => (
+                <MemoryCard
+                  key={memory.id}
+                  id={memory.id}
+                  title={memory.title}
+                  photoUrl={memory.photoUrl}
+                  people={memory.people}
+                  description={memory.description}
+                  date={memory.date}
+                />
+              ))
             ) : null}
-          </Timeline>
+          </Stack>
           <div ref={loaderRef} />
           {loading && !initialLoad && (
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }} aria-busy="true" aria-live="polite">
