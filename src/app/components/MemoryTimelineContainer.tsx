@@ -20,6 +20,10 @@ import Chip from '@mui/material/Chip';
 import { useQuery, gql } from '@apollo/client';
 import { useSearchParams } from 'next/navigation';
 import SearchMemoriesInput, { type MemorySuggestion } from './SearchMemoriesInput';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const PAGE_SIZE = 5;
 
@@ -53,6 +57,8 @@ const MemoryTimelineContainer: React.FC = () => {
   const { data: peopleData, loading: peopleLoading, error: peopleError } = useQuery<{ people: Person[] }>(GET_ALL_PEOPLE);
   const searchParams = useSearchParams();
   const [searchSelection, setSearchSelection] = useState<MemorySuggestion | null>(null);
+  const [searchText, setSearchText] = useState<string>('');
+  const [selectedMemoryId, setSelectedMemoryId] = useState<string | null>(null);
 
   // Move shortcutOptions here so minDate/maxDate are in scope
   const shortcutOptions: ShortcutOption[] = [
@@ -132,6 +138,7 @@ const MemoryTimelineContainer: React.FC = () => {
           dateFrom: dayjs(dateRange[0]).isValid() ? dayjs(dateRange[0]).toISOString() : undefined,
           dateTo: dayjs(dateRange[1]).isValid() ? dayjs(dateRange[1]).toISOString() : undefined,
           peopleIds: selectedPeople.length > 0 ? selectedPeople.map(p => p.id) : undefined,
+          text: searchText || undefined,
         }
       : { sortBy: 'date', limit: 0, offset: 0 }
   );
@@ -232,14 +239,31 @@ const MemoryTimelineContainer: React.FC = () => {
     setInitialLoad(true);
   }, []);
 
-  // Add effect to log or handle search selection
+  // When a suggestion is selected, update searchText and selectedMemoryId
   useEffect(() => {
     if (searchSelection) {
-      // For now, just log the selected memory suggestion
-      console.log('Selected memory from search:', searchSelection);
-      // In the future: scroll to or highlight the memory in the timeline
+      setSearchText(searchSelection.title);
+      setSelectedMemoryId(searchSelection.id);
+    } else {
+      setSearchText('');
+      setSelectedMemoryId(null);
     }
   }, [searchSelection]);
+
+  // Optionally clear search when filters change
+  useEffect(() => {
+    setSearchSelection(null);
+    setSearchText('');
+    setSelectedMemoryId(null);
+  }, [dateRange[0], dateRange[1], selectedPeople]);
+
+  // Ref map for scrolling
+  const memoryRefs = useRef<{ [id: string]: HTMLDivElement | null }>({});
+  useEffect(() => {
+    if (selectedMemoryId && memoryRefs.current[selectedMemoryId]) {
+      memoryRefs.current[selectedMemoryId]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [selectedMemoryId, allMemories]);
 
   return (
     <Box
@@ -262,85 +286,97 @@ const MemoryTimelineContainer: React.FC = () => {
           placeholder="Type to search..."
         />
       </Box>
-      {/* Date Range Filter */}
-      <Box sx={{ mb: 3 }}>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap' }}>
-            {shortcutOptions.map((shortcut) => (
-              <Button
-                key={shortcut.label}
-                size="small"
-                variant="outlined"
-                onClick={() => handleShortcut(shortcut)}
-              >
-                {shortcut.label}
-              </Button>
-            ))}
-          </Stack>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
-            <DatePicker
-              label="Start Date"
-              value={dateRange[0] && dayjs.isDayjs(dateRange[0]) ? dateRange[0] : null}
-              onChange={(newValue) => {
-                setDateRange([newValue, dateRange[1]]);
-                setUserChangedDate(true);
-              }}
-              slotProps={{ textField: { size: 'small' } }}
-              maxDate={dateRange[1] || undefined}
-            />
-            <DatePicker
-              label="End Date"
-              value={dateRange[1] && dayjs.isDayjs(dateRange[1]) ? dateRange[1] : null}
-              onChange={(newValue) => {
-                setDateRange([dateRange[0], newValue]);
-                setUserChangedDate(true);
-              }}
-              slotProps={{ textField: { size: 'small' } }}
-              minDate={dateRange[0] || undefined}
-            />
-          </Stack>
-        </LocalizationProvider>
-      </Box>
-      {/* People Filter */}
-      <Box sx={{ mb: 3 }}>
-        <Autocomplete
-          multiple
-          options={peopleData?.people || []}
-          value={selectedPeople}
-          onChange={(_e, newValue) => {
-            setSelectedPeople(newValue as Person[]);
-            setAllMemories([]); // Reset timeline when filter changes
-            setOffset(0);
-            setHasMore(true);
-            setInitialLoad(true);
-          }}
-          getOptionLabel={option => option.name + (option.relationship ? ` (${option.relationship})` : '')}
-          isOptionEqualToValue={(option, value) => option.id === value.id}
-          loading={peopleLoading}
-          disabled={peopleLoading || !!peopleError}
-          renderInput={params => (
-            <TextField
-              {...params}
-              label="Filter by People"
-              placeholder="Select people..."
-              error={!!peopleError}
-              helperText={peopleError ? 'Failed to load people' : ''}
-            />
-          )}
-          renderTags={(selected, getTagProps) =>
-            selected.map((option, index) => {
-              const restTagProps = Object.fromEntries(Object.entries(getTagProps({ index })).filter(([k]) => k !== 'key'));
-              return (
-                <Chip
-                  key={option.id}
-                  label={option.name + (option.relationship ? ` (${option.relationship})` : '')}
-                  {...restTagProps}
+      {/* Filter Panel */}
+      <Accordion defaultExpanded sx={{ mb: 3 }} aria-label="Filters">
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="filters-content"
+          id="filters-header"
+        >
+          <Typography variant="h6">Filters</Typography>
+        </AccordionSummary>
+        <AccordionDetails id="filters-content">
+          {/* Date Range Filter */}
+          <Box sx={{ mb: 3 }}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap' }}>
+                {shortcutOptions.map((shortcut) => (
+                  <Button
+                    key={shortcut.label}
+                    size="small"
+                    variant="outlined"
+                    onClick={() => handleShortcut(shortcut)}
+                  >
+                    {shortcut.label}
+                  </Button>
+                ))}
+              </Stack>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                <DatePicker
+                  label="Start Date"
+                  value={dateRange[0] && dayjs.isDayjs(dateRange[0]) ? dateRange[0] : null}
+                  onChange={(newValue) => {
+                    setDateRange([newValue, dateRange[1]]);
+                    setUserChangedDate(true);
+                  }}
+                  slotProps={{ textField: { size: 'small' } }}
+                  maxDate={dateRange[1] || undefined}
                 />
-              );
-            })
-          }
-        />
-      </Box>
+                <DatePicker
+                  label="End Date"
+                  value={dateRange[1] && dayjs.isDayjs(dateRange[1]) ? dateRange[1] : null}
+                  onChange={(newValue) => {
+                    setDateRange([dateRange[0], newValue]);
+                    setUserChangedDate(true);
+                  }}
+                  slotProps={{ textField: { size: 'small' } }}
+                  minDate={dateRange[0] || undefined}
+                />
+              </Stack>
+            </LocalizationProvider>
+          </Box>
+          {/* People Filter */}
+          <Box sx={{ mb: 3 }}>
+            <Autocomplete
+              multiple
+              options={peopleData?.people || []}
+              value={selectedPeople}
+              onChange={(_e, newValue) => {
+                setSelectedPeople(newValue as Person[]);
+                setAllMemories([]); // Reset timeline when filter changes
+                setOffset(0);
+                setHasMore(true);
+                setInitialLoad(true);
+              }}
+              getOptionLabel={option => option.name + (option.relationship ? ` (${option.relationship})` : '')}
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+              loading={peopleLoading}
+              disabled={peopleLoading || !!peopleError}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  label="Filter by People"
+                  placeholder="Select people..."
+                  error={!!peopleError}
+                  helperText={peopleError ? 'Failed to load people' : ''}
+                />
+              )}
+              renderTags={(selected, getTagProps) =>
+                selected.map((option, index) => {
+                  const restTagProps = Object.fromEntries(Object.entries(getTagProps({ index })).filter(([k]) => k !== 'key'));
+                  return (
+                    <Chip
+                      key={option.id}
+                      label={option.name + (option.relationship ? ` (${option.relationship})` : '')}
+                      {...restTagProps}
+                    />
+                  );
+                })
+              }
+            />
+          </Box>
+        </AccordionDetails>
+      </Accordion>
       <Box sx={{ display: { xs: 'column', sm: 'row' }, flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'flex-start' }}>
         {/* Feed of MemoryCards */}
         <Box sx={{ flex: 1, minHeight: 400, height: '70vh' }}>
@@ -392,16 +428,21 @@ const MemoryTimelineContainer: React.FC = () => {
               </Fade>
             ) : allMemories.length > 0 ? (
               allMemories.map((memory) => (
-                <MemoryCard
+                <div
                   key={memory.id}
-                  id={memory.id}
-                  title={memory.title}
-                  photoUrl={memory.photoUrl}
-                  people={memory.people}
-                  description={memory.description}
-                  date={memory.date}
-                  animate={true}
-                />
+                  ref={el => memoryRefs.current[memory.id] = el}
+                >
+                  <MemoryCard
+                    id={memory.id}
+                    title={memory.title}
+                    photoUrl={memory.photoUrl}
+                    people={memory.people}
+                    description={memory.description}
+                    date={memory.date}
+                    animate={true}
+                    selected={selectedMemoryId === memory.id}
+                  />
+                </div>
               ))
             ) : null}
           </Stack>

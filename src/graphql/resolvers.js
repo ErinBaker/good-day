@@ -30,7 +30,7 @@ const resolvers = {
         nextMemoryId: next?.id || null,
       };
     },
-    memories: async (_, { limit = 10, offset = 0, sortBy = 'date', dateFrom, dateTo, peopleIds }) => {
+    memories: async (_, { limit = 10, offset = 0, sortBy = 'date', dateFrom, dateTo, peopleIds, text }) => {
       const where = {};
       if (dateFrom || dateTo) {
         where.date = {};
@@ -43,6 +43,12 @@ const resolvers = {
             id: { in: peopleIds }
           }
         };
+      }
+      if (text && text.trim() !== "") {
+        where.OR = [
+          { title: { contains: text } },
+          { description: { contains: text } }
+        ];
       }
       const orderBy = [
         { [sortBy]: 'desc' },

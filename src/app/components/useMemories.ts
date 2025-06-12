@@ -13,8 +13,8 @@ export interface Memory {
 }
 
 const MEMORIES_QUERY = gql`
-  query Memories($limit: Int, $offset: Int, $sortBy: String, $dateFrom: String, $dateTo: String, $peopleIds: [ID!]) {
-    memories(limit: $limit, offset: $offset, sortBy: $sortBy, dateFrom: $dateFrom, dateTo: $dateTo, peopleIds: $peopleIds) {
+  query Memories($limit: Int, $offset: Int, $sortBy: String, $dateFrom: String, $dateTo: String, $peopleIds: [ID!], $text: String) {
+    memories(limit: $limit, offset: $offset, sortBy: $sortBy, dateFrom: $dateFrom, dateTo: $dateTo, peopleIds: $peopleIds, text: $text) {
       items {
         id
         title
@@ -61,6 +61,7 @@ interface UseMemoriesOptions {
   dateFrom?: string;
   dateTo?: string;
   peopleIds?: string[];
+  text?: string;
 }
 
 export function useMemories(options: UseMemoriesOptions = {}) {
