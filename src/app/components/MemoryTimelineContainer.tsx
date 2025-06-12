@@ -392,9 +392,14 @@ const MemoryTimelineContainer: React.FC = () => {
             </Box>
           )}
           {!hasMore && !loading && allMemories.length > 0 && (
-            <Typography align="center" color="text.secondary" sx={{ my: 2 }}>
-              No more memories to load.
-            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 2 }}>
+              <Typography align="center" color="text.secondary" sx={{ mb: 2 }}>
+                That&rsquo;s all for now — time to make another memory.
+              </Typography>
+              <Button variant="contained" color="primary" href="/create-memory">
+                Create Memory
+              </Button>
+            </Box>
           )}
         </Box>
       </Box>

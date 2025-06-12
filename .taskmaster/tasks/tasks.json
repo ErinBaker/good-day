@@ -495,7 +495,7 @@
       "id": 8,
       "title": "Create Memory Detail View",
       "description": "Implement detailed view for individual memory entries with full context and navigation",
-      "status": "pending",
+      "status": "done",
       "dependencies": [
         5,
         6
@@ -543,7 +543,7 @@
             3
           ],
           "details": "Create edit and delete buttons in an appropriate location (e.g., top-right corner). For edit, implement navigation to the edit form pre-populated with current memory data. For delete, implement a confirmation dialog that warns about permanent deletion and requires explicit confirmation. On confirmed deletion, remove the memory and navigate back to the memory list view.",
-          "status": "in-progress",
+          "status": "done",
           "testStrategy": "Test the edit navigation to ensure form is correctly pre-populated. Test the delete confirmation flow, ensuring cancellation keeps the memory intact and confirmation properly removes it."
         },
         {
@@ -554,7 +554,7 @@
             3
           ],
           "details": "Create previous/next navigation buttons that use the previousMemoryId and nextMemoryId from the GraphQL query. Implement smooth transitions between memories, preserving scroll position where appropriate. Handle edge cases where there is no previous or next memory by disabling the respective navigation button. Update the URL to reflect the current memory ID without requiring a full page reload.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test navigation at the beginning, middle, and end of a memory collection. Verify that the correct memory loads when navigating and that the URL updates appropriately."
         }
       ]
