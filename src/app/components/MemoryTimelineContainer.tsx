@@ -222,6 +222,14 @@ const MemoryTimelineContainer: React.FC = () => {
     }
   }, [peopleData, searchParams]);
 
+  // Always reset memories and offset on mount (or navigation to timeline)
+  useEffect(() => {
+    setAllMemories([]);
+    setOffset(0);
+    setHasMore(true);
+    setInitialLoad(true);
+  }, []);
+
   return (
     <Box
       sx={{
