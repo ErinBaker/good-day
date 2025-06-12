@@ -25,6 +25,7 @@ import Button from '@mui/material/Button';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Container from '@mui/material/Container';
+import CloseIcon from '@mui/icons-material/Close';
 
 const MEMORY_DETAIL_QUERY = gql`
   query Memory($id: ID!) {
@@ -73,6 +74,7 @@ export default function MemoryDetailPage() {
       // TODO: Show error feedback
     },
   });
+  const [lightboxOpen, setLightboxOpen] = React.useState(false);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMenuAnchorEl(event.currentTarget);
@@ -145,11 +147,24 @@ export default function MemoryDetailPage() {
                 background: 'transparent',
                 display: 'block',
                 zIndex: 2,
+                cursor: 'zoom-in',
               }}
+              onClick={() => !imgError && setLightboxOpen(true)}
               onLoad={() => setImgLoaded(true)}
               onError={() => setImgError(true)}
               draggable={false}
+              tabIndex={0}
+              aria-label="Open full image"
             />
+            {/* Lightbox Dialog */}
+            <Dialog open={lightboxOpen} onClose={() => setLightboxOpen(false)} maxWidth={false} PaperProps={{ sx: { bgcolor: 'transparent', boxShadow: 'none', m: 0, p: 0 } }}>
+              <Box sx={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'rgba(0,0,0,0.92)', zIndex: 1300 }}>
+                <IconButton onClick={() => setLightboxOpen(false)} sx={{ position: 'absolute', top: 24, right: 24, color: '#fff', bgcolor: 'rgba(0,0,0,0.4)', '&:hover': { bgcolor: 'rgba(0,0,0,0.7)' }, zIndex: 1400 }} aria-label="Close full image">
+                  <CloseIcon fontSize="large" />
+                </IconButton>
+                <Box component="img" src={memory.photoUrl} alt={memory.title} sx={{ maxWidth: '98vw', maxHeight: '96vh', objectFit: 'contain', boxShadow: 6, borderRadius: 2, outline: 'none' }} draggable={false} />
+              </Box>
+            </Dialog>
           </Box>
           {/* Right: Details */}
           <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, p: { xs: 2, md: 6 }, bgcolor: 'background.paper', position: 'relative', flex: 1, overflowY: 'auto' }}>
