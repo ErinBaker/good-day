@@ -409,7 +409,7 @@
       "id": 7,
       "title": "Develop Memory Timeline View",
       "description": "Create a chronological timeline view for browsing memory entries",
-      "status": "pending",
+      "status": "done",
       "dependencies": [
         5
       ],
@@ -477,7 +477,7 @@
           "description": "Optimize the timeline for performance and add final UI polish",
           "dependencies": [],
           "details": "Optimize the timeline for performance by implementing virtualization for large lists (consider react-window or react-virtualized). Add smooth animations and transitions between states. Implement memoization for expensive components using React.memo. Add final UI polish including hover states, focus indicators, and subtle animations. Ensure the timeline meets all accessibility requirements and performs well on mobile devices.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Conduct performance testing with large datasets to ensure smooth scrolling and responsive UI. Test on various devices and browsers to verify cross-platform compatibility. Perform a final accessibility audit."
         },
         {
@@ -495,7 +495,7 @@
       "id": 8,
       "title": "Create Memory Detail View",
       "description": "Implement detailed view for individual memory entries with full context and navigation",
-      "status": "pending",
+      "status": "done",
       "dependencies": [
         5,
         6
@@ -503,7 +503,61 @@
       "priority": "medium",
       "details": "Develop a memory detail view with the following components:\n\n1. Full-resolution photo display\n2. Memory metadata (title, date, creation time)\n3. Rich text description display\n4. Tagged people with links to person profiles\n5. Edit and delete actions with confirmation\n6. Navigation to previous/next memories\n\nConnect detail view to GraphQL query for retrieving a single memory with all associated data. Implement navigation between related memories. Create edit and delete functionality with proper confirmation dialogs.",
       "testStrategy": "Test memory detail view with various memory data. Verify that all information is displayed correctly. Test navigation between memories. Verify that edit and delete actions work correctly with proper confirmation.",
-      "subtasks": []
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Create GraphQL query for memory detail data",
+          "description": "Implement a GraphQL query to fetch a single memory with all associated data including full-resolution photo, metadata, description, and tagged people.",
+          "dependencies": [],
+          "details": "Define a GraphQL query that retrieves a memory by ID. Include fields for image URL, title, date, creation time, description text, and an array of tagged people with their IDs and names. Also include fields needed for navigation such as previousMemoryId and nextMemoryId.",
+          "status": "done",
+          "testStrategy": "Test the query with mock data to ensure all required fields are returned correctly. Verify error handling for non-existent memory IDs."
+        },
+        {
+          "id": 2,
+          "title": "Implement memory detail UI layout and photo display",
+          "description": "Create the basic layout for the memory detail view with focus on the full-resolution photo display and container structure.",
+          "dependencies": [
+            1
+          ],
+          "details": "Design a responsive layout that prominently displays the memory photo. Implement image loading with placeholders and error states. Ensure the photo can be viewed in full resolution with appropriate zooming capabilities if needed. Structure the container to accommodate all the other components that will be added in subsequent tasks.",
+          "status": "done",
+          "testStrategy": "Test the component with various image sizes and aspect ratios. Verify responsive behavior across different screen sizes."
+        },
+        {
+          "id": 3,
+          "title": "Add metadata, description, and tagged people sections",
+          "description": "Implement the display of memory metadata (title, date, creation time), rich text description, and tagged people with links to their profiles.",
+          "dependencies": [
+            2
+          ],
+          "details": "Create styled components for displaying the memory title, formatted date and time. Implement a rich text renderer for the description that preserves formatting. For tagged people, create a component that displays profile thumbnails with names and makes them clickable links to person profiles.",
+          "status": "done",
+          "testStrategy": "Test with various metadata formats and rich text content. Verify that person links navigate correctly to the appropriate profiles."
+        },
+        {
+          "id": 4,
+          "title": "Implement edit and delete functionality with confirmation",
+          "description": "Add edit and delete actions to the memory detail view with appropriate confirmation dialogs.",
+          "dependencies": [
+            3
+          ],
+          "details": "Create edit and delete buttons in an appropriate location (e.g., top-right corner). For edit, implement navigation to the edit form pre-populated with current memory data. For delete, implement a confirmation dialog that warns about permanent deletion and requires explicit confirmation. On confirmed deletion, remove the memory and navigate back to the memory list view.",
+          "status": "done",
+          "testStrategy": "Test the edit navigation to ensure form is correctly pre-populated. Test the delete confirmation flow, ensuring cancellation keeps the memory intact and confirmation properly removes it."
+        },
+        {
+          "id": 5,
+          "title": "Add navigation between related memories",
+          "description": "Implement navigation controls to move between previous and next memories in the collection.",
+          "dependencies": [
+            3
+          ],
+          "details": "Create previous/next navigation buttons that use the previousMemoryId and nextMemoryId from the GraphQL query. Implement smooth transitions between memories, preserving scroll position where appropriate. Handle edge cases where there is no previous or next memory by disabling the respective navigation button. Update the URL to reflect the current memory ID without requiring a full page reload.",
+          "status": "done",
+          "testStrategy": "Test navigation at the beginning, middle, and end of a memory collection. Verify that the correct memory loads when navigating and that the URL updates appropriately."
+        }
+      ]
     },
     {
       "id": 9,
