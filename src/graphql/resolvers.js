@@ -147,8 +147,15 @@ const resolvers = {
       return memory;
     },
     deleteMemory: async (_, { id }) => {
-      await prisma.memory.delete({ where: { id } });
-      return true;
+      console.log(`[deleteMemory] Attempting to delete memory with id: ${id}`);
+      try {
+        await prisma.memory.delete({ where: { id } });
+        console.log(`[deleteMemory] Successfully deleted memory with id: ${id}`);
+        return true;
+      } catch (error) {
+        console.error(`[deleteMemory] Failed to delete memory with id: ${id}`, error);
+        throw error;
+      }
     },
     createPerson: async (_, { input }) => {
       // Validation: name is required and not empty after trimming
