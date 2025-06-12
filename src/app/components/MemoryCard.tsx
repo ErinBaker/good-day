@@ -10,6 +10,7 @@ import Stack from '@mui/material/Stack';
 import Fade from '@mui/material/Fade';
 import { useTheme } from '@mui/material/styles';
 import Link from 'next/link';
+import RelativeTime from './RelativeTime';
 
 export interface MemoryCardProps {
   id: string;
@@ -99,8 +100,8 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, peo
           </Typography>
           <Stack direction="row" spacing={2} alignItems="center" sx={{ mt: 2, flexWrap: 'wrap' }}>
             {date && (
-              <Typography variant="caption" color="text.secondary">
-                {new Date(date).toLocaleDateString()}
+              <Typography variant="caption" color="text.secondary" title={new Date(date).toISOString()} aria-label={`Date: ${new Date(date).toISOString()}`}>
+                <RelativeTime date={date} />
               </Typography>
             )}
             {people.length > 0 && (

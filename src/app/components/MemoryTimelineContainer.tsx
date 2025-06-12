@@ -25,14 +25,15 @@ const MemoryTimelineContainer: React.FC = () => {
   const { minDate, maxDate } = useMemoryDateRange();
   const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
   const [userChangedDate, setUserChangedDate] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   // Move shortcutOptions here so minDate/maxDate are in scope
-  const shortcutOptions = [
+  const shortcutOptions: ShortcutOption[] = [
     {
       label: 'This Week',
       getValue: () => {
         const today = dayjs();
-        return [today.startOf('week'), today.endOf('week')];
+        return [today.startOf('week'), today.endOf('week')] as [Dayjs, Dayjs];
       },
     },
     {
@@ -40,21 +41,21 @@ const MemoryTimelineContainer: React.FC = () => {
       getValue: () => {
         const today = dayjs();
         const prevWeek = today.subtract(7, 'day');
-        return [prevWeek.startOf('week'), prevWeek.endOf('week')];
+        return [prevWeek.startOf('week'), prevWeek.endOf('week')] as [Dayjs, Dayjs];
       },
     },
     {
       label: 'Last 7 Days',
       getValue: () => {
         const today = dayjs();
-        return [today.subtract(7, 'day'), today];
+        return [today.subtract(7, 'day'), today] as [Dayjs, Dayjs];
       },
     },
     {
       label: 'Current Month',
       getValue: () => {
         const today = dayjs();
-        return [today.startOf('month'), today.endOf('month')];
+        return [today.startOf('month'), today.endOf('month')] as [Dayjs, Dayjs];
       },
     },
     {
@@ -62,21 +63,28 @@ const MemoryTimelineContainer: React.FC = () => {
       getValue: () => {
         const today = dayjs();
         const startOfNextMonth = today.endOf('month').add(1, 'day');
-        return [startOfNextMonth, startOfNextMonth.endOf('month')];
+        return [startOfNextMonth, startOfNextMonth.endOf('month')] as [Dayjs, Dayjs];
       },
     },
     {
       label: 'Reset',
-      getValue: () => [minDate ? dayjs(minDate) : null, maxDate ? dayjs(maxDate) : null],
+      getValue: () => [minDate ? dayjs(minDate) : null, maxDate ? dayjs(maxDate) : null] as [Dayjs | null, Dayjs | null],
     },
   ];
 
   // Set initial dateRange from backend only if user hasn't changed them
   useEffect(() => {
-    if (!userChangedDate && minDate && maxDate) {
+    console.log('minDate:', minDate, 'maxDate:', maxDate, 'hasInitialized:', hasInitialized);
+    if (!hasInitialized && minDate && maxDate) {
       setDateRange([dayjs(minDate), dayjs(maxDate)]);
+      setHasInitialized(true);
+      setUserChangedDate(false);
     }
-  }, [minDate, maxDate, userChangedDate]);
+  }, [minDate, maxDate, hasInitialized]);
+
+  useEffect(() => {
+    console.log('dateRange:', dateRange);
+  }, [dateRange]);
 
   // Reset memories and offset when date filter changes
   useEffect(() => {
@@ -86,16 +94,25 @@ const MemoryTimelineContainer: React.FC = () => {
     setInitialLoad(true);
   }, [dateRange[0], dateRange[1]]);
 
-  const { memories, totalCount, loading, error } = useMemories({
-    sortBy: 'date',
-    limit: PAGE_SIZE,
-    offset,
-    dateFrom: dateRange[0] ? dateRange[0].toISOString() : undefined,
-    dateTo: dateRange[1] ? dateRange[1].toISOString() : undefined,
-  });
+  // Only fetch if both dates are set
+  const shouldFetch = dateRange[0] && dateRange[1];
+  const { memories, totalCount, loading, error } = useMemories(
+    shouldFetch
+      ? {
+          sortBy: 'date',
+          limit: PAGE_SIZE,
+          offset,
+          dateFrom: dayjs(dateRange[0]).isValid() ? dayjs(dateRange[0]).toISOString() : undefined,
+          dateTo: dayjs(dateRange[1]).isValid() ? dayjs(dateRange[1]).toISOString() : undefined,
+        }
+      : { sortBy: 'date', limit: 0, offset: 0 }
+  );
 
-  // Append new memories to the list
   useEffect(() => {
+    if (!shouldFetch) {
+      setHasMore(false);
+      return;
+    }
     console.log('[InfiniteScroll] offset:', offset, 'memories.length:', memories.length, 'allMemories.length:', allMemories.length, 'hasMore:', hasMore);
     if (memories.length > 0) {
       setAllMemories((prev) => {
@@ -107,9 +124,12 @@ const MemoryTimelineContainer: React.FC = () => {
         if (newMemories.length >= totalCount) setHasMore(false);
         return newMemories;
       });
+    } else if (!loading && offset > 0) {
+      // If no new memories are returned, stop infinite scroll
+      setHasMore(false);
     }
     if (initialLoad && !loading) setInitialLoad(false);
-  }, [memories, offset, loading, initialLoad, totalCount]);
+  }, [memories, offset, loading, initialLoad, totalCount, shouldFetch]);
 
   // Intersection Observer for infinite scroll
   const loaderRef = useRef<HTMLDivElement | null>(null);
@@ -147,6 +167,24 @@ const MemoryTimelineContainer: React.FC = () => {
     dateRange[1] ? dateRange[1].valueOf() : null
   ]);
 
+  type ShortcutOption = { label: string; getValue: () => [Dayjs | null, Dayjs | null] };
+  // Handler for shortcut buttons
+  const handleShortcut = (shortcut: ShortcutOption) => {
+    if (shortcut.label === 'Reset') {
+      if (minDate && maxDate) {
+        setDateRange([dayjs(minDate), dayjs(maxDate)]);
+        setUserChangedDate(false);
+        setHasInitialized(true);
+      } else {
+        setDateRange([null, null]);
+        setUserChangedDate(false);
+      }
+    } else {
+      setDateRange(shortcut.getValue());
+      setUserChangedDate(true);
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -168,10 +206,7 @@ const MemoryTimelineContainer: React.FC = () => {
                 key={shortcut.label}
                 size="small"
                 variant="outlined"
-                onClick={() => {
-                  setDateRange(shortcut.getValue() as [Dayjs | null, Dayjs | null]);
-                  setUserChangedDate(true);
-                }}
+                onClick={() => handleShortcut(shortcut)}
               >
                 {shortcut.label}
               </Button>
@@ -180,7 +215,7 @@ const MemoryTimelineContainer: React.FC = () => {
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
             <DatePicker
               label="Start Date"
-              value={dateRange[0]}
+              value={dateRange[0] && dayjs.isDayjs(dateRange[0]) ? dateRange[0] : null}
               onChange={(newValue) => {
                 setDateRange([newValue, dateRange[1]]);
                 setUserChangedDate(true);
@@ -190,7 +225,7 @@ const MemoryTimelineContainer: React.FC = () => {
             />
             <DatePicker
               label="End Date"
-              value={dateRange[1]}
+              value={dateRange[1] && dayjs.isDayjs(dateRange[1]) ? dateRange[1] : null}
               onChange={(newValue) => {
                 setDateRange([dateRange[0], newValue]);
                 setUserChangedDate(true);

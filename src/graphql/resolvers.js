@@ -33,8 +33,8 @@ const resolvers = {
       const where = {};
       if (dateFrom || dateTo) {
         where.date = {};
-        if (dateFrom) where.date.gte = new Date(dateFrom);
-        if (dateTo) where.date.lte = new Date(dateTo);
+        if (dateFrom) where.date.gte = dateFrom;
+        if (dateTo) where.date.lte = dateTo;
       }
       if (peopleIds && peopleIds.length > 0) {
         where.people = {
@@ -81,9 +81,17 @@ const resolvers = {
     memoryDateRange: async () => {
       const min = await prisma.memory.findFirst({ orderBy: { date: 'asc' }, select: { date: true } });
       const max = await prisma.memory.findFirst({ orderBy: { date: 'desc' }, select: { date: true } });
+
+      function toIso(val) {
+        if (!val) return null;
+        if (typeof val === 'string') return val;
+        if (val instanceof Date) return val.toISOString();
+        return null;
+      }
+
       return {
-        minDate: min?.date ? min.date.toISOString() : null,
-        maxDate: max?.date ? max.date.toISOString() : null,
+        minDate: toIso(min?.date),
+        maxDate: toIso(max?.date),
       };
     },
   },

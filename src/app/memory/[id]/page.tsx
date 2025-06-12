@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Skeleton from "@mui/material/Skeleton";
+import RelativeTime from '../../components/RelativeTime';
 
 const MEMORY_DETAIL_QUERY = gql`
   query Memory($id: ID!) {
@@ -97,8 +98,12 @@ export default function MemoryDetailPage() {
           </Box>
           {/* Right: Details */}
           <Box sx={{ width: { xs: '100%', md: '50%' }, height: { xs: 'auto', md: '100vh' }, overflowY: 'auto', p: { xs: 2, md: 6 }, bgcolor: 'background.paper' }}>
-            <Typography variant="h4" sx={{ mb: 2 }}>
+            <Typography variant="h3" sx={{ mb: 1, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.1 }}>
               {memory.title}
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 3 }} title={memory.date ? new Date(memory.date).toISOString() : ''} aria-label={memory.date ? `Date: ${new Date(memory.date).toISOString()}` : ''}>
+              {memory.date && <RelativeTime date={memory.date} />}<br />
+              <span style={{ fontSize: '0.9em', color: '#888' }}>{memory.date ? new Date(memory.date).toISOString() : ''}</span>
             </Typography>
             <Typography variant="body1" sx={{ mb: 2 }}>
               {memory.description}
