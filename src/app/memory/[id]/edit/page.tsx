@@ -59,6 +59,8 @@ export default function EditMemoryPage() {
   const [description, setDescription] = useState("");
   const [selectedPeople, setSelectedPeople] = useState<Person[]>([]);
   const [photoUrl, setPhotoUrl] = useState("");
+  const [originalPhotoUrl, setOriginalPhotoUrl] = useState<string>("");
+  const [photoRemoved, setPhotoRemoved] = useState(false);
   const [detailsError, setDetailsError] = useState("");
   const [saving, setSaving] = useState(false);
   const [alert, setAlert] = useState<{ message: string; severity: 'success' | 'error' | 'info' | 'warning'; open: boolean }>({ message: '', severity: 'success', open: false });
@@ -70,6 +72,8 @@ export default function EditMemoryPage() {
       setDescription(memory.description || "");
       setSelectedPeople(memory.people || []);
       setPhotoUrl(memory.photoUrl || "");
+      setOriginalPhotoUrl(memory.photoUrl || "");
+      setPhotoRemoved(false);
     }
   }, [memory]);
 
@@ -86,6 +90,11 @@ export default function EditMemoryPage() {
     ) {
       setPhotoUrl(`/api/photos/${(result as { folder: string }).folder}/${(result as { baseFilename: string }).baseFilename}`);
     }
+  };
+
+  const handleRemovePhoto = () => {
+    setPhotoUrl("");
+    setPhotoRemoved(true);
   };
 
   const handleSubmit = async (e: SyntheticEvent) => {
@@ -123,6 +132,17 @@ export default function EditMemoryPage() {
     <Box sx={{ maxWidth: 600, mx: 'auto', py: 4, px: { xs: 1, sm: 2 } }}>
       <Typography variant="h4" component="h1" gutterBottom>Edit Memory</Typography>
       <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        {/* Photo Preview and Remove Button */}
+        {photoUrl ? (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <img src={photoUrl} alt="Current" style={{ maxWidth: 120, borderRadius: 8, border: '1px solid #ccc' }} />
+            <Button variant="outlined" color="error" onClick={handleRemovePhoto} disabled={saving}>
+              Remove Photo
+            </Button>
+          </Box>
+        ) : (
+          <Alert severity="warning">You must upload a new photo before saving.</Alert>
+        )}
         <FileUpload onFileSelect={handleFileSelect} />
         <input
           type="text"
@@ -153,7 +173,7 @@ export default function EditMemoryPage() {
         <PersonSelection value={selectedPeople} onChange={setSelectedPeople} />
         {detailsError && <Alert severity="error">{detailsError}</Alert>}
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-          <Button type="submit" variant="contained" color="primary" disabled={saving}>
+          <Button type="submit" variant="contained" color="primary" disabled={saving || !photoUrl}>
             {saving ? <CircularProgress size={18} /> : 'Save Changes'}
           </Button>
           <Button variant="outlined" color="secondary" onClick={() => router.push(`/memory/${id}`)} disabled={saving}>

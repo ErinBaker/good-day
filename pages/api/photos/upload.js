@@ -107,7 +107,8 @@ export default function handler(req, res) {
     const base = path.basename(req.file.filename, ext);
     const folder = req._uploadFolder;
     const baseFilename = req._baseFilename;
-    const originalName = `${base}_original${ext}`;
+    // Save original as base filename (no _original)
+    const originalName = `${base}${ext}`;
     const mediumName = `${base}_medium${ext}`;
     const thumbName = `${base}_thumbnail${ext}`;
     const originalPath = path.join('uploads', folder, originalName);
@@ -116,7 +117,7 @@ export default function handler(req, res) {
     const format = req.file.mimetype === 'image/png' ? 'png' : req.file.mimetype === 'image/webp' ? 'webp' : 'jpeg';
     const qualityOpts = format === 'png' ? {} : { quality: 80 };
     try {
-      // Original (max 2000x2000)
+      // Original (max 2000x2000) - save as base filename
       await sharp(req.file.path)
         .resize({ width: 2000, height: 2000, fit: 'inside' })
         [format](qualityOpts)
@@ -159,12 +160,13 @@ export default function handler(req, res) {
         medium: mediumName,
         thumbnail: thumbName
       });
-    } catch {
+    } catch (e) {
+      console.error('Error during image processing:', e);
       if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
       if (fs.existsSync(originalPath)) fs.unlinkSync(originalPath);
       if (fs.existsSync(mediumPath)) fs.unlinkSync(mediumPath);
       if (fs.existsSync(thumbPath)) fs.unlinkSync(thumbPath);
-      res.status(500).json({ error: 'Image processing failed.' });
+      res.status(500).json({ error: 'Image processing failed.', details: e && e.message ? e.message : String(e) });
     }
   });
 } 
