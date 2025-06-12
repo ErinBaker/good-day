@@ -273,6 +273,8 @@ const MemoryTimelineContainer: React.FC = () => {
         mx: 'auto',
         py: 4,
         px: { xs: 1, sm: 2 },
+        bgcolor: 'background.paper',
+        color: 'text.primary',
       }}
       role="region"
       aria-label="Memory timeline"
