@@ -256,6 +256,8 @@ const resolvers = {
         where: { memoryId: parent.id },
       });
     },
+    createdAt: (parent) => parent.createdAt instanceof Date ? parent.createdAt.toISOString() : parent.createdAt,
+    updatedAt: (parent) => parent.updatedAt instanceof Date ? parent.updatedAt.toISOString() : parent.updatedAt,
   },
   Person: {
     memories: async (parent) => {
