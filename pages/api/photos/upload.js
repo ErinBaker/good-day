@@ -27,10 +27,12 @@ const storage = multer.diskStorage({
     cb(null, fullPath);
   },
   filename: function (req, file, cb) {
+    // Always use a unique temp name for the upload
     const uuid = uuidv4();
     const ext = path.extname(file.originalname);
-    req._baseFilename = uuid + ext;
-    cb(null, uuid + ext);
+    const tempName = uuid + '_upload' + ext;
+    req._baseFilename = uuid + ext; // The final base filename (no _upload)
+    cb(null, tempName);
   }
 });
 
@@ -104,7 +106,7 @@ export default function handler(req, res) {
       return res.status(400).json({ error: 'Could not validate file content.' });
     }
     const ext = path.extname(req.file.filename);
-    const base = path.basename(req.file.filename, ext);
+    const base = path.basename(req._baseFilename, ext); // Use the final base filename (no _upload)
     const folder = req._uploadFolder;
     const baseFilename = req._baseFilename;
     // Save original as base filename (no _original)
@@ -132,7 +134,7 @@ export default function handler(req, res) {
         .resize({ width: 200, height: 200, fit: 'inside' })
         [format](qualityOpts)
         .toFile(thumbPath);
-      // Remove the original upload
+      // Remove the temp upload
       fs.unlinkSync(req.file.path);
       // Set file permissions to 0640
       [originalPath, mediumPath, thumbPath].forEach(p => {
