@@ -1,6 +1,6 @@
 # Task ID: 9
 # Title: Implement Person Profile View
-# Status: pending
+# Status: done
 # Dependencies: 6, 7
 # Priority: medium
 # Description: Create person profile pages showing all associated memories in chronological order
@@ -19,7 +19,7 @@ Connect person profile to GraphQL query for retrieving a person with all associa
 Test person profile with various numbers of associated memories. Verify that memories are displayed in chronological order. Test edit and delete functionality with proper confirmation. Verify that statistics are calculated and displayed correctly.
 
 # Subtasks:
-## 1. Create Person Profile Layout with Avatar and Metadata [pending]
+## 1. Create Person Profile Layout with Avatar and Metadata [done]
 ### Dependencies: None
 ### Description: Implement the basic layout for the person profile view, including the person's avatar, name, and relevant metadata.
 ### Details:
@@ -43,7 +43,7 @@ Create an EditPersonForm component with fields for all editable person attribute
 ### Details:
 Add a delete button to the person profile. Implement a confirmation dialog that explains the consequences of deletion (e.g., memories will remain but person associations will be removed). Show the number of affected memories in the confirmation. Implement the GraphQL mutation to delete a person. After successful deletion, redirect to the appropriate view (e.g., people list). Handle errors gracefully.
 
-## 5. Create Memory Statistics Section [pending]
+## 5. Create Memory Statistics Section [done]
 ### Dependencies: None
 ### Description: Implement a statistics section showing memory frequency, date ranges, and other relevant metrics for the person.
 ### Details:

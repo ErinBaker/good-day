@@ -563,7 +563,7 @@
       "id": 9,
       "title": "Implement Person Profile View",
       "description": "Create person profile pages showing all associated memories in chronological order",
-      "status": "pending",
+      "status": "done",
       "dependencies": [
         6,
         7
@@ -571,7 +571,53 @@
       "priority": "medium",
       "details": "Develop person profile views with the following features:\n\n1. Person information display\n2. Chronological list of associated memories\n3. Memory cards similar to timeline view\n4. Edit and delete person actions with confirmation\n5. Statistics about memory frequency and date ranges\n\nConnect person profile to GraphQL query for retrieving a person with all associated memories. Implement memory filtering and sorting within the person context. Create edit and delete functionality with proper confirmation and impact assessment.",
       "testStrategy": "Test person profile with various numbers of associated memories. Verify that memories are displayed in chronological order. Test edit and delete functionality with proper confirmation. Verify that statistics are calculated and displayed correctly.",
-      "subtasks": []
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Create Person Profile Layout with Avatar and Metadata",
+          "description": "Implement the basic layout for the person profile view, including the person's avatar, name, and relevant metadata.",
+          "dependencies": [],
+          "details": "Create a new PersonProfileView component that displays the person's avatar, name, and metadata (e.g., relationship, birthday, contact info). Implement the GraphQL query to fetch person data. Use a responsive layout with appropriate spacing and typography. Include a header section with the person's name and a back button to return to the previous view.",
+          "status": "done",
+          "testStrategy": "Write unit tests for the PersonProfileView component, mocking the GraphQL response. Test responsive behavior at different viewport sizes."
+        },
+        {
+          "id": 2,
+          "title": "Implement Chronological Memory List for Person",
+          "description": "Display all memories associated with the person in chronological order, using memory cards similar to the timeline view.",
+          "dependencies": [],
+          "details": "Extend the GraphQL query to include all memories associated with the person. Implement a chronological list component that renders memory cards for each memory. Include date headers to group memories by time period. Add sorting controls (newest/oldest first). Reuse the existing memory card component from the timeline view, adapting it as needed for the person context.",
+          "status": "done",
+          "testStrategy": "Test the sorting functionality and verify that memories appear in the correct order. Test with various memory counts to ensure performance."
+        },
+        {
+          "id": 3,
+          "title": "Add Edit Person Functionality",
+          "description": "Implement the ability to edit a person's information with proper form validation and error handling.",
+          "dependencies": [],
+          "details": "Create an EditPersonForm component with fields for all editable person attributes. Implement form validation for required fields and data formats. Add an edit button to the person profile that opens the form in a modal or navigates to an edit view. Implement the GraphQL mutation to update person data. Show appropriate loading states and success/error messages after submission.",
+          "status": "done",
+          "testStrategy": "Test form validation logic, successful submissions, and error handling. Verify that the UI updates correctly after a successful edit."
+        },
+        {
+          "id": 4,
+          "title": "Implement Delete Person Functionality with Confirmation",
+          "description": "Add the ability to delete a person with proper confirmation dialog and impact assessment.",
+          "dependencies": [],
+          "details": "Add a delete button to the person profile. Implement a confirmation dialog that explains the consequences of deletion (e.g., memories will remain but person associations will be removed). Show the number of affected memories in the confirmation. Implement the GraphQL mutation to delete a person. After successful deletion, redirect to the appropriate view (e.g., people list). Handle errors gracefully.",
+          "status": "done",
+          "testStrategy": "Test the confirmation flow, successful deletion, and error cases. Verify that the impact assessment correctly shows the number of affected memories."
+        },
+        {
+          "id": 5,
+          "title": "Create Memory Statistics Section",
+          "description": "Implement a statistics section showing memory frequency, date ranges, and other relevant metrics for the person.",
+          "dependencies": [],
+          "details": "Create a PersonStatistics component that calculates and displays metrics such as: total number of memories, first and last memory dates, memory frequency over time (e.g., memories per year/month), and common co-occurring people. Use appropriate data visualizations (charts, graphs) for frequency data. Implement caching to avoid recalculating statistics on every render. Add a toggle to show/hide detailed statistics.",
+          "status": "done",
+          "testStrategy": "Test the statistics calculations with various memory datasets. Verify that visualizations render correctly and are accessible. Test edge cases like persons with no memories or memories all on the same date."
+        }
+      ]
     },
     {
       "id": 10,

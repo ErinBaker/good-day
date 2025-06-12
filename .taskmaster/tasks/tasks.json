@@ -563,7 +563,7 @@
       "id": 9,
       "title": "Implement Person Profile View",
       "description": "Create person profile pages showing all associated memories in chronological order",
-      "status": "pending",
+      "status": "done",
       "dependencies": [
         6,
         7
@@ -578,7 +578,7 @@
           "description": "Implement the basic layout for the person profile view, including the person's avatar, name, and relevant metadata.",
           "dependencies": [],
           "details": "Create a new PersonProfileView component that displays the person's avatar, name, and metadata (e.g., relationship, birthday, contact info). Implement the GraphQL query to fetch person data. Use a responsive layout with appropriate spacing and typography. Include a header section with the person's name and a back button to return to the previous view.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Write unit tests for the PersonProfileView component, mocking the GraphQL response. Test responsive behavior at different viewport sizes."
         },
         {
@@ -614,7 +614,7 @@
           "description": "Implement a statistics section showing memory frequency, date ranges, and other relevant metrics for the person.",
           "dependencies": [],
           "details": "Create a PersonStatistics component that calculates and displays metrics such as: total number of memories, first and last memory dates, memory frequency over time (e.g., memories per year/month), and common co-occurring people. Use appropriate data visualizations (charts, graphs) for frequency data. Implement caching to avoid recalculating statistics on every render. Add a toggle to show/hide detailed statistics.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test the statistics calculations with various memory datasets. Verify that visualizations render correctly and are accessible. Test edge cases like persons with no memories or memories all on the same date."
         }
       ]
@@ -631,7 +631,63 @@
       "priority": "medium",
       "details": "Create a search system with the following capabilities:\n\n1. Search input with auto-suggestions\n2. Results display with highlighting of matched terms\n3. Filtering by date ranges\n4. Filtering by tagged people\n5. Combined filtering with multiple criteria\n\nImplement GraphQL query for searching memories with various parameters. Create a search interface with real-time feedback. Implement filtering controls for refining search results.",
       "testStrategy": "Test search with various keywords and combinations. Verify that results are relevant and properly ranked. Test filtering with different criteria. Verify that combined filtering works correctly with multiple parameters.",
-      "subtasks": []
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Implement GraphQL Search Query API",
+          "description": "Create GraphQL query endpoint for searching memories with various parameters including text search, date ranges, and tagged people filters.",
+          "dependencies": [],
+          "details": "Define a new GraphQL query called `searchMemories` that accepts parameters for text search, date ranges, and people IDs. Implement resolver functions that construct database queries using these parameters. Ensure the query returns paginated results with proper metadata. Include highlighting information for matched terms in the response.",
+          "status": "pending",
+          "testStrategy": "Write unit tests for the resolver functions with various parameter combinations. Create integration tests that verify the query returns expected results for different search scenarios."
+        },
+        {
+          "id": 2,
+          "title": "Develop Backend Search Logic",
+          "description": "Implement the backend logic for searching memories by title, description, or tagged people, with support for filtering by date ranges and multiple criteria.",
+          "dependencies": [
+            1
+          ],
+          "details": "Create a search service that handles text search across memory titles and descriptions. Implement efficient database queries that support partial matching and relevance sorting. Add logic for filtering by date ranges and tagged people. Optimize queries for performance with appropriate indexes. Implement highlighting of matched terms in the search results.",
+          "status": "pending",
+          "testStrategy": "Create unit tests for the search service with various search terms and filter combinations. Benchmark query performance with large datasets."
+        },
+        {
+          "id": 3,
+          "title": "Build Search Input Component with Auto-suggestions",
+          "description": "Create a React component for the search input field with auto-suggestion functionality that provides real-time feedback as users type.",
+          "dependencies": [
+            1
+          ],
+          "details": "Develop a search input component using React and MUI v7. Implement debounced input handling to prevent excessive API calls. Create an auto-suggestion dropdown that displays potential matches as users type. Handle keyboard navigation within suggestions. Style the component according to the project's UI standards. Connect the component to the GraphQL API to fetch suggestions.",
+          "status": "pending",
+          "testStrategy": "Write unit tests for the component's rendering and state management. Create integration tests for the auto-suggestion functionality with mock API responses."
+        },
+        {
+          "id": 4,
+          "title": "Implement Filtering Controls UI",
+          "description": "Create UI components for filtering search results by date ranges, tagged people, and combined criteria.",
+          "dependencies": [
+            3
+          ],
+          "details": "Develop filter control components using React and MUI v7, including date range pickers and people selection dropdowns. Implement state management for active filters. Create a filter panel that can be expanded/collapsed. Ensure the UI is responsive and follows accessibility guidelines. Connect filter controls to the search component to update results in real-time.",
+          "status": "pending",
+          "testStrategy": "Test filter components individually and in combination. Verify that filter state is correctly maintained and applied to search results."
+        },
+        {
+          "id": 5,
+          "title": "Integrate Search and Filtering with Timeline View",
+          "description": "Integrate the search and filtering system with the existing memory timeline view, ensuring seamless user experience and consistent UI.",
+          "dependencies": [
+            2,
+            3,
+            4
+          ],
+          "details": "Integrate the search input and filter controls into the timeline view. Implement state management to synchronize search/filter parameters with the timeline display. Create a results display component that highlights matched terms in memory cards. Add loading states and error handling for search operations. Ensure the timeline updates dynamically as search and filter parameters change. Implement empty state handling for no search results.",
+          "status": "pending",
+          "testStrategy": "Perform end-to-end testing of the complete search and filtering system. Test edge cases like empty results, partial matches, and filter combinations. Conduct usability testing to ensure the interface is intuitive."
+        }
+      ]
     },
     {
       "id": 11,
