@@ -3,6 +3,7 @@ const prisma = new PrismaClient();
 
 /**
  * Search memories with text, date range, people, pagination, and highlighting.
+ * NOTE: Search is case-sensitive in SQLite (dev/local) because Prisma does not support 'mode: insensitive' for SQLite.
  * @param {Object} params
  * @param {string} params.text
  * @param {string} params.dateFrom
@@ -28,9 +29,23 @@ export async function searchMemories({ text, dateFrom, dateTo, peopleIds, limit 
   }
   if (text && text.trim() !== "") {
     where.OR = [
-      { title: { contains: text, mode: 'insensitive' } },
-      { description: { contains: text, mode: 'insensitive' } }
+      { title: { contains: text } },
+      { description: { contains: text } }
     ];
+  }
+  function stripMode(obj) {
+    if (Array.isArray(obj)) {
+      return obj.map(stripMode);
+    }
+    if (obj && typeof obj === 'object') {
+      const newObj = {};
+      for (const key in obj) {
+        if (key === 'mode') continue;
+        newObj[key] = stripMode(obj[key]);
+      }
+      return newObj;
+    }
+    return obj;
   }
   const [items, totalCount] = await Promise.all([
     prisma.memory.findMany({
@@ -40,7 +55,7 @@ export async function searchMemories({ text, dateFrom, dateTo, peopleIds, limit 
       orderBy: [{ date: 'desc' }, { id: 'asc' }],
       include: { people: true, photos: true },
     }),
-    prisma.memory.count({ where }),
+    prisma.memory.count({ where: stripMode(where) }),
   ]);
   // Highlight logic
   function getHighlights(memory, text) {

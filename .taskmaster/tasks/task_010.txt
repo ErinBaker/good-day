@@ -25,7 +25,7 @@ Test search with various keywords and combinations. Verify that results are rele
 ### Details:
 Define a new GraphQL query called `searchMemories` that accepts parameters for text search, date ranges, and people IDs. Implement resolver functions that construct database queries using these parameters. Ensure the query returns paginated results with proper metadata. Include highlighting information for matched terms in the response.
 
-## 2. Develop Backend Search Logic [pending]
+## 2. Develop Backend Search Logic [done]
 ### Dependencies: 10.1
 ### Description: Implement the backend logic for searching memories by title, description, or tagged people, with support for filtering by date ranges and multiple criteria.
 ### Details:

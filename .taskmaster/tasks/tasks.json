@@ -649,7 +649,7 @@
             1
           ],
           "details": "Create a search service that handles text search across memory titles and descriptions. Implement efficient database queries that support partial matching and relevance sorting. Add logic for filtering by date ranges and tagged people. Optimize queries for performance with appropriate indexes. Implement highlighting of matched terms in the search results.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Create unit tests for the search service with various search terms and filter combinations. Benchmark query performance with large datasets."
         },
         {
