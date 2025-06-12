@@ -532,7 +532,7 @@
             2
           ],
           "details": "Create styled components for displaying the memory title, formatted date and time. Implement a rich text renderer for the description that preserves formatting. For tagged people, create a component that displays profile thumbnails with names and makes them clickable links to person profiles.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test with various metadata formats and rich text content. Verify that person links navigate correctly to the appropriate profiles."
         },
         {

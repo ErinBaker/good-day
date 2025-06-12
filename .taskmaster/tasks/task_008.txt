@@ -32,7 +32,7 @@ Define a GraphQL query that retrieves a memory by ID. Include fields for image U
 ### Details:
 Design a responsive layout that prominently displays the memory photo. Implement image loading with placeholders and error states. Ensure the photo can be viewed in full resolution with appropriate zooming capabilities if needed. Structure the container to accommodate all the other components that will be added in subsequent tasks.
 
-## 3. Add metadata, description, and tagged people sections [pending]
+## 3. Add metadata, description, and tagged people sections [done]
 ### Dependencies: 8.2
 ### Description: Implement the display of memory metadata (title, date, creation time), rich text description, and tagged people with links to their profiles.
 ### Details:

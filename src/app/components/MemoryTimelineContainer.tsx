@@ -18,6 +18,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Chip from '@mui/material/Chip';
 import { useQuery, gql } from '@apollo/client';
+import { useSearchParams } from 'next/navigation';
 
 const PAGE_SIZE = 5;
 
@@ -49,6 +50,7 @@ const MemoryTimelineContainer: React.FC = () => {
   const [hasInitialized, setHasInitialized] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState<Person[]>([]);
   const { data: peopleData, loading: peopleLoading, error: peopleError } = useQuery<{ people: Person[] }>(GET_ALL_PEOPLE);
+  const searchParams = useSearchParams();
 
   // Move shortcutOptions here so minDate/maxDate are in scope
   const shortcutOptions: ShortcutOption[] = [
@@ -208,6 +210,17 @@ const MemoryTimelineContainer: React.FC = () => {
       setUserChangedDate(true);
     }
   };
+
+  // Pre-select people from URL query param on mount or when peopleData loads
+  useEffect(() => {
+    if (!peopleData?.people || !searchParams) return;
+    const peopleParam = searchParams.get('people');
+    if (peopleParam) {
+      const ids = peopleParam.split(',');
+      const selected = peopleData.people.filter(p => ids.includes(p.id));
+      setSelectedPeople(selected);
+    }
+  }, [peopleData, searchParams]);
 
   return (
     <Box

@@ -109,7 +109,7 @@ export default function MemoryDetailPage() {
               {memory.title}
             </Typography>
             <Box sx={{ mb: 2 }}>
-              <Typography variant="h4" component="body1" sx={{ mb: 1 }}>
+              <Typography variant="h4" component="div" sx={{ mb: 1 }}>
                 {memory.description || <span style={{ color: '#aaa' }}>You didn&apos;t add a note, but the feeling lingers.</span>}
               </Typography>
             </Box>
@@ -123,7 +123,10 @@ export default function MemoryDetailPage() {
                       avatar={<Avatar sx={{ width: 24, height: 24 }}>{person.name[0]}</Avatar>}
                       label={person.relationship ? `${person.name} (${person.relationship})` : person.name}
                       variant="outlined"
-                      sx={{ fontSize: '1em', height: 32 }}
+                      sx={{ fontSize: '1em', height: 32, cursor: 'pointer' }}
+                      component="a"
+                      href={`/people/${person.id}`}
+                      clickable
                     />
                   ))}
                 </Box>
