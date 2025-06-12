@@ -9,6 +9,7 @@ import TimeSeriesChart from '../components/statistics/TimeSeriesChart';
 import TaggedPersonsChart from '../components/statistics/TaggedPersonsChart';
 import DateCoverageChart from '../components/statistics/DateCoverageChart';
 import PatternVisualization from '../components/statistics/PatternVisualization';
+import TaggedPeopleChordChart from '../components/statistics/TaggedPeopleChordChart';
 
 const StatisticsDashboardPage: React.FC = () => {
   return (
@@ -26,6 +27,7 @@ const StatisticsDashboardPage: React.FC = () => {
           <Box flex={1} minWidth={240}><DateCoverageChart /></Box>
         </Box>
         <PatternVisualization />
+        <TaggedPeopleChordChart />
       </Stack>
     </Container>
   );
