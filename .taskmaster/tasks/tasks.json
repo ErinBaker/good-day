@@ -543,7 +543,7 @@
             3
           ],
           "details": "Create edit and delete buttons in an appropriate location (e.g., top-right corner). For edit, implement navigation to the edit form pre-populated with current memory data. For delete, implement a confirmation dialog that warns about permanent deletion and requires explicit confirmation. On confirmed deletion, remove the memory and navigate back to the memory list view.",
-          "status": "pending",
+          "status": "in-progress",
           "testStrategy": "Test the edit navigation to ensure form is correctly pre-populated. Test the delete confirmation flow, ensuring cancellation keeps the memory intact and confirmation properly removes it."
         },
         {

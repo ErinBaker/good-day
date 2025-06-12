@@ -38,7 +38,7 @@ Design a responsive layout that prominently displays the memory photo. Implement
 ### Details:
 Create styled components for displaying the memory title, formatted date and time. Implement a rich text renderer for the description that preserves formatting. For tagged people, create a component that displays profile thumbnails with names and makes them clickable links to person profiles.
 
-## 4. Implement edit and delete functionality with confirmation [pending]
+## 4. Implement edit and delete functionality with confirmation [in-progress]
 ### Dependencies: 8.3
 ### Description: Add edit and delete actions to the memory detail view with appropriate confirmation dialogs.
 ### Details:
