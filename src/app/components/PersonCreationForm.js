@@ -2,13 +2,24 @@
 
 import React, { useState } from 'react';
 import { Box, TextField, Button, Alert, CircularProgress, Typography } from '@mui/material';
+import { gql, useMutation } from '@apollo/client';
 
-export default function PersonCreationForm() {
+const CREATE_PERSON = gql`
+  mutation CreatePerson($input: PersonInput!) {
+    createPerson(input: $input) {
+      id
+      name
+      relationship
+    }
+  }
+`;
+
+export default function PersonCreationForm({ onCreated }) {
   const [name, setName] = useState('');
   const [relationship, setRelationship] = useState('');
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [createPerson, { loading }] = useMutation(CREATE_PERSON);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,28 +30,19 @@ export default function PersonCreationForm() {
       setError('Name is required.');
       return;
     }
-    setLoading(true);
     try {
-      const res = await fetch('/api/graphql', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          query: `mutation CreatePerson($input: PersonInput!) { createPerson(input: $input) { id name relationship } }`,
-          variables: { input: { name: trimmedName, relationship: relationship || null } },
-        }),
+      const { data } = await createPerson({
+        variables: { input: { name: trimmedName, relationship: relationship || null } },
+        // Optionally, refetchQueries or update cache here
       });
-      const json = await res.json();
-      if (json.errors && json.errors.length > 0) {
-        setError(json.errors[0].message);
-      } else {
+      if (data?.createPerson) {
         setSuccess('Person created successfully!');
         setName('');
         setRelationship('');
+        if (onCreated) onCreated(data.createPerson);
       }
-    } catch {
-      setError('An unexpected error occurred.');
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      setError(err.message || 'An unexpected error occurred.');
     }
   };
 

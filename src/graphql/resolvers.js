@@ -78,8 +78,6 @@ const resolvers = {
       if (search) {
         where.name = { contains: search };
       }
-      // Only return people tagged in at least one memory
-      where.memories = { some: {} };
       return prisma.person.findMany({
         where,
         skip: offset,

@@ -20,6 +20,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import DateCell from '@/components/DateCell';
+import Link from 'next/link';
+import { useQuery, gql } from '@apollo/client';
 
 type Person = {
   id: string;
@@ -115,48 +117,34 @@ function EditPersonModal({ person, open, onClose, onSave }: { person: Person | n
   );
 }
 
+const GET_ALL_PEOPLE = gql`
+  query GetAllPeople($sortBy: String) {
+    people(sortBy: $sortBy) {
+      id
+      name
+      relationship
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export default function PeopleListPage() {
-  const [people, setPeople] = useState<Person[]>([]);
   const [search, setSearch] = useState('');
   const [sortBy] = useState('name');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, loading, error, refetch } = useQuery(GET_ALL_PEOPLE, {
+    variables: { sortBy },
+    fetchPolicy: 'network-only',
+  });
+  const people = data?.people || [];
   const [editPerson, setEditPerson] = useState<Person | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [snackbar, setSnackbar] = useState<{ message: string, severity: 'success' | 'error' } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Person | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  useEffect(() => {
-    async function fetchPeople() {
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await fetch('/api/graphql', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            query: `query People($sortBy: String) { people(sortBy: $sortBy) { id name relationship createdAt updatedAt } }`,
-            variables: { sortBy },
-          }),
-        });
-        const json = await res.json();
-        if (json.errors && json.errors.length > 0) {
-          setError(json.errors[0].message);
-        } else {
-          setPeople(json.data.people || []);
-        }
-      } catch {
-        setError('Failed to fetch people.');
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchPeople();
-  }, [sortBy]);
-
   const filteredPeople = people
-    .filter(p =>
+    .filter((p: Person) =>
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       (p.relationship || '').toLowerCase().includes(search.toLowerCase())
     );
@@ -194,9 +182,9 @@ export default function PeopleListPage() {
     setEditPerson(null);
   };
 
-  const handlePersonSave = (updated: Person) => {
-    setPeople(prev => prev.map(p => p.id === updated.id ? updated : p));
+  const handlePersonSave = async () => {
     setSnackbar({ message: 'Person updated.', severity: 'success' });
+    await refetch();
   };
 
   const handleDeleteClick = (person: Person) => {
@@ -220,8 +208,8 @@ export default function PeopleListPage() {
       if (json.errors && json.errors.length > 0) {
         setSnackbar({ message: json.errors[0].message, severity: 'error' });
       } else if (json.data.deletePerson) {
-        setPeople(prev => prev.filter(p => p.id !== deleteTarget.id));
         setSnackbar({ message: 'Person deleted.', severity: 'success' });
+        await refetch();
       } else {
         setSnackbar({ message: 'Failed to delete person.', severity: 'error' });
       }
@@ -232,8 +220,21 @@ export default function PeopleListPage() {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>People List</Typography>
+    <Box sx={{ width: '100%', maxWidth: 1200, mx: 'auto', mt: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h4" component="h1" tabIndex={0} aria-label="People List">
+          People List
+        </Typography>
+        <Button
+          component={Link}
+          href="/people/create"
+          variant="contained"
+          color="primary"
+          sx={{ fontWeight: 600 }}
+        >
+          Create Person
+        </Button>
+      </Box>
       <Box display="flex" alignItems="center" gap={2} mb={2}>
         <TextField
           label="Search by name or relationship"
@@ -250,7 +251,7 @@ export default function PeopleListPage() {
           ))}
         </Box>
       ) : error ? (
-        <Alert severity="error">{error}</Alert>
+        <Alert severity="error">{error.message}</Alert>
       ) : (
         <DataGrid
           autoHeight
