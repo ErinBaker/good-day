@@ -83,6 +83,26 @@ const typeDefs = gql`
     totalCount: Int!
   }
 
+  type MemoryStats {
+    totalMemories: Int!
+    totalPeople: Int!
+  }
+
+  type TimeSeriesDataPoint {
+    date: String!
+    count: Int!
+  }
+
+  type PersonTagStats {
+    person: Person!
+    tagCount: Int!
+  }
+
+  type DateRangeStats {
+    minDate: String
+    maxDate: String
+  }
+
   type Query {
     hello: String
     memory(id: ID!): Memory
@@ -91,6 +111,10 @@ const typeDefs = gql`
     people(search: String, limit: Int, offset: Int, sortBy: String): [Person]
     memoryDateRange: MemoryDateRange
     searchMemories(text: String, dateFrom: String, dateTo: String, peopleIds: [ID!], limit: Int, offset: Int): MemorySearchConnection
+    memoryStatistics: MemoryStats!
+    memoryTimeSeries(interval: String): [TimeSeriesDataPoint!]!
+    personTagStats(limit: Int): [PersonTagStats!]!
+    memoryDateRangeStats: DateRangeStats!
   }
 
   type Mutation {

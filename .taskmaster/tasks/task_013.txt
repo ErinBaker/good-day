@@ -17,3 +17,41 @@ Implement GraphQL queries for aggregating statistics data. Create visual compone
 
 # Test Strategy:
 Test statistics calculations with various memory collections. Verify that visualizations accurately represent the data. Test dashboard with different screen sizes to ensure responsive design.
+
+# Subtasks:
+## 1. Design GraphQL Schema and Resolvers for Memory Statistics [pending]
+### Dependencies: None
+### Description: Define GraphQL schema types and resolvers for memory statistics data aggregation
+### Details:
+Create new GraphQL types for statistics including: MemoryStats (total counts), TimeSeriesData (for frequency charts), PersonTagStats (for person tagging frequency), DateRangeStats (for memory coverage), and any other necessary types. Implement corresponding resolver functions that will connect to the database aggregation logic. Extend the existing GraphQL schema to include these new query endpoints.
+
+## 2. Implement Backend Aggregation Logic for Statistics [pending]
+### Dependencies: 13.1
+### Description: Develop backend database queries and aggregation functions to generate the required statistics
+### Details:
+Create database query functions to calculate: total memory and people counts, memory creation frequency over time (daily/weekly/monthly), person tag frequency counts, date range coverage statistics, and pattern detection algorithms. Optimize queries for performance using appropriate indexing and caching strategies. Implement data transformation functions to convert raw database results into the format defined by the GraphQL schema.
+
+## 3. Create Frontend GraphQL Queries and React Hooks [pending]
+### Dependencies: 13.1
+### Description: Develop frontend GraphQL queries and custom React hooks to fetch statistics data
+### Details:
+Create GraphQL query documents for each statistic type. Implement custom React hooks (useMemoryStats, useTimeSeriesData, usePersonTagStats, useDateRangeStats) that leverage Apollo Client to fetch and manage the statistics data. Include loading, error, and data states in each hook. Implement appropriate caching and refetching strategies.
+
+## 4. Build MUI Chart Components for Each Metric [pending]
+### Dependencies: 13.3
+### Description: Create reusable chart components for each statistical metric using Material-UI charts
+### Details:
+Implement the following chart components: TotalCountsCard (for displaying total memories and people), TimeSeriesChart (for memory creation frequency), TaggedPersonsChart (for most frequently tagged people), DateCoverageChart (for memory date range visualization), and PatternVisualization (for memory patterns). Use MUI components and chart libraries (like Recharts or Nivo) that integrate well with Material-UI. Make components responsive and accessible.
+
+## 5. Assemble Dashboard Layout with MUI Components [pending]
+### Dependencies: 13.4
+### Description: Design and implement the overall dashboard layout integrating all statistical components
+### Details:
+Create a StatisticsDashboard component that arranges all chart components in a logical, user-friendly layout. Use MUI Grid, Paper, and Card components for layout structure. Implement responsive design that works well on mobile and desktop. Add filters and controls for time period selection and other user customization options. Include loading states and error handling for the entire dashboard.
+
+## 6. Test and Validate Dashboard for Accuracy and Performance [pending]
+### Dependencies: 13.2, 13.5
+### Description: Conduct comprehensive testing of the statistics dashboard for data accuracy, performance, and accessibility
+### Details:
+Perform end-to-end testing of the complete statistics feature. Validate that frontend visualizations accurately represent backend data. Conduct performance testing with large datasets to ensure efficient rendering. Implement automated accessibility testing. Create documentation for the statistics feature including explanations of metrics and how they're calculated.
+

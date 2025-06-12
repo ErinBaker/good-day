@@ -107,6 +107,45 @@ const resolvers = {
     searchMemories: async (_, args) => {
       return searchMemoriesService(args);
     },
+    memoryStatistics: async () => {
+      const [totalMemories, totalPeople] = await Promise.all([
+        prisma.memory.count(),
+        prisma.person.count(),
+      ]);
+      return { totalMemories, totalPeople };
+    },
+    memoryTimeSeries: async (_, { interval = 'month' } = {}) => {
+      // Supported intervals: day, week, month
+      // We'll use SQLite strftime for grouping
+      let format;
+      if (interval === 'day') format = '%Y-%m-%d';
+      else if (interval === 'week') format = '%Y-%W';
+      else format = '%Y-%m';
+      // Raw query for grouping by date
+      const results = await prisma.$queryRawUnsafe(
+        `SELECT strftime('${format}', date) as period, COUNT(*) as count FROM Memory GROUP BY period ORDER BY period ASC`
+      );
+      return results.map(r => ({ date: r.period, count: Number(r.count) }));
+    },
+    personTagStats: async (_, { limit = 10 } = {}) => {
+      // Get people and their memory counts, sorted desc
+      const people = await prisma.person.findMany({
+        include: { memories: true },
+      });
+      const stats = people
+        .map(p => ({ person: p, tagCount: p.memories.length }))
+        .sort((a, b) => b.tagCount - a.tagCount)
+        .slice(0, limit);
+      return stats;
+    },
+    memoryDateRangeStats: async () => {
+      const min = await prisma.memory.findFirst({ orderBy: { date: 'asc' }, select: { date: true } });
+      const max = await prisma.memory.findFirst({ orderBy: { date: 'desc' }, select: { date: true } });
+      return {
+        minDate: min?.date || null,
+        maxDate: max?.date || null,
+      };
+    },
   },
   Mutation: {
     createMemory: async (_, { input }) => {

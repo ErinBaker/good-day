@@ -54,6 +54,46 @@ export const MEMORY_DATE_RANGE_QUERY = gql`
   }
 `;
 
+export const MEMORY_STATISTICS_QUERY = gql`
+  query MemoryStatistics {
+    memoryStatistics {
+      totalMemories
+      totalPeople
+    }
+  }
+`;
+
+export const MEMORY_TIME_SERIES_QUERY = gql`
+  query MemoryTimeSeries($interval: String) {
+    memoryTimeSeries(interval: $interval) {
+      date
+      count
+    }
+  }
+`;
+
+export const PERSON_TAG_STATS_QUERY = gql`
+  query PersonTagStats($limit: Int) {
+    personTagStats(limit: $limit) {
+      person {
+        id
+        name
+        relationship
+      }
+      tagCount
+    }
+  }
+`;
+
+export const MEMORY_DATE_RANGE_STATS_QUERY = gql`
+  query MemoryDateRangeStats {
+    memoryDateRangeStats {
+      minDate
+      maxDate
+    }
+  }
+`;
+
 interface UseMemoriesOptions {
   limit?: number;
   offset?: number;
@@ -83,6 +123,48 @@ export function useMemoryDateRange() {
   return {
     minDate: data?.memoryDateRange?.minDate ?? null,
     maxDate: data?.memoryDateRange?.maxDate ?? null,
+    loading,
+    error,
+  };
+}
+
+export function useMemoryStatistics() {
+  const { data, loading, error } = useQuery<{ memoryStatistics: { totalMemories: number; totalPeople: number } }>(MEMORY_STATISTICS_QUERY);
+  return {
+    totalMemories: data?.memoryStatistics?.totalMemories ?? 0,
+    totalPeople: data?.memoryStatistics?.totalPeople ?? 0,
+    loading,
+    error,
+  };
+}
+
+export function useMemoryTimeSeries(interval: 'day' | 'week' | 'month' = 'month') {
+  const { data, loading, error } = useQuery<{ memoryTimeSeries: { date: string; count: number }[] }>(MEMORY_TIME_SERIES_QUERY, {
+    variables: { interval },
+  });
+  return {
+    timeSeries: data?.memoryTimeSeries ?? [],
+    loading,
+    error,
+  };
+}
+
+export function usePersonTagStats(limit: number = 10) {
+  const { data, loading, error } = useQuery<{ personTagStats: { person: { id: string; name: string; relationship?: string }; tagCount: number }[] }>(PERSON_TAG_STATS_QUERY, {
+    variables: { limit },
+  });
+  return {
+    personTagStats: data?.personTagStats ?? [],
+    loading,
+    error,
+  };
+}
+
+export function useMemoryDateRangeStats() {
+  const { data, loading, error } = useQuery<{ memoryDateRangeStats: { minDate: string | null; maxDate: string | null } }>(MEMORY_DATE_RANGE_STATS_QUERY);
+  return {
+    minDate: data?.memoryDateRangeStats?.minDate ?? null,
+    maxDate: data?.memoryDateRangeStats?.maxDate ?? null,
     loading,
     error,
   };

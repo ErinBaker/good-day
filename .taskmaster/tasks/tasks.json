@@ -729,7 +729,73 @@
       "priority": "low",
       "details": "Develop a statistics dashboard with the following metrics:\n\n1. Total memories and people counts\n2. Memory creation frequency over time\n3. Most frequently tagged people\n4. Date range coverage of memories\n5. Visual representations of memory patterns\n\nImplement GraphQL queries for aggregating statistics data. Create visual components for displaying metrics in an engaging way. Design a dashboard layout that provides meaningful insights.",
       "testStrategy": "Test statistics calculations with various memory collections. Verify that visualizations accurately represent the data. Test dashboard with different screen sizes to ensure responsive design.",
-      "subtasks": []
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Design GraphQL Schema and Resolvers for Memory Statistics",
+          "description": "Define GraphQL schema types and resolvers for memory statistics data aggregation",
+          "dependencies": [],
+          "details": "Create new GraphQL types for statistics including: MemoryStats (total counts), TimeSeriesData (for frequency charts), PersonTagStats (for person tagging frequency), DateRangeStats (for memory coverage), and any other necessary types. Implement corresponding resolver functions that will connect to the database aggregation logic. Extend the existing GraphQL schema to include these new query endpoints.",
+          "status": "pending",
+          "testStrategy": "Write unit tests for resolver functions using mock data. Ensure schema validation passes and queries return expected data structures."
+        },
+        {
+          "id": 2,
+          "title": "Implement Backend Aggregation Logic for Statistics",
+          "description": "Develop backend database queries and aggregation functions to generate the required statistics",
+          "dependencies": [
+            1
+          ],
+          "details": "Create database query functions to calculate: total memory and people counts, memory creation frequency over time (daily/weekly/monthly), person tag frequency counts, date range coverage statistics, and pattern detection algorithms. Optimize queries for performance using appropriate indexing and caching strategies. Implement data transformation functions to convert raw database results into the format defined by the GraphQL schema.",
+          "status": "pending",
+          "testStrategy": "Create unit tests with sample database data to verify aggregation logic produces correct results. Test edge cases like empty collections and large datasets."
+        },
+        {
+          "id": 3,
+          "title": "Create Frontend GraphQL Queries and React Hooks",
+          "description": "Develop frontend GraphQL queries and custom React hooks to fetch statistics data",
+          "dependencies": [
+            1
+          ],
+          "details": "Create GraphQL query documents for each statistic type. Implement custom React hooks (useMemoryStats, useTimeSeriesData, usePersonTagStats, useDateRangeStats) that leverage Apollo Client to fetch and manage the statistics data. Include loading, error, and data states in each hook. Implement appropriate caching and refetching strategies.",
+          "status": "pending",
+          "testStrategy": "Write tests using React Testing Library and Mock Service Worker to verify hooks correctly fetch and process data. Test loading, error, and success states."
+        },
+        {
+          "id": 4,
+          "title": "Build MUI Chart Components for Each Metric",
+          "description": "Create reusable chart components for each statistical metric using Material-UI charts",
+          "dependencies": [
+            3
+          ],
+          "details": "Implement the following chart components: TotalCountsCard (for displaying total memories and people), TimeSeriesChart (for memory creation frequency), TaggedPersonsChart (for most frequently tagged people), DateCoverageChart (for memory date range visualization), and PatternVisualization (for memory patterns). Use MUI components and chart libraries (like Recharts or Nivo) that integrate well with Material-UI. Make components responsive and accessible.",
+          "status": "pending",
+          "testStrategy": "Create component tests to verify charts render correctly with sample data. Test responsiveness at different viewport sizes and verify accessibility compliance."
+        },
+        {
+          "id": 5,
+          "title": "Assemble Dashboard Layout with MUI Components",
+          "description": "Design and implement the overall dashboard layout integrating all statistical components",
+          "dependencies": [
+            4
+          ],
+          "details": "Create a StatisticsDashboard component that arranges all chart components in a logical, user-friendly layout. Use MUI Grid, Paper, and Card components for layout structure. Implement responsive design that works well on mobile and desktop. Add filters and controls for time period selection and other user customization options. Include loading states and error handling for the entire dashboard.",
+          "status": "pending",
+          "testStrategy": "Test dashboard layout rendering and responsiveness. Verify all components integrate correctly and user interactions (like filters) work as expected."
+        },
+        {
+          "id": 6,
+          "title": "Test and Validate Dashboard for Accuracy and Performance",
+          "description": "Conduct comprehensive testing of the statistics dashboard for data accuracy, performance, and accessibility",
+          "dependencies": [
+            2,
+            5
+          ],
+          "details": "Perform end-to-end testing of the complete statistics feature. Validate that frontend visualizations accurately represent backend data. Conduct performance testing with large datasets to ensure efficient rendering. Implement automated accessibility testing. Create documentation for the statistics feature including explanations of metrics and how they're calculated.",
+          "status": "pending",
+          "testStrategy": "Conduct end-to-end tests with Cypress or similar tools. Perform manual testing with real user data. Use Lighthouse for performance and accessibility audits. Verify calculations match expected results from test datasets."
+        }
+      ]
     },
     {
       "id": 14,
