@@ -67,6 +67,22 @@ const typeDefs = gql`
     totalCount: Int!
   }
 
+  type SearchHighlight {
+    field: String!
+    value: String!
+    indices: [[Int!]!]!
+  }
+
+  type MemorySearchResult {
+    memory: Memory!
+    highlights: [SearchHighlight!]
+  }
+
+  type MemorySearchConnection {
+    items: [MemorySearchResult!]!
+    totalCount: Int!
+  }
+
   type Query {
     hello: String
     memory(id: ID!): Memory
@@ -74,6 +90,7 @@ const typeDefs = gql`
     person(id: ID!): Person
     people(search: String, limit: Int, offset: Int, sortBy: String): [Person]
     memoryDateRange: MemoryDateRange
+    searchMemories(text: String, dateFrom: String, dateTo: String, peopleIds: [ID!], limit: Int, offset: Int): MemorySearchConnection
   }
 
   type Mutation {
