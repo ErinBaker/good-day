@@ -38,7 +38,7 @@ const resolvers = {
       }
       if (peopleIds && peopleIds.length > 0) {
         where.people = {
-          every: {
+          some: {
             id: { in: peopleIds }
           }
         };
@@ -67,9 +67,12 @@ const resolvers = {
       });
     },
     people: async (_, { search, limit = 50, offset = 0, sortBy = 'name' }) => {
-      const where = search
-        ? { name: { contains: search } }
-        : {};
+      let where = {};
+      if (search) {
+        where.name = { contains: search };
+      }
+      // Only return people tagged in at least one memory
+      where.memories = { some: {} };
       return prisma.person.findMany({
         where,
         skip: offset,

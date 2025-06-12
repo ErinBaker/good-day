@@ -14,8 +14,29 @@ import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied
 import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import Skeleton from '@mui/material/Skeleton';
 import Fade from '@mui/material/Fade';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import Chip from '@mui/material/Chip';
+import { useQuery, gql } from '@apollo/client';
 
 const PAGE_SIZE = 5;
+
+const GET_ALL_PEOPLE = gql`
+  query GetAllPeople {
+    people {
+      id
+      name
+      relationship
+    }
+  }
+`;
+
+// Add Person type for people filter
+type Person = {
+  id: string;
+  name: string;
+  relationship?: string;
+};
 
 const MemoryTimelineContainer: React.FC = () => {
   const [offset, setOffset] = useState(0);
@@ -26,6 +47,8 @@ const MemoryTimelineContainer: React.FC = () => {
   const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
   const [userChangedDate, setUserChangedDate] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [selectedPeople, setSelectedPeople] = useState<Person[]>([]);
+  const { data: peopleData, loading: peopleLoading, error: peopleError } = useQuery<{ people: Person[] }>(GET_ALL_PEOPLE);
 
   // Move shortcutOptions here so minDate/maxDate are in scope
   const shortcutOptions: ShortcutOption[] = [
@@ -104,6 +127,7 @@ const MemoryTimelineContainer: React.FC = () => {
           offset,
           dateFrom: dayjs(dateRange[0]).isValid() ? dayjs(dateRange[0]).toISOString() : undefined,
           dateTo: dayjs(dateRange[1]).isValid() ? dayjs(dateRange[1]).toISOString() : undefined,
+          peopleIds: selectedPeople.length > 0 ? selectedPeople.map(p => p.id) : undefined,
         }
       : { sortBy: 'date', limit: 0, offset: 0 }
   );
@@ -235,6 +259,46 @@ const MemoryTimelineContainer: React.FC = () => {
             />
           </Stack>
         </LocalizationProvider>
+      </Box>
+      {/* People Filter */}
+      <Box sx={{ mb: 3 }}>
+        <Autocomplete
+          multiple
+          options={peopleData?.people || []}
+          value={selectedPeople}
+          onChange={(_e, newValue) => {
+            setSelectedPeople(newValue as Person[]);
+            setAllMemories([]); // Reset timeline when filter changes
+            setOffset(0);
+            setHasMore(true);
+            setInitialLoad(true);
+          }}
+          getOptionLabel={option => option.name + (option.relationship ? ` (${option.relationship})` : '')}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
+          loading={peopleLoading}
+          disabled={peopleLoading || !!peopleError}
+          renderInput={params => (
+            <TextField
+              {...params}
+              label="Filter by People"
+              placeholder="Select people..."
+              error={!!peopleError}
+              helperText={peopleError ? 'Failed to load people' : ''}
+            />
+          )}
+          renderTags={(selected, getTagProps) =>
+            selected.map((option, index) => {
+              const restTagProps = Object.fromEntries(Object.entries(getTagProps({ index })).filter(([k]) => k !== 'key'));
+              return (
+                <Chip
+                  key={option.id}
+                  label={option.name + (option.relationship ? ` (${option.relationship})` : '')}
+                  {...restTagProps}
+                />
+              );
+            })
+          }
+        />
       </Box>
       <Box sx={{ display: { xs: 'column', sm: 'row' }, flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'flex-start' }}>
         {/* Feed of MemoryCards */}
