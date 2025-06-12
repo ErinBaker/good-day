@@ -605,7 +605,7 @@
           "description": "Add the ability to delete a person with proper confirmation dialog and impact assessment.",
           "dependencies": [],
           "details": "Add a delete button to the person profile. Implement a confirmation dialog that explains the consequences of deletion (e.g., memories will remain but person associations will be removed). Show the number of affected memories in the confirmation. Implement the GraphQL mutation to delete a person. After successful deletion, redirect to the appropriate view (e.g., people list). Handle errors gracefully.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test the confirmation flow, successful deletion, and error cases. Verify that the impact assessment correctly shows the number of affected memories."
         },
         {

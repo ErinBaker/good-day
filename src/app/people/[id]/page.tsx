@@ -20,6 +20,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import PersonStatistics from '../../components/PersonStatistics';
 
 const PERSON_MEMORIES_QUERY = gql`
   query PersonMemories($id: ID!) {
@@ -170,6 +171,8 @@ export default function PersonDetailPage() {
                 <PersonPhotoMasonry memories={sortedMemories} withTooltips />
               )}
             </Box>
+            {/* Statistics Section */}
+            <PersonStatistics memories={sortedMemories} />
           </Box>
           {/* Delete Confirmation Dialog */}
           <Dialog

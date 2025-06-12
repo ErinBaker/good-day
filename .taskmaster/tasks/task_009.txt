@@ -37,7 +37,7 @@ Extend the GraphQL query to include all memories associated with the person. Imp
 ### Details:
 Create an EditPersonForm component with fields for all editable person attributes. Implement form validation for required fields and data formats. Add an edit button to the person profile that opens the form in a modal or navigates to an edit view. Implement the GraphQL mutation to update person data. Show appropriate loading states and success/error messages after submission.
 
-## 4. Implement Delete Person Functionality with Confirmation [pending]
+## 4. Implement Delete Person Functionality with Confirmation [done]
 ### Dependencies: None
 ### Description: Add the ability to delete a person with proper confirmation dialog and impact assessment.
 ### Details:
