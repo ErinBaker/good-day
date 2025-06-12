@@ -9,6 +9,10 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Skeleton from "@mui/material/Skeleton";
 import RelativeTime from '../../components/RelativeTime';
+import Chip from '@mui/material/Chip';
+import Avatar from '@mui/material/Avatar';
+import Divider from '@mui/material/Divider';
+import dayjs from 'dayjs';
 
 const MEMORY_DETAIL_QUERY = gql`
   query Memory($id: ID!) {
@@ -98,17 +102,43 @@ export default function MemoryDetailPage() {
           </Box>
           {/* Right: Details */}
           <Box sx={{ width: { xs: '100%', md: '50%' }, height: { xs: 'auto', md: '100vh' }, overflowY: 'auto', p: { xs: 2, md: 6 }, bgcolor: 'background.paper' }}>
-            <Typography variant="h3" sx={{ mb: 1, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.1 }}>
+            <Typography variant="caption" color="text.secondary" sx={{ mb: 2 }} title={memory.date ? dayjs(memory.date).format('dddd MMMM D, YYYY [at] h:mma') : ''} aria-label={memory.date ? `Date: ${dayjs(memory.date).format('dddd MMMM D, YYYY [at] h:mma')}` : ''}>
+            Looking back to {memory.date && <RelativeTime date={memory.date} />}
+            </Typography>
+            <Typography variant="h3" sx={{ mb: 1, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.1 }} component="h1">
               {memory.title}
             </Typography>
-            <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 3 }} title={memory.date ? new Date(memory.date).toISOString() : ''} aria-label={memory.date ? `Date: ${new Date(memory.date).toISOString()}` : ''}>
-              {memory.date && <RelativeTime date={memory.date} />}<br />
-              <span style={{ fontSize: '0.9em', color: '#888' }}>{memory.date ? new Date(memory.date).toISOString() : ''}</span>
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              {memory.description}
-            </Typography>
-            {/* ...stub for metadata, people, actions, navigation... */}
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="h4" component="body1" sx={{ mb: 1 }}>
+                {memory.description || <span style={{ color: '#aaa' }}>You didn&apos;t add a note, but the feeling lingers.</span>}
+              </Typography>
+            </Box>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600, mb: 0.5 }}>The People in This Moment</Typography>
+              {memory.people && memory.people.length > 0 ? (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
+                  {memory.people.map((person: { id: string; name: string; relationship?: string }) => (
+                    <Chip
+                      key={person.id}
+                      avatar={<Avatar sx={{ width: 24, height: 24 }}>{person.name[0]}</Avatar>}
+                      label={person.relationship ? `${person.name} (${person.relationship})` : person.name}
+                      variant="outlined"
+                      sx={{ fontSize: '1em', height: 32 }}
+                    />
+                  ))}
+                </Box>
+              ) : (
+                <Typography variant="body2" color="text.secondary">No people tagged.</Typography>
+              )}
+            </Box>
+            <Divider sx={{ my: 2 }} />
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600, mb: 0.5 }}>Metadata</Typography>
+              <Typography variant="body2" color="text.secondary">
+                <strong>Created:</strong> {memory.createdAt ? new Date(memory.createdAt).toLocaleString() : 'Unknown'}<br />
+                <strong>Last Updated:</strong> {memory.updatedAt ? new Date(memory.updatedAt).toLocaleString() : 'Unknown'}
+              </Typography>
+            </Box>
           </Box>
         </Stack>
       )}

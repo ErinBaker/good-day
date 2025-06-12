@@ -43,7 +43,7 @@ async function main() {
       title: `Memory #${i}`,
       date: isoDate,
       description: `This is a description for memory #${i}. It is a complete and realistic memory entry for testing purposes.`,
-      photoUrl: `https://placehold.co/600x400.png?text=Memory+${i}`,
+      photoUrl: `https://placehold.co/2048x2048.png?text=Memory+${i}`,
       createdAt: isoDate,
       updatedAt: isoDate,
       people: { connect: getRandomPeople() },
