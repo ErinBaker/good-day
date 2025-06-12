@@ -23,6 +23,8 @@ const typeDefs = gql`
     updatedAt: String!
     people: [Person!]!
     photos: [Photo!]!
+    previousMemoryId: ID
+    nextMemoryId: ID
   }
 
   type Person {

@@ -20,13 +20,13 @@ Connect detail view to GraphQL query for retrieving a single memory with all ass
 Test memory detail view with various memory data. Verify that all information is displayed correctly. Test navigation between memories. Verify that edit and delete actions work correctly with proper confirmation.
 
 # Subtasks:
-## 1. Create GraphQL query for memory detail data [pending]
+## 1. Create GraphQL query for memory detail data [done]
 ### Dependencies: None
 ### Description: Implement a GraphQL query to fetch a single memory with all associated data including full-resolution photo, metadata, description, and tagged people.
 ### Details:
 Define a GraphQL query that retrieves a memory by ID. Include fields for image URL, title, date, creation time, description text, and an array of tagged people with their IDs and names. Also include fields needed for navigation such as previousMemoryId and nextMemoryId.
 
-## 2. Implement memory detail UI layout and photo display [pending]
+## 2. Implement memory detail UI layout and photo display [done]
 ### Dependencies: 8.1
 ### Description: Create the basic layout for the memory detail view with focus on the full-resolution photo display and container structure.
 ### Details:

@@ -510,7 +510,7 @@
           "description": "Implement a GraphQL query to fetch a single memory with all associated data including full-resolution photo, metadata, description, and tagged people.",
           "dependencies": [],
           "details": "Define a GraphQL query that retrieves a memory by ID. Include fields for image URL, title, date, creation time, description text, and an array of tagged people with their IDs and names. Also include fields needed for navigation such as previousMemoryId and nextMemoryId.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test the query with mock data to ensure all required fields are returned correctly. Verify error handling for non-existent memory IDs."
         },
         {
@@ -521,7 +521,7 @@
             1
           ],
           "details": "Design a responsive layout that prominently displays the memory photo. Implement image loading with placeholders and error states. Ensure the photo can be viewed in full resolution with appropriate zooming capabilities if needed. Structure the container to accommodate all the other components that will be added in subsequent tasks.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test the component with various image sizes and aspect ratios. Verify responsive behavior across different screen sizes."
         },
         {

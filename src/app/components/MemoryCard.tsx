@@ -9,6 +9,7 @@ import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import Fade from '@mui/material/Fade';
 import { useTheme } from '@mui/material/styles';
+import Link from 'next/link';
 
 export interface MemoryCardProps {
   id: string;
@@ -41,83 +42,88 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, peo
   }, [photoUrl]);
 
   const card = (
-    <Card
-      sx={{
-        width: '100%',
-        maxWidth: 600,
-        mx: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-        mb: 2,
-        boxShadow: 3,
-        borderRadius: 2,
-        transition: 'box-shadow 0.2s, transform 0.2s, background 0.2s',
-        outline: 'none',
-        bgcolor: 'background.paper',
-        p: { xs: 1, sm: 2 },
-        '&:hover': {
-          boxShadow: 8,
-          transform: 'scale(1.01)',
-          background: theme.palette.action.hover,
-        },
-        '&:focus-visible': {
-          boxShadow: 12,
-          border: '2px solid',
-          borderColor: 'primary.main',
-          transform: 'scale(1.01)',
-        },
-      }}
-      aria-labelledby={`memory-title-${id}`}
-      role="article"
+    <Link
+      href={`/memory/${id}`}
+      passHref
+      style={{ textDecoration: 'none', width: '100%', display: 'block' }}
       tabIndex={0}
+      aria-label={`View details for memory: ${title}`}
     >
-      <CardMedia
-        component="img"
-        ref={imgRef}
-        src={imgSrc}
-        alt={title}
+      <Card
         sx={{
           width: '100%',
-          height: { xs: 200, sm: 340 },
-          objectFit: 'cover',
-          borderRadius: '8px 8px 0 0',
+          maxWidth: 600,
+          mx: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          mb: 2,
+          boxShadow: 3,
+          borderRadius: 2,
+          transition: 'box-shadow 0.2s, transform 0.2s, background 0.2s',
+          outline: 'none',
+          bgcolor: 'background.paper',
+          p: { xs: 1, sm: 2 },
+          cursor: 'pointer',
+          '&:hover, &:focus-visible': {
+            boxShadow: 8,
+            transform: 'scale(1.01)',
+            background: theme.palette.action.hover,
+            border: '2px solid',
+            borderColor: 'primary.main',
+          },
         }}
-      />
-      <CardContent sx={{ flex: 1, minWidth: 0, p: { xs: 1, sm: 2 } }}>
-        {title && (
-          <Typography id={`memory-title-${id}`} variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
-            {title}
-          </Typography>
-        )}
-        <Typography variant="body1" sx={{ mb: 2 }}>
-          {description}
-        </Typography>
-        <Stack direction="row" spacing={2} alignItems="center" sx={{ mt: 2, flexWrap: 'wrap' }}>
-          {date && (
-            <Typography variant="caption" color="text.secondary">
-              {new Date(date).toLocaleDateString()}
+        aria-labelledby={`memory-title-${id}`}
+        role="article"
+        tabIndex={-1}
+      >
+        <CardMedia
+          component="img"
+          ref={imgRef}
+          src={imgSrc}
+          alt={title}
+          sx={{
+            width: '100%',
+            height: { xs: 200, sm: 340 },
+            objectFit: 'cover',
+            borderRadius: '8px 8px 0 0',
+          }}
+        />
+        <CardContent sx={{ flex: 1, minWidth: 0, p: { xs: 1, sm: 2 } }}>
+          {title && (
+            <Typography id={`memory-title-${id}`} variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
+              {title}
             </Typography>
           )}
-          {people.length > 0 && (
-            <Stack direction="row" spacing={1} alignItems="center">
-              {people.map((person) => (
-                <Box key={person.id} sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
-                  <Avatar
-                    src={AVATAR_PLACEHOLDER}
-                    alt={person.name}
-                    sx={{ width: 24, height: 24, mr: 0.5 }}
-                    imgProps={{ 'aria-label': person.name }}
-                  />
-                  <Typography variant="caption" sx={{ mr: 1 }}>
-                    {person.name}
-                  </Typography>
-                </Box>
-              ))}
-            </Stack>
-          )}
-        </Stack>
-      </CardContent>
-    </Card>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            {description}
+          </Typography>
+          <Stack direction="row" spacing={2} alignItems="center" sx={{ mt: 2, flexWrap: 'wrap' }}>
+            {date && (
+              <Typography variant="caption" color="text.secondary">
+                {new Date(date).toLocaleDateString()}
+              </Typography>
+            )}
+            {people.length > 0 && (
+              <Stack direction="row" spacing={1} alignItems="center">
+                {people.map((person) => (
+                  <Box key={person.id} sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
+                    <Avatar
+                      src={AVATAR_PLACEHOLDER}
+                      alt={person.name}
+                      sx={{ width: 24, height: 24, mr: 0.5 }}
+                      imgProps={{ 'aria-label': person.name }}
+                    />
+                    <Typography variant="caption" sx={{ mr: 1 }}>
+                      {person.name}
+                    </Typography>
+                  </Box>
+                ))}
+              </Stack>
+            )}
+          </Stack>
+        </CardContent>
+      </Card>
+    </Link>
   );
 
   return animate ? (

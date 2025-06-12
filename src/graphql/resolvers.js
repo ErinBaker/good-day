@@ -5,10 +5,29 @@ const resolvers = {
   Query: {
     hello: () => 'Hello, world!',
     memory: async (_, { id }) => {
-      return prisma.memory.findUnique({
+      const memory = await prisma.memory.findUnique({
         where: { id },
         include: { people: true, photos: true },
       });
+      if (!memory) throw new Error('Memory not found');
+
+      // Find previous and next memory IDs by date
+      const previous = await prisma.memory.findFirst({
+        where: { date: { lt: memory.date } },
+        orderBy: { date: 'desc' },
+        select: { id: true },
+      });
+      const next = await prisma.memory.findFirst({
+        where: { date: { gt: memory.date } },
+        orderBy: { date: 'asc' },
+        select: { id: true },
+      });
+
+      return {
+        ...memory,
+        previousMemoryId: previous?.id || null,
+        nextMemoryId: next?.id || null,
+      };
     },
     memories: async (_, { limit = 10, offset = 0, sortBy = 'date', dateFrom, dateTo, peopleIds }) => {
       const where = {};
