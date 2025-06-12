@@ -61,7 +61,7 @@ export default function MemoryDetailPage() {
     variables: { id },
     onCompleted: () => {
       setDeleteDialogOpen(false);
-      router.push("/memories");
+      router.push("/");
     },
     onError: () => {
       setDeleteDialogOpen(false);
