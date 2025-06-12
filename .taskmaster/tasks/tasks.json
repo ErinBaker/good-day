@@ -596,7 +596,7 @@
           "description": "Implement the ability to edit a person's information with proper form validation and error handling.",
           "dependencies": [],
           "details": "Create an EditPersonForm component with fields for all editable person attributes. Implement form validation for required fields and data formats. Add an edit button to the person profile that opens the form in a modal or navigates to an edit view. Implement the GraphQL mutation to update person data. Show appropriate loading states and success/error messages after submission.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test form validation logic, successful submissions, and error handling. Verify that the UI updates correctly after a successful edit."
         },
         {

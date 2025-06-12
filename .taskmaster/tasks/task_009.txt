@@ -31,7 +31,7 @@ Create a new PersonProfileView component that displays the person's avatar, name
 ### Details:
 Extend the GraphQL query to include all memories associated with the person. Implement a chronological list component that renders memory cards for each memory. Include date headers to group memories by time period. Add sorting controls (newest/oldest first). Reuse the existing memory card component from the timeline view, adapting it as needed for the person context.
 
-## 3. Add Edit Person Functionality [pending]
+## 3. Add Edit Person Functionality [done]
 ### Dependencies: None
 ### Description: Implement the ability to edit a person's information with proper form validation and error handling.
 ### Details:

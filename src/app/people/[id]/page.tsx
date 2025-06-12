@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useParams } from "next/navigation";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useMutation } from "@apollo/client";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -16,6 +16,10 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useRouter } from 'next/navigation';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 
 const PERSON_MEMORIES_QUERY = gql`
   query PersonMemories($id: ID!) {
@@ -35,6 +39,12 @@ const PERSON_MEMORIES_QUERY = gql`
   }
 `;
 
+const DELETE_PERSON_MUTATION = gql`
+  mutation DeletePerson($id: ID!) {
+    deletePerson(id: $id)
+  }
+`;
+
 export default function PersonDetailPage() {
   const params = useParams();
   const id = params && typeof params.id !== 'undefined' ? (Array.isArray(params.id) ? params.id[0] : params.id) : '';
@@ -51,6 +61,18 @@ export default function PersonDetailPage() {
   }, [memories, sortOrder]);
   const router = useRouter();
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletePerson, { loading: deleting }] = useMutation(DELETE_PERSON_MUTATION, {
+    variables: { id },
+    onCompleted: () => {
+      setDeleteDialogOpen(false);
+      router.push('/people/list');
+    },
+    onError: () => {
+      setDeleteDialogOpen(false);
+      // TODO: Show error feedback
+    },
+  });
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMenuAnchorEl(event.currentTarget);
@@ -63,6 +85,19 @@ export default function PersonDetailPage() {
   const handleEdit = () => {
     handleMenuClose();
     router.push(`/people/${id}/edit`);
+  };
+
+  const handleDelete = () => {
+    handleMenuClose();
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    deletePerson();
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
   };
 
   return (
@@ -110,6 +145,7 @@ export default function PersonDetailPage() {
               transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
               <MenuItem onClick={handleEdit}>Edit</MenuItem>
+              <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>Delete</MenuItem>
             </Menu>
           </Box>
           {/* Photo masonry grid with sorting toggle */}
@@ -135,6 +171,26 @@ export default function PersonDetailPage() {
               )}
             </Box>
           </Box>
+          {/* Delete Confirmation Dialog */}
+          <Dialog
+            open={deleteDialogOpen}
+            onClose={handleDeleteCancel}
+            aria-labelledby="delete-person-dialog-title"
+          >
+            <DialogTitle id="delete-person-dialog-title">Delete Person</DialogTitle>
+            <DialogContent>
+              <Typography>Are you sure you want to permanently delete this person? This action cannot be undone.</Typography>
+              <Typography sx={{ mt: 2 }} color="text.secondary">
+                Memories will remain, but this person will be untagged from {memories.length} {memories.length === 1 ? 'memory' : 'memories'}.
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleDeleteCancel} color="primary" disabled={deleting}>Cancel</Button>
+              <Button onClick={handleDeleteConfirm} color="error" variant="contained" disabled={deleting}>
+                {deleting ? 'Deleting...' : 'Delete'}
+              </Button>
+            </DialogActions>
+          </Dialog>
         </>
       )}
     </Box>
