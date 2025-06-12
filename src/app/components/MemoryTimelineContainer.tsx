@@ -2,7 +2,6 @@ import React, { useRef, useCallback, useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
-import Alert from '@mui/material/Alert';
 import { useMemories, Memory, useMemoryDateRange } from './useMemories';
 import MemoryCard from './MemoryCard';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -11,19 +10,15 @@ import { DatePicker } from '@mui/x-date-pickers';
 import dayjs, { Dayjs } from 'dayjs';
 import { Stack, Button } from '@mui/material';
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
-import SentimentVerySatisfiedIcon from '@mui/icons-material/SentimentVerySatisfied';
 import Skeleton from '@mui/material/Skeleton';
-import Fade from '@mui/material/Fade';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Chip from '@mui/material/Chip';
 import { useQuery, gql } from '@apollo/client';
 import { useSearchParams } from 'next/navigation';
 import SearchMemoriesInput, { type MemorySuggestion } from './SearchMemoriesInput';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
 
 const PAGE_SIZE = 5;
 
@@ -51,7 +46,6 @@ const MemoryTimelineContainer: React.FC = () => {
   const [initialLoad, setInitialLoad] = useState(true);
   const { minDate, maxDate } = useMemoryDateRange();
   const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null]>([null, null]);
-  const [userChangedDate, setUserChangedDate] = useState(false);
   const [hasInitialized, setHasInitialized] = useState(false);
   const [selectedPeople, setSelectedPeople] = useState<Person[]>([]);
   const { data: peopleData, loading: peopleLoading, error: peopleError } = useQuery<{ people: Person[] }>(GET_ALL_PEOPLE);
@@ -111,7 +105,6 @@ const MemoryTimelineContainer: React.FC = () => {
     if (!hasInitialized && minDate && maxDate) {
       setDateRange([dayjs(minDate), dayjs(maxDate)]);
       setHasInitialized(true);
-      setUserChangedDate(false);
     }
   }, [minDate, maxDate, hasInitialized]);
 
@@ -129,7 +122,7 @@ const MemoryTimelineContainer: React.FC = () => {
 
   // Only fetch if both dates are set
   const shouldFetch = dateRange[0] && dateRange[1];
-  const { memories, totalCount, loading, error } = useMemories(
+  const { memories, totalCount, loading } = useMemories(
     shouldFetch
       ? {
           sortBy: 'date',
@@ -167,7 +160,7 @@ const MemoryTimelineContainer: React.FC = () => {
   }, [memories, offset, loading, initialLoad, totalCount, shouldFetch]);
 
   // Intersection Observer for infinite scroll
-  const loaderRef = useRef<HTMLDivElement | null>(null);
+  const loaderRef = useRef<HTMLDivElement>(null);
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       const target = entries[0];
@@ -208,15 +201,12 @@ const MemoryTimelineContainer: React.FC = () => {
     if (shortcut.label === 'Reset') {
       if (minDate && maxDate) {
         setDateRange([dayjs(minDate), dayjs(maxDate)]);
-        setUserChangedDate(false);
         setHasInitialized(true);
       } else {
         setDateRange([null, null]);
-        setUserChangedDate(false);
       }
     } else {
       setDateRange(shortcut.getValue());
-      setUserChangedDate(true);
     }
   };
 
@@ -266,39 +256,29 @@ const MemoryTimelineContainer: React.FC = () => {
   }, [selectedMemoryId, allMemories]);
 
   return (
-    <Box
-      sx={{
-        width: '100%',
-        maxWidth: 800,
-        mx: 'auto',
-        py: 4,
-        px: { xs: 1, sm: 2 },
-        bgcolor: 'background.paper',
-        color: 'text.primary',
-      }}
-      role="region"
-      aria-label="Memory timeline"
-    >
-      {/* Search Input */}
-      <Box sx={{ mb: 3 }}>
-        <SearchMemoriesInput
-          value={searchSelection}
-          onChange={setSearchSelection}
-          label="Search Memories"
-          placeholder="Type to search..."
-        />
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Memory Timeline
+      </Typography>
+      <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 3 }}>
+        Browse and relive your memories. Use filters to find specific moments.
+      </Typography>
+
+      {/* Large search input above filters */}
+      <Box sx={{ mb: 4, width: '100%' }}>
+        <Box sx={{ width: '100%', fontSize: 20 }}>
+          <SearchMemoriesInput
+            value={searchSelection}
+            onChange={setSearchSelection}
+            label="Search Memories"
+            placeholder="Type to search..."
+          />
+        </Box>
       </Box>
-      {/* Filter Panel */}
-      <Accordion defaultExpanded sx={{ mb: 3 }} aria-label="Filters">
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="filters-content"
-          id="filters-header"
-        >
-          <Typography variant="h6">Filters</Typography>
-        </AccordionSummary>
-        <AccordionDetails id="filters-content">
-          {/* Date Range Filter */}
+
+      <Paper elevation={2} sx={{ p: 2, mb: 4 }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+          {/* Date range picker, people filter */}
           <Box sx={{ mb: 3 }}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap' }}>
@@ -319,7 +299,6 @@ const MemoryTimelineContainer: React.FC = () => {
                   value={dateRange[0] && dayjs.isDayjs(dateRange[0]) ? dateRange[0] : null}
                   onChange={(newValue) => {
                     setDateRange([newValue, dateRange[1]]);
-                    setUserChangedDate(true);
                   }}
                   slotProps={{ textField: { size: 'small' } }}
                   maxDate={dateRange[1] || undefined}
@@ -329,7 +308,6 @@ const MemoryTimelineContainer: React.FC = () => {
                   value={dateRange[1] && dayjs.isDayjs(dateRange[1]) ? dateRange[1] : null}
                   onChange={(newValue) => {
                     setDateRange([dateRange[0], newValue]);
-                    setUserChangedDate(true);
                   }}
                   slotProps={{ textField: { size: 'small' } }}
                   minDate={dateRange[0] || undefined}
@@ -337,7 +315,6 @@ const MemoryTimelineContainer: React.FC = () => {
               </Stack>
             </LocalizationProvider>
           </Box>
-          {/* People Filter */}
           <Box sx={{ mb: 3 }}>
             <Autocomplete
               multiple
@@ -377,96 +354,31 @@ const MemoryTimelineContainer: React.FC = () => {
               }
             />
           </Box>
-        </AccordionDetails>
-      </Accordion>
-      <Box sx={{ display: { xs: 'column', sm: 'row' }, flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'flex-start' }}>
-        {/* Feed of MemoryCards */}
-        <Box sx={{ flex: 1, minHeight: 400, height: '70vh' }}>
-          {initialLoad && loading && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 4 }} aria-busy="true" aria-live="polite">
-              {[...Array(2)].map((_, i) => (
-                <Skeleton key={i} variant="rectangular" width={600} height={180} sx={{ mb: 2, borderRadius: 2 }} />
-              ))}
-              <CircularProgress sx={{ mt: 2 }} aria-label="Loading memories" />
-            </Box>
-          )}
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }} role="alert">
-              Error loading memories: {error.message}
-            </Alert>
-          )}
-          <Stack spacing={3} sx={{ width: '100%', maxWidth: 600, mx: 'auto' }}>
-            {(!loading && allMemories.length === 0 && !error) ? (
-              <Fade in timeout={400} appear>
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 4, width: '100%' }} role="status" aria-live="polite">
-                  {userChangedDate || (dateRange[0] && dateRange[1]) ? (
-                    <>
-                      <SentimentDissatisfiedIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} aria-hidden="true" />
-                      <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-                        No memories found for this time period.
-                      </Typography>
-                      <Button variant="outlined" onClick={() => {
-                        setDateRange([minDate ? dayjs(minDate) : null, maxDate ? dayjs(maxDate) : null]);
-                        setUserChangedDate(false);
-                      }}>
-                        Reset Filters
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <SentimentVerySatisfiedIcon sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} aria-hidden="true" />
-                      <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
-                        You haven&apos;t added any memories yet.
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        Start by adding your first memory!
-                      </Typography>
-                      <Button variant="contained" color="primary" href="#memory-entry-form">
-                        Add Memory
-                      </Button>
-                    </>
-                  )}
-                </Box>
-              </Fade>
-            ) : allMemories.length > 0 ? (
-              allMemories.map((memory) => (
-                <div
-                  key={memory.id}
-                  ref={el => memoryRefs.current[memory.id] = el}
-                >
-                  <MemoryCard
-                    id={memory.id}
-                    title={memory.title}
-                    photoUrl={memory.photoUrl}
-                    people={memory.people}
-                    description={memory.description}
-                    date={memory.date}
-                    animate={true}
-                    selected={selectedMemoryId === memory.id}
-                  />
-                </div>
-              ))
-            ) : null}
-          </Stack>
-          <div ref={loaderRef} />
-          {loading && !initialLoad && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }} aria-busy="true" aria-live="polite">
-              <CircularProgress aria-label="Loading more memories" />
-            </Box>
-          )}
-          {!hasMore && !loading && allMemories.length > 0 && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', my: 2 }}>
-              <Typography align="center" color="text.secondary" sx={{ mb: 2 }}>
-                That&rsquo;s all for now — time to make another memory.
-              </Typography>
-              <Button variant="contained" color="primary" href="/create-memory">
-                Create Memory
-              </Button>
-            </Box>
-          )}
-        </Box>
-      </Box>
-    </Box>
+        </Stack>
+      </Paper>
+
+      <Stack spacing={3} alignItems="center">
+        {/* Loading state */}
+        {loading && <Skeleton variant="rectangular" width="100%" height={200} />}
+        {/* Empty state */}
+        {!loading && allMemories.length === 0 && (
+          <Box textAlign="center" py={6}>
+            <SentimentDissatisfiedIcon sx={{ fontSize: 48, color: 'text.secondary' }} />
+            <Typography variant="h6" color="text.secondary" mt={2}>
+              No memories found for your filters.
+            </Typography>
+          </Box>
+        )}
+        {/* Memory cards */}
+        {allMemories.map(memory => (
+          <MemoryCard key={memory.id} {...memory} />
+        ))}
+        {/* Infinite scroll loader */}
+        <div ref={loaderRef}>
+          {hasMore && !loading && <CircularProgress sx={{ my: 4 }} />}
+        </div>
+      </Stack>
+    </Container>
   );
 };
 

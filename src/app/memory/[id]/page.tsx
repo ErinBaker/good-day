@@ -24,6 +24,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import Container from '@mui/material/Container';
 
 const MEMORY_DETAIL_QUERY = gql`
   query Memory($id: ID!) {
@@ -95,9 +96,9 @@ export default function MemoryDetailPage() {
   };
 
   return (
-    <Box sx={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
+    <Container maxWidth="xl" sx={{ py: { xs: 2, md: 6 }, px: { xs: 0, sm: 2 }, minHeight: '100vh' }}>
       {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
           <CircularProgress />
         </Box>
       )}
@@ -105,9 +106,9 @@ export default function MemoryDetailPage() {
         <Alert severity="error">Error loading memory: {error.message}</Alert>
       )}
       {memory && (
-        <Stack direction={{ xs: 'column', md: 'row' }} sx={{ height: '100vh', width: '100vw' }}>
+        <Stack direction={{ xs: 'column', md: 'row' }} spacing={0} sx={{ width: '100%', minHeight: 400 }}>
           {/* Left: Photo */}
-          <Box sx={{ width: { xs: '100%', md: '50%' }, height: { xs: 300, md: '100vh' }, position: 'relative' }}>
+          <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, height: { xs: 300, md: '100%' }, minHeight: { xs: 300, md: 400 }, display: 'flex', alignItems: 'stretch', justifyContent: 'center', position: 'relative', bgcolor: 'grey.100' }}>
             {/* Skeleton always rendered behind the image */}
             <Skeleton
               variant="rectangular"
@@ -139,15 +140,11 @@ export default function MemoryDetailPage() {
                 width: '100%',
                 height: '100%',
                 objectFit: 'cover',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                zIndex: 2,
                 opacity: imgLoaded && !imgError ? 1 : 0,
                 transition: 'opacity 0.3s',
                 background: 'transparent',
-                pointerEvents: 'none',
                 display: 'block',
+                zIndex: 2,
               }}
               onLoad={() => setImgLoaded(true)}
               onError={() => setImgError(true)}
@@ -155,7 +152,7 @@ export default function MemoryDetailPage() {
             />
           </Box>
           {/* Right: Details */}
-          <Box sx={{ width: { xs: '100%', md: '50%' }, height: { xs: 'auto', md: '100vh' }, overflowY: 'auto', p: { xs: 2, md: 6 }, bgcolor: 'background.paper', position: 'relative' }}>
+          <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, p: { xs: 2, md: 6 }, bgcolor: 'background.paper', position: 'relative', flex: 1, overflowY: 'auto' }}>
             {/* Context Menu Trigger */}
             <IconButton
               aria-label="memory actions"
@@ -258,6 +255,6 @@ export default function MemoryDetailPage() {
           </Box>
         </Stack>
       )}
-    </Box>
+    </Container>
   );
 } 
