@@ -1,6 +1,6 @@
 # Task ID: 10
 # Title: Develop Search and Filtering System
-# Status: pending
+# Status: done
 # Dependencies: 7, 8
 # Priority: medium
 # Description: Implement search functionality for finding memories by title, description, or tagged people
@@ -19,7 +19,7 @@ Implement GraphQL query for searching memories with various parameters. Create a
 Test search with various keywords and combinations. Verify that results are relevant and properly ranked. Test filtering with different criteria. Verify that combined filtering works correctly with multiple parameters.
 
 # Subtasks:
-## 1. Implement GraphQL Search Query API [pending]
+## 1. Implement GraphQL Search Query API [done]
 ### Dependencies: None
 ### Description: Create GraphQL query endpoint for searching memories with various parameters including text search, date ranges, and tagged people filters.
 ### Details:
@@ -31,19 +31,19 @@ Define a new GraphQL query called `searchMemories` that accepts parameters for t
 ### Details:
 Create a search service that handles text search across memory titles and descriptions. Implement efficient database queries that support partial matching and relevance sorting. Add logic for filtering by date ranges and tagged people. Optimize queries for performance with appropriate indexes. Implement highlighting of matched terms in the search results.
 
-## 3. Build Search Input Component with Auto-suggestions [pending]
+## 3. Build Search Input Component with Auto-suggestions [done]
 ### Dependencies: 10.1
 ### Description: Create a React component for the search input field with auto-suggestion functionality that provides real-time feedback as users type.
 ### Details:
 Develop a search input component using React and MUI v7. Implement debounced input handling to prevent excessive API calls. Create an auto-suggestion dropdown that displays potential matches as users type. Handle keyboard navigation within suggestions. Style the component according to the project's UI standards. Connect the component to the GraphQL API to fetch suggestions.
 
-## 4. Implement Filtering Controls UI [pending]
+## 4. Implement Filtering Controls UI [done]
 ### Dependencies: 10.3
 ### Description: Create UI components for filtering search results by date ranges, tagged people, and combined criteria.
 ### Details:
 Develop filter control components using React and MUI v7, including date range pickers and people selection dropdowns. Implement state management for active filters. Create a filter panel that can be expanded/collapsed. Ensure the UI is responsive and follows accessibility guidelines. Connect filter controls to the search component to update results in real-time.
 
-## 5. Integrate Search and Filtering with Timeline View [pending]
+## 5. Integrate Search and Filtering with Timeline View [done]
 ### Dependencies: 10.2, 10.3, 10.4
 ### Description: Integrate the search and filtering system with the existing memory timeline view, ensuring seamless user experience and consistent UI.
 ### Details:
