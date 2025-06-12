@@ -19,6 +19,7 @@ import TextField from '@mui/material/TextField';
 import Chip from '@mui/material/Chip';
 import { useQuery, gql } from '@apollo/client';
 import { useSearchParams } from 'next/navigation';
+import SearchMemoriesInput, { type MemorySuggestion } from './SearchMemoriesInput';
 
 const PAGE_SIZE = 5;
 
@@ -51,6 +52,7 @@ const MemoryTimelineContainer: React.FC = () => {
   const [selectedPeople, setSelectedPeople] = useState<Person[]>([]);
   const { data: peopleData, loading: peopleLoading, error: peopleError } = useQuery<{ people: Person[] }>(GET_ALL_PEOPLE);
   const searchParams = useSearchParams();
+  const [searchSelection, setSearchSelection] = useState<MemorySuggestion | null>(null);
 
   // Move shortcutOptions here so minDate/maxDate are in scope
   const shortcutOptions: ShortcutOption[] = [
@@ -230,6 +232,15 @@ const MemoryTimelineContainer: React.FC = () => {
     setInitialLoad(true);
   }, []);
 
+  // Add effect to log or handle search selection
+  useEffect(() => {
+    if (searchSelection) {
+      // For now, just log the selected memory suggestion
+      console.log('Selected memory from search:', searchSelection);
+      // In the future: scroll to or highlight the memory in the timeline
+    }
+  }, [searchSelection]);
+
   return (
     <Box
       sx={{
@@ -242,6 +253,15 @@ const MemoryTimelineContainer: React.FC = () => {
       role="region"
       aria-label="Memory timeline"
     >
+      {/* Search Input */}
+      <Box sx={{ mb: 3 }}>
+        <SearchMemoriesInput
+          value={searchSelection}
+          onChange={setSearchSelection}
+          label="Search Memories"
+          placeholder="Type to search..."
+        />
+      </Box>
       {/* Date Range Filter */}
       <Box sx={{ mb: 3 }}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
