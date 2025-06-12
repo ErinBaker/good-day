@@ -587,7 +587,7 @@
           "description": "Display all memories associated with the person in chronological order, using memory cards similar to the timeline view.",
           "dependencies": [],
           "details": "Extend the GraphQL query to include all memories associated with the person. Implement a chronological list component that renders memory cards for each memory. Include date headers to group memories by time period. Add sorting controls (newest/oldest first). Reuse the existing memory card component from the timeline view, adapting it as needed for the person context.",
-          "status": "pending",
+          "status": "done",
           "testStrategy": "Test the sorting functionality and verify that memories appear in the correct order. Test with various memory counts to ensure performance."
         },
         {

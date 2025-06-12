@@ -12,6 +12,10 @@ import IconButton from '@mui/material/IconButton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Button from '@mui/material/Button';
 import { useState, useMemo } from 'react';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import { useRouter } from 'next/navigation';
 
 const PERSON_MEMORIES_QUERY = gql`
   query PersonMemories($id: ID!) {
@@ -34,7 +38,7 @@ const PERSON_MEMORIES_QUERY = gql`
 export default function PersonDetailPage() {
   const params = useParams();
   const id = params && typeof params.id !== 'undefined' ? (Array.isArray(params.id) ? params.id[0] : params.id) : '';
-  const { data, loading, error } = useQuery(PERSON_MEMORIES_QUERY, { variables: { id } });
+  const { data, loading, error } = useQuery(PERSON_MEMORIES_QUERY, { variables: { id }, fetchPolicy: 'network-only' });
   const person = data?.person;
   const memories = data?.memories?.items || [];
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
@@ -45,6 +49,21 @@ export default function PersonDetailPage() {
       return sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
     });
   }, [memories, sortOrder]);
+  const router = useRouter();
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setMenuAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+  };
+
+  const handleEdit = () => {
+    handleMenuClose();
+    router.push(`/people/${id}/edit`);
+  };
 
   return (
     <Box sx={{ maxWidth: 900, mx: 'auto', py: 4, px: { xs: 1, sm: 2 } }}>
@@ -59,7 +78,7 @@ export default function PersonDetailPage() {
       {person && (
         <>
           {/* Header with back button, avatar, name, and relationship */}
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, position: 'relative' }}>
             <IconButton aria-label="Back" onClick={() => window.history.back()} sx={{ mr: 2 }}>
               <ArrowBackIcon />
             </IconButton>
@@ -72,6 +91,26 @@ export default function PersonDetailPage() {
                 <Typography variant="subtitle1" color="text.secondary">{person.relationship}</Typography>
               )}
             </Box>
+            {/* Context menu in upper right */}
+            <IconButton
+              aria-label="person actions"
+              aria-controls={menuAnchorEl ? 'person-actions-menu' : undefined}
+              aria-haspopup="true"
+              onClick={handleMenuOpen}
+              sx={{ position: 'absolute', top: 0, right: 0 }}
+            >
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              id="person-actions-menu"
+              anchorEl={menuAnchorEl}
+              open={Boolean(menuAnchorEl)}
+              onClose={handleMenuClose}
+              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+              <MenuItem onClick={handleEdit}>Edit</MenuItem>
+            </Menu>
           </Box>
           {/* Photo masonry grid with sorting toggle */}
           <Box sx={{ mt: 4 }}>

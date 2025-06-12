@@ -25,7 +25,7 @@ Test person profile with various numbers of associated memories. Verify that mem
 ### Details:
 Create a new PersonProfileView component that displays the person's avatar, name, and metadata (e.g., relationship, birthday, contact info). Implement the GraphQL query to fetch person data. Use a responsive layout with appropriate spacing and typography. Include a header section with the person's name and a back button to return to the previous view.
 
-## 2. Implement Chronological Memory List for Person [pending]
+## 2. Implement Chronological Memory List for Person [done]
 ### Dependencies: None
 ### Description: Display all memories associated with the person in chronological order, using memory cards similar to the timeline view.
 ### Details:
