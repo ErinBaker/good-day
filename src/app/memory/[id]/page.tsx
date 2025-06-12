@@ -22,6 +22,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const MEMORY_DETAIL_QUERY = gql`
   query Memory($id: ID!) {
@@ -231,6 +233,27 @@ export default function MemoryDetailPage() {
                 <strong>Created:</strong> {memory.createdAt ? new Date(memory.createdAt).toLocaleString() : 'Unknown'}<br />
                 <strong>Last Updated:</strong> {memory.updatedAt ? new Date(memory.updatedAt).toLocaleString() : 'Unknown'}
               </Typography>
+            </Box>
+            {/* Previous/Next Navigation */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, mt: 3 }}>
+              <Button
+                variant="outlined"
+                startIcon={<ArrowBackIcon />}
+                onClick={() => memory.previousMemoryId && router.push(`/memory/${memory.previousMemoryId}`)}
+                disabled={!memory.previousMemoryId}
+                aria-label="Previous memory"
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outlined"
+                endIcon={<ArrowForwardIcon />}
+                onClick={() => memory.nextMemoryId && router.push(`/memory/${memory.nextMemoryId}`)}
+                disabled={!memory.nextMemoryId}
+                aria-label="Next memory"
+              >
+                Next
+              </Button>
             </Box>
           </Box>
         </Stack>
