@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useQuery, useMutation, gql } from "@apollo/client";
+import { useQuery, useMutation, gql, useApolloClient } from "@apollo/client";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -57,10 +57,12 @@ export default function MemoryDetailPage() {
   const [menuAnchorEl, setMenuAnchorEl] = React.useState<null | HTMLElement>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const router = useRouter();
+  const client = useApolloClient();
   const [deleteMemory, { loading: deleting }] = useMutation(DELETE_MEMORY_MUTATION, {
     variables: { id },
-    onCompleted: () => {
+    onCompleted: async () => {
       setDeleteDialogOpen(false);
+      await client.refetchQueries({ include: ["Memories"] });
       router.push("/");
     },
     onError: () => {
