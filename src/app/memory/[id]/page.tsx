@@ -79,7 +79,7 @@ export default function MemoryDetailPage() {
   };
   const handleEdit = () => {
     handleMenuClose();
-    router.push(`/memories/${id}/edit`);
+    router.push(`/memory/${id}/edit`);
   };
   const handleDelete = () => {
     handleMenuClose();
@@ -200,7 +200,7 @@ export default function MemoryDetailPage() {
             </Typography>
             <Box sx={{ mb: 2 }}>
               <Typography variant="h4" component="div" sx={{ mb: 1 }}>
-                {memory.description || <span style={{ color: '#aaa' }}>You didn&apos;t add a note, but the feeling lingers.</span>}
+                {memory.description || <span>You didn&apos;t add a note, but the feeling lingers.</span>}
               </Typography>
             </Box>
             <Box sx={{ mb: 2 }}>
