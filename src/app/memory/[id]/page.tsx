@@ -27,6 +27,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Container from '@mui/material/Container';
 import CloseIcon from '@mui/icons-material/Close';
 import dynamic from 'next/dynamic';
+import { AvatarGenerator } from 'random-avatar-generator';
 
 const MEMORY_DETAIL_QUERY = gql`
   query Memory($id: ID!) {
@@ -54,6 +55,8 @@ const DELETE_MEMORY_MUTATION = gql`
 `;
 
 const MemoryLocationMap = dynamic(() => import('../../components/MemoryLocationMap'), { ssr: false });
+
+const avatarGenerator = new AvatarGenerator();
 
 export default function MemoryDetailPage() {
   const params = useParams();
@@ -226,18 +229,21 @@ export default function MemoryDetailPage() {
             <Box sx={{ mb: 2 }}>
               {memory.people && memory.people.length > 0 ? (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
-                  {memory.people.map((person: { id: string; name: string; relationship?: string }) => (
-                    <Chip
-                      key={person.id}
-                      avatar={<Avatar sx={{ width: 24, height: 24 }}>{person.name[0]}</Avatar>}
-                      label={person.relationship ? `${person.name} (${person.relationship})` : person.name}
-                      variant="outlined"
-                      sx={{ fontSize: '1em', height: 32, cursor: 'pointer' }}
-                      component="a"
-                      href={`/people/${person.id}`}
-                      clickable
-                    />
-                  ))}
+                  {memory.people.map((person: { id: string; name: string; relationship?: string }) => {
+                    const avatarUrl = person.name ? avatarGenerator.generateRandomAvatar(person.name) : undefined;
+                    return (
+                      <Chip
+                        key={person.id}
+                        avatar={<Avatar src={avatarUrl} sx={{ width: 24, height: 24 }} alt={person.name} />}
+                        label={person.relationship ? `${person.name} (${person.relationship})` : person.name}
+                        variant="outlined"
+                        sx={{ fontSize: '1em', height: 32, cursor: 'pointer' }}
+                        component="a"
+                        href={`/people/${person.id}`}
+                        clickable
+                      />
+                    );
+                  })}
                 </Box>
               ) : (
                 <Typography variant="body2" color="text.secondary">No people tagged.</Typography>
