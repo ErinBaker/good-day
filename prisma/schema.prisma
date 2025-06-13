@@ -20,6 +20,7 @@ model Memory {
   updatedAt   DateTime @default(now())
   people      Person[]
   photos      Photo[]
+  location    Json?
 }
 
 model Person {

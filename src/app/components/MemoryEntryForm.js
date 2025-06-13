@@ -6,10 +6,11 @@ import PersonSelection from './PersonSelection';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { TextField } from '@mui/material';
+import exifr from 'exifr';
 
 const CREATE_MEMORY = gql`
-  mutation CreateMemory($title: String!, $date: String!, $description: String!, $photoUrl: String!) {
-    createMemory(input: { title: $title, date: $date, description: $description, photoUrl: $photoUrl }) {
+  mutation CreateMemory($title: String!, $date: String!, $description: String!, $photoUrl: String!, $location: LocationInput) {
+    createMemory(input: { title: $title, date: $date, description: $description, photoUrl: $photoUrl, location: $location }) {
       id
       title
       date
@@ -40,6 +41,7 @@ function MemoryEntryForm({ onMemoryCreated }) {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState(dayjs());
   const [description, setDescription] = useState('');
+  const [location, setLocation] = useState({ lat: '', lng: '' });
   const [detailsError, setDetailsError] = useState('');
   const [creatingMemory, setCreatingMemory] = useState(false);
   const [memoryId, setMemoryId] = useState(null);
@@ -56,10 +58,28 @@ function MemoryEntryForm({ onMemoryCreated }) {
   const [addPeople] = useMutation(ADD_PEOPLE);
 
   // Step 1: Handle file select (no upload yet)
-  const handleFileSelect = (file) => {
+  const handleFileSelect = async (file) => {
     setPhotoError('');
     setPhotoFile(file);
-    if (file) setActiveStep(1);
+    if (file) {
+      // Extract EXIF metadata
+      try {
+        const exif = await exifr.parse(file, { gps: true });
+        // Date
+        if (exif?.DateTimeOriginal || exif?.CreateDate) {
+          setDate(dayjs(exif.DateTimeOriginal || exif.CreateDate));
+        }
+        // Location
+        if (exif?.latitude && exif?.longitude) {
+          setLocation({ lat: exif.latitude.toString(), lng: exif.longitude.toString() });
+        } else {
+          setLocation({ lat: '', lng: '' });
+        }
+      } catch {
+        // Ignore EXIF errors, just don't autofill
+      }
+      setActiveStep(1);
+    }
   };
 
   // Step 2: Handle details submit (upload image now, then create memory)
@@ -72,6 +92,11 @@ function MemoryEntryForm({ onMemoryCreated }) {
     }
     if (!photoFile) {
       setDetailsError('Photo is required.');
+      return;
+    }
+    // Validate location if present
+    if ((location.lat && isNaN(Number(location.lat))) || (location.lng && isNaN(Number(location.lng)))) {
+      setDetailsError('Latitude and longitude must be numbers.');
       return;
     }
     setCreatingMemory(true);
@@ -97,6 +122,7 @@ function MemoryEntryForm({ onMemoryCreated }) {
           date: date ? date.toISOString() : dayjs().toISOString(),
           description: description.trim(),
           photoUrl,
+          location: location.lat && location.lng ? { lat: parseFloat(location.lat), lng: parseFloat(location.lng) } : null,
         },
       });
       setMemoryId(gqlRes.data.createMemory.id);
@@ -185,6 +211,26 @@ function MemoryEntryForm({ onMemoryCreated }) {
               minRows={3}
               inputProps={{ maxLength: 500 }}
             />
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Latitude"
+                value={location.lat}
+                onChange={e => setLocation(l => ({ ...l, lat: e.target.value }))}
+                fullWidth
+                type="number"
+                inputProps={{ step: 'any', min: -90, max: 90 }}
+                placeholder="Latitude"
+              />
+              <TextField
+                label="Longitude"
+                value={location.lng}
+                onChange={e => setLocation(l => ({ ...l, lng: e.target.value }))}
+                fullWidth
+                type="number"
+                inputProps={{ step: 'any', min: -180, max: 180 }}
+                placeholder="Longitude"
+              />
+            </Box>
           </Box>
           {detailsError && <Alert severity="error" sx={{ mt: 2 }}>{detailsError}</Alert>}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>

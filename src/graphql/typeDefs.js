@@ -25,6 +25,7 @@ const typeDefs = gql`
     photos: [Photo!]!
     previousMemoryId: ID
     nextMemoryId: ID
+    location: Location
   }
 
   type Person {
@@ -36,12 +37,18 @@ const typeDefs = gql`
     memories: [Memory!]!
   }
 
+  type Location {
+    lat: Float!
+    lng: Float!
+  }
+
   input MemoryInput {
     title: String!
     date: String!
     description: String!
     photoUrl: String
     peopleIds: [ID!]
+    location: LocationInput
   }
 
   input MemoryUpdateInput {
@@ -50,6 +57,12 @@ const typeDefs = gql`
     description: String
     photoUrl: String
     peopleIds: [ID!]
+    location: LocationInput
+  }
+
+  input LocationInput {
+    lat: Float!
+    lng: Float!
   }
 
   input PersonInput {

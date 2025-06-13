@@ -10,6 +10,7 @@ export interface Memory {
   updatedAt: string;
   people: { id: string; name: string; relationship?: string }[];
   photos: { id: string; originalFilename: string; folder: string; baseFilename: string; mimeType: string; size: number; width: number; height: number; createdAt: string }[];
+  location?: { lat: number; lng: number };
 }
 
 const MEMORIES_QUERY = gql`
@@ -38,6 +39,10 @@ const MEMORIES_QUERY = gql`
           width
           height
           createdAt
+        }
+        location {
+          lat
+          lng
         }
       }
       totalCount

@@ -154,6 +154,7 @@ const resolvers = {
           date: input.date,
           description: input.description,
           photoUrl: input.photoUrl,
+          location: input.location ? { lat: input.location.lat, lng: input.location.lng } : undefined,
         },
         include: { people: true, photos: true },
       });
@@ -185,6 +186,9 @@ const resolvers = {
       if (typeof input.photoUrl !== 'undefined') data.photoUrl = input.photoUrl;
       if (typeof input.peopleIds !== 'undefined') {
         data.people = { set: input.peopleIds.map(id => ({ id })) };
+      }
+      if (typeof input.location !== 'undefined') {
+        data.location = input.location ? { lat: input.location.lat, lng: input.location.lng } : undefined;
       }
       const memory = await prisma.memory.update({
         where: { id },
@@ -295,6 +299,18 @@ const resolvers = {
     },
     createdAt: (parent) => parent.createdAt instanceof Date ? parent.createdAt.toISOString() : parent.createdAt,
     updatedAt: (parent) => parent.updatedAt instanceof Date ? parent.updatedAt.toISOString() : parent.updatedAt,
+    location: (parent) => {
+      if (!parent.location) return null;
+      if (typeof parent.location === 'object' && parent.location.lat !== undefined && parent.location.lng !== undefined) {
+        return parent.location;
+      }
+      // If location is a string (legacy), try to parse
+      try {
+        const loc = typeof parent.location === 'string' ? JSON.parse(parent.location) : parent.location;
+        if (loc && typeof loc.lat === 'number' && typeof loc.lng === 'number') return loc;
+      } catch {}
+      return null;
+    },
   },
   Person: {
     memories: async (parent) => {
