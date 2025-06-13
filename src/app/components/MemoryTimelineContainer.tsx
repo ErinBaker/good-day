@@ -274,7 +274,7 @@ const MemoryTimelineContainer: React.FC = () => {
       </Box>
 
       {/* Main layout: sidebar (filters) + feed */}
-      <Stack direction={{ xs: 'column', md: 'row' }} spacing={4} alignItems="flex-start">
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems="flex-start">
         {/* Sticky Sidebar Filters */}
         <Box
           sx={{
@@ -389,7 +389,7 @@ const MemoryTimelineContainer: React.FC = () => {
             {loading && (
               <>
                 {[...Array(3)].map((_, i) => (
-                  <Box key={i} sx={{ width: '100%', maxWidth: 600, mx: 'auto', mb: 2 }}>
+                  <Box key={i} sx={{ width: '100%', mx: 'auto', mb: 2 }}>
                     <Box
                       sx={{
                         bgcolor: 'background.paper',
@@ -402,7 +402,7 @@ const MemoryTimelineContainer: React.FC = () => {
                       <Skeleton
                         variant="rectangular"
                         width="100%"
-                        height={340}
+                        height={640}
                         sx={{ borderRadius: '8px 8px 0 0', bgcolor: 'grey.100' }}
                       />
                       <Box sx={{ p: { xs: 1, sm: 2 } }}>
@@ -433,6 +433,24 @@ const MemoryTimelineContainer: React.FC = () => {
             {/* Infinite scroll loader */}
             <div ref={loaderRef}>
               {hasMore && !loading && <CircularProgress sx={{ my: 4 }} />}
+              {!hasMore && !loading && allMemories.length > 0 && (
+                <Box textAlign="center" py={6}>
+                  <Typography variant="h6" color="text.secondary" gutterBottom>
+                    You&rsquo;ve reached the end of your memories!
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    Want to add a new one?
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    href="/create-memory"
+                    sx={{ mt: 1 }}
+                  >
+                    Create New Memory
+                  </Button>
+                </Box>
+              )}
             </div>
           </Stack>
         </Box>

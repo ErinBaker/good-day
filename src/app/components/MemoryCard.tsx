@@ -55,7 +55,8 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, peo
       <Card
         sx={{
           width: '100%',
-          maxWidth: 600,
+          maxWidth: 640,
+          height: 'auto',
           mx: 'auto',
           display: 'flex',
           flexDirection: 'column',
@@ -81,18 +82,22 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, peo
         role="article"
         tabIndex={-1}
       >
-        <CardMedia
-          component="img"
-          ref={imgRef}
-          src={imgSrc}
-          alt={title}
-          sx={{
-            width: '100%',
-            height: { xs: 200, sm: 340 },
-            objectFit: 'cover',
-            borderRadius: '8px 8px 0 0',
-          }}
-        />
+        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#f5f5f5', borderRadius: '8px 8px 0 0' }}>
+          <CardMedia
+            component="img"
+            ref={imgRef}
+            src={imgSrc}
+            alt={title}
+            sx={{
+              height: 640,
+              objectFit: 'cover',
+              background: '#f5f5f5',
+              display: 'block',
+              margin: '0 auto',
+              borderRadius: '8px 8px 0 0',
+            }}
+          />
+        </Box>
         <CardContent sx={{ flex: 1, minWidth: 0, p: { xs: 1, sm: 2 } }}>
           {title && (
             <Typography id={`memory-title-${id}`} variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
