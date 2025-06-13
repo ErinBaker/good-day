@@ -9,7 +9,7 @@ export default function CreatePersonPage() {
   const router = useRouter();
 
   const handlePersonCreated = () => {
-    router.push("/people/list");
+    router.push("/people");
   };
 
   return (
