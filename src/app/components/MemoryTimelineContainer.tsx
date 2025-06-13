@@ -386,7 +386,35 @@ const MemoryTimelineContainer: React.FC = () => {
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Stack spacing={3} alignItems="stretch">
             {/* Loading state */}
-            {loading && <Skeleton variant="rectangular" width="100%" height={200} />}
+            {loading && (
+              <>
+                {[...Array(3)].map((_, i) => (
+                  <Box key={i} sx={{ width: '100%', maxWidth: 600, mx: 'auto', mb: 2 }}>
+                    <Box
+                      sx={{
+                        bgcolor: 'background.paper',
+                        borderRadius: 2,
+                        boxShadow: 3,
+                        p: { xs: 1, sm: 2 },
+                        mb: 0,
+                      }}
+                    >
+                      <Skeleton
+                        variant="rectangular"
+                        width="100%"
+                        height={340}
+                        sx={{ borderRadius: '8px 8px 0 0', bgcolor: 'grey.100' }}
+                      />
+                      <Box sx={{ p: { xs: 1, sm: 2 } }}>
+                        <Skeleton variant="text" width="60%" height={32} sx={{ mb: 1 }} />
+                        <Skeleton variant="text" width="90%" height={24} sx={{ mb: 1 }} />
+                        <Skeleton variant="text" width="40%" height={20} />
+                      </Box>
+                    </Box>
+                  </Box>
+                ))}
+              </>
+            )}
             {/* Empty state */}
             {!loading && allMemories.length === 0 && (
               <Box textAlign="center" py={6}>
