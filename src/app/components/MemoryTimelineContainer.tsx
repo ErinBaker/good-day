@@ -256,7 +256,7 @@ const MemoryTimelineContainer: React.FC = () => {
   }, [selectedMemoryId, allMemories]);
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
         Memory Timeline
       </Typography>
@@ -276,31 +276,44 @@ const MemoryTimelineContainer: React.FC = () => {
         </Box>
       </Box>
 
-      <Paper elevation={2} sx={{ p: 2, mb: 4 }}>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
-          {/* Date range picker, people filter */}
-          <Box sx={{ mb: 3 }}>
+      {/* Main layout: sidebar (filters) + feed */}
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={4} alignItems="flex-start">
+        {/* Sticky Sidebar Filters */}
+        <Box
+          sx={{
+            width: { xs: '100%', md: 320 },
+            flexShrink: 0,
+            position: { md: 'sticky' },
+            top: { md: 32 },
+            alignSelf: { md: 'flex-start' },
+            zIndex: 1,
+          }}
+        >
+          <Paper elevation={3} sx={{ p: 3, mb: { xs: 2, md: 0 } }}>
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Filters
+            </Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap' }}>
-                {shortcutOptions.map((shortcut) => (
-                  <Button
-                    key={shortcut.label}
-                    size="small"
-                    variant="outlined"
-                    onClick={() => handleShortcut(shortcut)}
-                  >
-                    {shortcut.label}
-                  </Button>
-                ))}
-              </Stack>
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+              <Stack spacing={2}>
+                <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                  {shortcutOptions.map((shortcut) => (
+                    <Button
+                      key={shortcut.label}
+                      size="small"
+                      variant="outlined"
+                      onClick={() => handleShortcut(shortcut)}
+                    >
+                      {shortcut.label}
+                    </Button>
+                  ))}
+                </Stack>
                 <DatePicker
                   label="Start Date"
                   value={dateRange[0] && dayjs.isDayjs(dateRange[0]) ? dateRange[0] : null}
                   onChange={(newValue) => {
                     setDateRange([newValue, dateRange[1]]);
                   }}
-                  slotProps={{ textField: { size: 'small' } }}
+                  slotProps={{ textField: { size: 'small', fullWidth: true } }}
                   maxDate={dateRange[1] || undefined}
                 />
                 <DatePicker
@@ -309,74 +322,78 @@ const MemoryTimelineContainer: React.FC = () => {
                   onChange={(newValue) => {
                     setDateRange([dateRange[0], newValue]);
                   }}
-                  slotProps={{ textField: { size: 'small' } }}
+                  slotProps={{ textField: { size: 'small', fullWidth: true } }}
                   minDate={dateRange[0] || undefined}
+                />
+                <Autocomplete
+                  multiple
+                  options={peopleData?.people || []}
+                  value={selectedPeople}
+                  onChange={(_e, newValue) => {
+                    setSelectedPeople(newValue as Person[]);
+                    setAllMemories([]); // Reset timeline when filter changes
+                    setOffset(0);
+                    setHasMore(true);
+                    setInitialLoad(true);
+                  }}
+                  getOptionLabel={option => option.name + (option.relationship ? ` (${option.relationship})` : '')}
+                  isOptionEqualToValue={(option, value) => option.id === value.id}
+                  loading={peopleLoading}
+                  disabled={peopleLoading || !!peopleError}
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      label="Filter by People"
+                      placeholder="Select people..."
+                      error={!!peopleError}
+                      helperText={peopleError ? 'Failed to load people' : ''}
+                      fullWidth
+                    />
+                  )}
+                  renderTags={(selected, getTagProps) =>
+                    selected.map((option, index) => {
+                      const restTagProps = Object.fromEntries(Object.entries(getTagProps({ index })).filter(([k]) => k !== 'key'));
+                      return (
+                        <Chip
+                          key={option.id}
+                          label={option.name + (option.relationship ? ` (${option.relationship})` : '')}
+                          {...restTagProps}
+                        />
+                      );
+                    })
+                  }
                 />
               </Stack>
             </LocalizationProvider>
-          </Box>
-          <Box sx={{ mb: 3 }}>
-            <Autocomplete
-              multiple
-              options={peopleData?.people || []}
-              value={selectedPeople}
-              onChange={(_e, newValue) => {
-                setSelectedPeople(newValue as Person[]);
-                setAllMemories([]); // Reset timeline when filter changes
-                setOffset(0);
-                setHasMore(true);
-                setInitialLoad(true);
-              }}
-              getOptionLabel={option => option.name + (option.relationship ? ` (${option.relationship})` : '')}
-              isOptionEqualToValue={(option, value) => option.id === value.id}
-              loading={peopleLoading}
-              disabled={peopleLoading || !!peopleError}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  label="Filter by People"
-                  placeholder="Select people..."
-                  error={!!peopleError}
-                  helperText={peopleError ? 'Failed to load people' : ''}
-                />
-              )}
-              renderTags={(selected, getTagProps) =>
-                selected.map((option, index) => {
-                  const restTagProps = Object.fromEntries(Object.entries(getTagProps({ index })).filter(([k]) => k !== 'key'));
-                  return (
-                    <Chip
-                      key={option.id}
-                      label={option.name + (option.relationship ? ` (${option.relationship})` : '')}
-                      {...restTagProps}
-                    />
-                  );
-                })
-              }
-            />
-          </Box>
-        </Stack>
-      </Paper>
+          </Paper>
+        </Box>
 
-      <Stack spacing={3} alignItems="center">
-        {/* Loading state */}
-        {loading && <Skeleton variant="rectangular" width="100%" height={200} />}
-        {/* Empty state */}
-        {!loading && allMemories.length === 0 && (
-          <Box textAlign="center" py={6}>
-            <SentimentDissatisfiedIcon sx={{ fontSize: 48, color: 'text.secondary' }} />
-            <Typography variant="h6" color="text.secondary" mt={2}>
-              No memories found for your filters.
-            </Typography>
-          </Box>
-        )}
-        {/* Memory cards */}
-        {allMemories.map(memory => (
-          <MemoryCard key={memory.id} {...memory} />
-        ))}
-        {/* Infinite scroll loader */}
-        <div ref={loaderRef}>
-          {hasMore && !loading && <CircularProgress sx={{ my: 4 }} />}
-        </div>
+        {/* Memory Feed */}
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Stack spacing={3} alignItems="stretch">
+            {/* Loading state */}
+            {loading && <Skeleton variant="rectangular" width="100%" height={200} />}
+            {/* Empty state */}
+            {!loading && allMemories.length === 0 && (
+              <Box textAlign="center" py={6}>
+                <SentimentDissatisfiedIcon sx={{ fontSize: 48, color: 'text.secondary' }} />
+                <Typography variant="h6" color="text.secondary" mt={2}>
+                  No memories found for your filters.
+                </Typography>
+              </Box>
+            )}
+            {/* Memory cards */}
+            {allMemories.map(memory => (
+              <Box key={memory.id} sx={{ width: '100%' }}>
+                <MemoryCard {...memory} />
+              </Box>
+            ))}
+            {/* Infinite scroll loader */}
+            <div ref={loaderRef}>
+              {hasMore && !loading && <CircularProgress sx={{ my: 4 }} />}
+            </div>
+          </Stack>
+        </Box>
       </Stack>
     </Container>
   );
