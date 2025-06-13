@@ -55,46 +55,62 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, peo
       <Card
         sx={{
           width: '100%',
-          maxWidth: 640,
-          height: 'auto',
+          maxWidth: 600,
           mx: 'auto',
           display: 'flex',
           flexDirection: 'column',
           mb: 2,
           boxShadow: 3,
           borderRadius: 2,
-          transition: 'box-shadow 0.2s, transform 0.2s, background 0.2s',
+          transition: 'box-shadow 0.25s cubic-bezier(.4,0,.2,1), border-color 0.25s cubic-bezier(.4,0,.2,1)',
           outline: 'none',
           bgcolor: selected ? theme.palette.action.selected : 'background.paper',
           p: { xs: 1, sm: 2 },
           cursor: 'pointer',
-          border: selected ? '3px solid' : undefined,
-          borderColor: selected ? theme.palette.primary.main : undefined,
+          border: '2px solid',
+          borderColor: selected ? theme.palette.primary.main : 'transparent',
           '&:hover, &:focus-visible': {
             boxShadow: 8,
-            transform: 'scale(1.01)',
             background: theme.palette.action.hover,
-            border: '2px solid',
-            borderColor: 'primary.main',
+            borderColor: theme.palette.primary.main,
           },
         }}
         aria-labelledby={`memory-title-${id}`}
         role="article"
         tabIndex={-1}
       >
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', background: '#f5f5f5', borderRadius: '8px 8px 0 0' }}>
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            background: '#f5f5f5',
+            borderRadius: '8px 8px 0 0',
+            overflow: 'hidden',
+            position: 'relative',
+            '&:hover img, &:focus-visible img': {
+              transform: 'scale(1.04)',
+            },
+          }}
+        >
           <CardMedia
             component="img"
             ref={imgRef}
             src={imgSrc}
             alt={title}
             sx={{
+              width: 640,
               height: 640,
+              maxWidth: '100%',
+              maxHeight: '100%',
               objectFit: 'cover',
               background: '#f5f5f5',
               display: 'block',
               margin: '0 auto',
               borderRadius: '8px 8px 0 0',
+              transition: 'transform 0.35s cubic-bezier(.4,0,.2,1)',
+              willChange: 'transform',
             }}
           />
         </Box>
