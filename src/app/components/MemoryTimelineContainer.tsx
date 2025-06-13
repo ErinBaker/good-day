@@ -8,7 +8,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs, { Dayjs } from 'dayjs';
-import { Stack, Button, Avatar } from '@mui/material';
+import { Stack, Button, Avatar, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
 import Skeleton from '@mui/material/Skeleton';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -40,6 +40,8 @@ type Person = {
   relationship?: string;
 };
 
+type ShortcutOption = { label: string; getValue: () => [Dayjs | null, Dayjs | null] };
+
 const avatarGenerator = new AvatarGenerator();
 
 const MemoryTimelineContainer: React.FC = () => {
@@ -57,7 +59,6 @@ const MemoryTimelineContainer: React.FC = () => {
   const [searchText, setSearchText] = useState<string>('');
   const [selectedMemoryId, setSelectedMemoryId] = useState<string | null>(null);
 
-  // Move shortcutOptions here so minDate/maxDate are in scope
   const shortcutOptions: ShortcutOption[] = [
     {
       label: 'This Week',
@@ -89,18 +90,45 @@ const MemoryTimelineContainer: React.FC = () => {
       },
     },
     {
-      label: 'Next Month',
-      getValue: () => {
-        const today = dayjs();
-        const startOfNextMonth = today.endOf('month').add(1, 'day');
-        return [startOfNextMonth, startOfNextMonth.endOf('month')] as [Dayjs, Dayjs];
-      },
-    },
-    {
       label: 'Reset',
       getValue: () => [minDate ? dayjs(minDate) : null, maxDate ? dayjs(maxDate) : null] as [Dayjs | null, Dayjs | null],
     },
   ];
+
+  const [activeShortcut, setActiveShortcut] = useState<number | null>(null);
+
+  // Handler for shortcut buttons
+  const handleShortcut = (index: number) => {
+    const shortcut = shortcutOptions[index];
+    if (shortcut.label === 'Reset') {
+      if (minDate && maxDate) {
+        setDateRange([dayjs(minDate), dayjs(maxDate)]);
+        setHasInitialized(true);
+      } else {
+        setDateRange([null, null]);
+      }
+      setActiveShortcut(null);
+    } else {
+      setDateRange(shortcut.getValue());
+      setActiveShortcut(index);
+    }
+  };
+
+  // Clear active shortcut if date is changed manually
+  useEffect(() => {
+    if (activeShortcut !== null) {
+      const shortcut = shortcutOptions[activeShortcut];
+      const [start, end] = shortcut.getValue();
+      if (
+        !(
+          dateRange[0]?.isSame(start, 'day') &&
+          dateRange[1]?.isSame(end, 'day')
+        )
+      ) {
+        setActiveShortcut(null);
+      }
+    }
+  }, [dateRange]);
 
   // Set initial dateRange from backend only if user hasn't changed them
   useEffect(() => {
@@ -198,21 +226,6 @@ const MemoryTimelineContainer: React.FC = () => {
     dateRange[1] ? dateRange[1].valueOf() : null
   ]);
 
-  type ShortcutOption = { label: string; getValue: () => [Dayjs | null, Dayjs | null] };
-  // Handler for shortcut buttons
-  const handleShortcut = (shortcut: ShortcutOption) => {
-    if (shortcut.label === 'Reset') {
-      if (minDate && maxDate) {
-        setDateRange([dayjs(minDate), dayjs(maxDate)]);
-        setHasInitialized(true);
-      } else {
-        setDateRange([null, null]);
-      }
-    } else {
-      setDateRange(shortcut.getValue());
-    }
-  };
-
   // Pre-select people from URL query param on mount or when peopleData loads
   useEffect(() => {
     if (!peopleData?.people || !searchParams) return;
@@ -292,18 +305,25 @@ const MemoryTimelineContainer: React.FC = () => {
             </Typography>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <Stack spacing={2}>
-                <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
-                  {shortcutOptions.map((shortcut) => (
-                    <Button
+                <ToggleButtonGroup
+                  value={activeShortcut}
+                  exclusive
+                  onChange={(_e, newIndex) => {
+                    if (newIndex !== null) handleShortcut(newIndex);
+                  }}
+                  size="small"
+                  sx={{ flexWrap: 'wrap', mb: 1 }}
+                >
+                  {shortcutOptions.map((shortcut, idx) => (
+                    <ToggleButton
                       key={shortcut.label}
-                      size="small"
-                      variant="outlined"
-                      onClick={() => handleShortcut(shortcut)}
+                      value={idx}
+                      sx={{ minWidth: 100, textTransform: 'none', fontWeight: 500 }}
                     >
                       {shortcut.label}
-                    </Button>
+                    </ToggleButton>
                   ))}
-                </Stack>
+                </ToggleButtonGroup>
                 <DatePicker
                   label="Start Date"
                   value={dateRange[0] && dayjs.isDayjs(dateRange[0]) ? dateRange[0] : null}
@@ -436,7 +456,7 @@ const MemoryTimelineContainer: React.FC = () => {
               {!hasMore && !loading && allMemories.length > 0 && (
                 <Box textAlign="center" py={6}>
                   <Typography variant="h6" color="text.secondary" gutterBottom>
-                    You&rsquo;ve reached the end of your memories!
+                  No more memories here — but there&apos;s always room for one more.
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                     Want to add a new one?

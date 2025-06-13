@@ -4,8 +4,9 @@ import PeopleIcon from '@mui/icons-material/People';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 export const NAVIGATION = [
-  { segment: '', title: 'Home', icon: <DashboardIcon /> },
-  { segment: 'create-memory', title: 'Create Memory', icon: <AddCircleIcon /> },
+
+  { segment: 'create-memory', title: 'Create a memory', icon: <AddCircleIcon /> },
+  { segment: '', title: 'Memories', icon: <DashboardIcon /> },
   { segment: 'people', title: 'People', icon: <PeopleIcon /> },
   { segment: 'stats', title: 'Statistics', icon: <BarChartIcon /> },
 ]; 
