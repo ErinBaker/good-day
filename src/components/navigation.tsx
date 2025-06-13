@@ -6,6 +6,6 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 export const NAVIGATION = [
   { segment: '', title: 'Home', icon: <DashboardIcon /> },
   { segment: 'create-memory', title: 'Create Memory', icon: <AddCircleIcon /> },
-  { segment: 'people/list', title: 'People', icon: <PeopleIcon /> },
+  { segment: 'people', title: 'People', icon: <PeopleIcon /> },
   { segment: 'stats', title: 'Statistics', icon: <BarChartIcon /> },
 ]; 
