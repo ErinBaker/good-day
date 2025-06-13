@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Typography, Stack, ToggleButtonGroup, ToggleButton, List, ListItem, ListItemAvatar, ListItemText, Checkbox, ListItemButton, Autocomplete, TextField, Chip, Avatar, useMediaQuery } from '@mui/material';
+import { Paper, Stack, ToggleButtonGroup, ToggleButton, List, ListItem, ListItemAvatar, ListItemText, Checkbox, ListItemButton, Autocomplete, TextField, Chip, Avatar, useMediaQuery } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers';
@@ -58,7 +58,7 @@ const MemoryTimelineFilters: React.FC<Props> = ({
   return (
     <Box
       sx={{
-        width: { xs: '100%', md: 320 },
+        width: { xs: '100%', md: 380 },
         flexShrink: 0,
         position: { md: 'sticky' },
         top: { md: 32 },
@@ -66,10 +66,7 @@ const MemoryTimelineFilters: React.FC<Props> = ({
         zIndex: 1,
       }}
     >
-      <Paper elevation={3} sx={{ p: 3, mb: { xs: 2, md: 0 } }}>
-        <Typography variant="h6" sx={{ mb: 2 }}>
-          Filters
-        </Typography>
+      <Paper elevation={0} sx={{ mb: { xs: 2, md: 0 }, width: { xs: '100%', md: 380 }, position: { md: 'sticky' } }}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Stack spacing={2}>
             <ToggleButtonGroup
@@ -79,25 +76,25 @@ const MemoryTimelineFilters: React.FC<Props> = ({
                 if (newIndex !== null) handleShortcut(newIndex);
               }}
               size="small"
-              sx={{ flexWrap: 'wrap', mb: 1 }}
+              sx={{ flexWrap: 'wrap' }}
             >
               {shortcutOptions.map((shortcut, idx) => (
                 <ToggleButton
                   key={shortcut.label}
                   value={idx}
-                  sx={{ minWidth: 100, textTransform: 'none', fontWeight: 500 }}
+                  sx={{ textTransform: 'none', fontWeight: 500, fontSize: 12 }}
                 >
                   {shortcut.label}
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
-            <DatePicker
+            <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}><DatePicker
               label="Start Date"
               value={dateRange[0] && dayjs.isDayjs(dateRange[0]) ? dateRange[0] : null}
               onChange={(newValue) => {
                 setDateRange([newValue, dateRange[1]]);
               }}
-              slotProps={{ textField: { size: 'small', fullWidth: true } }}
+              slotProps={{ textField: { size: 'small' } }}
               maxDate={dateRange[1] || undefined}
             />
             <DatePicker
@@ -106,12 +103,12 @@ const MemoryTimelineFilters: React.FC<Props> = ({
               onChange={(newValue) => {
                 setDateRange([dateRange[0], newValue]);
               }}
-              slotProps={{ textField: { size: 'small', fullWidth: true } }}
+              slotProps={{ textField: { size: 'small' } }}
               minDate={dateRange[0] || undefined}
-            />
+            /></Box>
             {/* People Filter */}
             {isLargeScreen ? (
-              <List dense sx={{ maxHeight: 320, overflowY: 'auto', bgcolor: 'background.paper', borderRadius: 1, border: '1px solid', borderColor: 'divider', p: 0 }}>
+              <List dense sx={{ maxHeight: '75vh', width: 380, overflowY: 'auto', overflowX: 'hidden', bgcolor: 'background.paper', borderRadius: 1, border: '1px solid', borderColor: 'divider', p: 0 }}>
                 {peopleData?.people?.map((person) => {
                   const checked = selectedPeople.some((p) => p.id === person.id);
                   const avatarUrl = person.name ? avatarGenerator.generateRandomAvatar(person.name) : undefined;
@@ -216,7 +213,7 @@ const MemoryTimelineFilters: React.FC<Props> = ({
           </Stack>
         </LocalizationProvider>
       </Paper>
-    </Box>
+      </Box>
   );
 };
 

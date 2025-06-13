@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, Typography, CircularProgress } from '@mui/material';
-import { ResponsiveRadialBar } from '@nivo/radial-bar';
+import { ResponsiveTreeMap } from '@nivo/treemap';
 import { usePersonTagStats } from '../useMemories';
 
 const TaggedPersonsChart: React.FC = () => {
@@ -29,37 +29,35 @@ const TaggedPersonsChart: React.FC = () => {
     );
   }
 
-  // Prepare data for Nivo RadialBar
-  const data = personTagStatsSafe.map((stat) => ({
-    id: stat.person.name,
-    data: [
-      {
-        x: stat.person.name,
-        y: stat.tagCount,
-      },
-    ],
-  }));
+  // Prepare data for Nivo Treemap
+  const data = {
+    name: 'Tagged People',
+    children: personTagStatsSafe.map((stat) => ({
+      name: stat.person.name,
+      value: stat.tagCount,
+    })),
+  };
 
   return (
-    <Card sx={{ minWidth: 300, height: 350 }} aria-label="Most frequently tagged people">
+    <Card aria-label="Most frequently tagged people">
       <CardContent>
         <Typography variant="h6" gutterBottom>Most Frequently Tagged People</Typography>
-        <div style={{ height: 250 }}>
-          <ResponsiveRadialBar
+        <div style={{ height: 500 }}>
+          <ResponsiveTreeMap
             data={data}
-            valueFormat={v => `${v}`}
-            startAngle={0}
-            endAngle={360}
-            padding={0.4}
-            cornerRadius={2}
-            radialAxisStart={null}
-            circularAxisOuter={null}
-            legends={[]}
+            identity="name"
+            value="value"
+            label={(datum) => `${datum.data.name} (${datum.value})`}
+            labelSkipSize={12}
+            labelTextColor="#333"
+            parentLabelTextColor="#888"
+            borderColor="#fff"
+            colors={{ scheme: 'nivo' }}
             theme={{
               labels: { text: { fontSize: 12, fill: '#333' } },
               axis: { legend: { text: { fontSize: 14, fill: '#333' } } },
             }}
-            ariaLabel="Tagged persons radial bar chart"
+            ariaLabel="Tagged persons treemap chart"
           />
         </div>
       </CardContent>

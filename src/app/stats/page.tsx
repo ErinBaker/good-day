@@ -18,16 +18,14 @@ const StatisticsDashboardPage: React.FC = () => {
         Memory Statistics & Insights
       </Typography>
       <Stack spacing={3}>
-        <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={3}>
+        <Box display="flex" flexDirection="column" gap={3}>
           <Box flex={1} minWidth={240}><TotalCountsCard /></Box>
-          <Box flex={2} minWidth={320}><TimeSeriesChart /></Box>
-        </Box>
-        <Box display="flex" flexDirection={{ xs: 'column', md: 'row' }} gap={3}>
+          <Box flex={1} minWidth={320}><TimeSeriesChart /></Box>
           <Box flex={1} minWidth={240}><TaggedPersonsChart /></Box>
           <Box flex={1} minWidth={240}><DateCoverageChart /></Box>
-        </Box>
-        <PatternVisualization />
-        <TaggedPeopleChordChart />
+          <Box flex={1} minWidth={240}><PatternVisualization /></Box>
+          <Box flex={1} minWidth={240}><TaggedPeopleChordChart /></Box>
+        </Box>       
       </Stack>
     </Container>
   );

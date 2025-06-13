@@ -72,7 +72,27 @@ export default function PeoplePage() {
         );
       },
     },
-    { field: 'name', headerName: 'Name', flex: 1, minWidth: 120 },
+    {
+      field: 'name',
+      headerName: 'Name',
+      flex: 1,
+      minWidth: 120,
+      renderCell: (params) => (
+        <Link
+          href={`/people/${params.row.id}`}
+          style={{
+            color: '#1976d2',
+            textDecoration: 'underline',
+            cursor: 'pointer',
+            fontWeight: 500,
+          }}
+          tabIndex={0}
+          aria-label={`View details for ${params.row.name}`}
+        >
+          {params.row.name}
+        </Link>
+      ),
+    },
     { field: 'relationship', headerName: 'Relationship', flex: 1, minWidth: 120 },
     { field: 'createdAt', headerName: 'Created At', flex: 1, minWidth: 160, renderCell: (params) => <DateCell value={params.value} /> },
     { field: 'updatedAt', headerName: 'Updated At', flex: 1, minWidth: 160, renderCell: (params) => <DateCell value={params.value} /> },

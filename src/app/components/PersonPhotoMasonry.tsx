@@ -25,7 +25,7 @@ const PersonPhotoMasonry: React.FC<PersonPhotoMasonryProps> = ({ memories, withT
 
   return (
     <ImageList
-      variant="quilted"
+      variant="masonry"
       cols={3}
       gap={12}
       sx={{ width: '100%', maxWidth: 900, mx: 'auto',

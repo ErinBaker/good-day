@@ -4,7 +4,6 @@ import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { createTheme } from '@mui/material/styles';
 import { NAVIGATION } from './navigation';
-import Typography from '@mui/material/Typography';
 import Image from 'next/image';
 import logo from '../app/logo.svg';
 
@@ -56,7 +55,7 @@ export default function DashboardLayoutComponent({ children, pathname, navigate 
 
   return (
     <AppProvider navigation={NAVIGATION} router={router} theme={dashboardTheme}>
-      <DashboardLayout slots={{ appTitle: SidebarHeader, sidebarFooter: SidebarFooterAccount }}>
+      <DashboardLayout defaultSidebarCollapsed slots={{ appTitle: SidebarHeader, sidebarFooter: SidebarFooterAccount }}>
         <Box sx={{ p: 3, width: '100%' }}>{children}</Box>
       </DashboardLayout>
     </AppProvider>

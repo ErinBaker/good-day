@@ -57,10 +57,10 @@ const TaggedPeopleChordChart: React.FC = () => {
   }
 
   return (
-    <Card sx={{ minWidth: 300, height: 400 }} aria-label="Tagged people chord diagram">
+    <Card aria-label="Tagged people chord diagram">
       <CardContent>
         <Typography variant="h6" gutterBottom>Tagged People Relationships</Typography>
-        <div style={{ height: 300 }}>
+        <div style={{ height: 500 }}>
           <ResponsiveChord
             data={matrix}
             keys={topPeople}
