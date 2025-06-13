@@ -26,6 +26,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Container from '@mui/material/Container';
 import CloseIcon from '@mui/icons-material/Close';
+import dynamic from 'next/dynamic';
 
 const MEMORY_DETAIL_QUERY = gql`
   query Memory($id: ID!) {
@@ -51,6 +52,8 @@ const DELETE_MEMORY_MUTATION = gql`
     deleteMemory(id: $id)
   }
 `;
+
+const MemoryLocationMap = dynamic(() => import('../../components/MemoryLocationMap'), { ssr: false });
 
 export default function MemoryDetailPage() {
   const params = useParams();
@@ -221,7 +224,6 @@ export default function MemoryDetailPage() {
               </Typography>
             </Box>
             <Box sx={{ mb: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600, mb: 0.5 }}>The People in This Moment</Typography>
               {memory.people && memory.people.length > 0 ? (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
                   {memory.people.map((person: { id: string; name: string; relationship?: string }) => (
@@ -239,6 +241,9 @@ export default function MemoryDetailPage() {
                 </Box>
               ) : (
                 <Typography variant="body2" color="text.secondary">No people tagged.</Typography>
+              )}
+              {memory.location && typeof memory.location.lat === 'number' && typeof memory.location.lng === 'number' && (
+                <MemoryLocationMap lat={memory.location.lat} lng={memory.location.lng} />
               )}
             </Box>
             <Divider sx={{ my: 2 }} />
