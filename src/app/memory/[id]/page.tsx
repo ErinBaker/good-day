@@ -5,7 +5,6 @@ import { useQuery, useMutation, gql, useApolloClient } from "@apollo/client";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import Skeleton from "@mui/material/Skeleton";
 import RelativeTime from '../../components/RelativeTime';
@@ -107,9 +106,32 @@ export default function MemoryDetailPage() {
   return (
     <Container maxWidth="xl" sx={{ py: { xs: 2, md: 6 }, px: { xs: 0, sm: 2 }, minHeight: '100vh' }}>
       {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
-          <CircularProgress />
-        </Box>
+        <Stack direction={{ xs: 'column', md: 'row' }} spacing={0} sx={{ width: '100%', minHeight: 400 }}>
+          {/* Left: Photo Skeleton */}
+          <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, height: { xs: 300, md: '100%' }, minHeight: { xs: 300, md: 400 }, display: 'flex', alignItems: 'stretch', justifyContent: 'center', position: 'relative', bgcolor: 'grey.100' }}>
+            <Skeleton
+              variant="rectangular"
+              width="100%"
+              height="100%"
+              animation="wave"
+              sx={{ borderRadius: '8px 8px 0 0', bgcolor: 'grey.100' }}
+            />
+          </Box>
+          {/* Right: Details Skeleton */}
+          <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, p: { xs: 2, md: 6 }, bgcolor: 'background.paper', flex: 1, overflowY: 'auto' }}>
+            <Skeleton variant="text" width="40%" height={32} sx={{ mb: 2 }} /> {/* Date */}
+            <Skeleton variant="text" width="80%" height={48} sx={{ mb: 2 }} /> {/* Title */}
+            <Skeleton variant="text" width="95%" height={32} sx={{ mb: 2 }} /> {/* Description */}
+            <Skeleton variant="rectangular" width={180} height={36} sx={{ mb: 2, borderRadius: 2 }} /> {/* Chips */}
+            <Skeleton variant="text" width="60%" height={24} sx={{ mb: 1 }} /> {/* Metadata 1 */}
+            <Skeleton variant="text" width="50%" height={24} sx={{ mb: 1 }} /> {/* Metadata 2 */}
+            <Skeleton variant="text" width="40%" height={24} /> {/* Metadata 3 */}
+            <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+              <Skeleton variant="rectangular" width={120} height={36} sx={{ borderRadius: 2 }} />
+              <Skeleton variant="rectangular" width={120} height={36} sx={{ borderRadius: 2 }} />
+            </Box>
+          </Box>
+        </Stack>
       )}
       {error && (
         <Alert severity="error">Error loading memory: {error.message}</Alert>
