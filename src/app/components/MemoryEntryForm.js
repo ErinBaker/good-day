@@ -3,6 +3,8 @@ import { Box, Button, Typography, Stepper, Step, StepLabel, StepContent, Alert, 
 import { useMutation, gql } from '@apollo/client';
 import FileUpload from './FileUpload';
 import PersonSelection from './PersonSelection';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
 
 const CREATE_MEMORY = gql`
   mutation CreateMemory($title: String!, $date: String!, $description: String!, $photoUrl: String!) {
@@ -30,12 +32,12 @@ function MemoryEntryForm({ onMemoryCreated }) {
   const [activeStep, setActiveStep] = useState(0);
 
   // Step 1: Photo upload
-  const [photoResult, setPhotoResult] = useState(null);
+  const [photoFile, setPhotoFile] = useState(null);
   const [photoError, setPhotoError] = useState('');
 
   // Step 2: Details
   const [title, setTitle] = useState('');
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(dayjs());
   const [description, setDescription] = useState('');
   const [detailsError, setDetailsError] = useState('');
   const [creatingMemory, setCreatingMemory] = useState(false);
@@ -52,19 +54,14 @@ function MemoryEntryForm({ onMemoryCreated }) {
   const [createMemory] = useMutation(CREATE_MEMORY);
   const [addPeople] = useMutation(ADD_PEOPLE);
 
-  // Step 1: Handle photo upload
-  const handleFileSelect = async (result) => {
+  // Step 1: Handle file select (no upload yet)
+  const handleFileSelect = (file) => {
     setPhotoError('');
-    setPhotoResult(null);
-    if (!result || !result.folder || !result.baseFilename) {
-      setPhotoError('Photo upload failed.');
-      return;
-    }
-    setPhotoResult(result);
-    setActiveStep(1);
+    setPhotoFile(file);
+    if (file) setActiveStep(1);
   };
 
-  // Step 2: Handle details submit
+  // Step 2: Handle details submit (upload image now, then create memory)
   const handleDetailsSubmit = async (e) => {
     e.preventDefault();
     setDetailsError('');
@@ -72,25 +69,39 @@ function MemoryEntryForm({ onMemoryCreated }) {
       setDetailsError('All fields are required.');
       return;
     }
-    if (!photoResult) {
+    if (!photoFile) {
       setDetailsError('Photo is required.');
       return;
     }
     setCreatingMemory(true);
     try {
-      const photoUrl = `/api/photos/${photoResult.folder}/${photoResult.baseFilename}`;
-      const res = await createMemory({
+      // Upload the image
+      const formData = new FormData();
+      formData.append('photo', photoFile);
+      const res = await fetch('/api/photos/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok || !data.folder || !data.baseFilename) {
+        setDetailsError(data.error || 'Photo upload failed.');
+        setCreatingMemory(false);
+        return;
+      }
+      const photoUrl = `/api/photos/${data.folder}/${data.baseFilename}`;
+      // Create the memory
+      const gqlRes = await createMemory({
         variables: {
           title: title.trim(),
-          date: new Date(date).toISOString(),
+          date: dayjs(date).toISOString(),
           description: description.trim(),
           photoUrl,
         },
       });
-      setMemoryId(res.data.createMemory.id);
+      setMemoryId(gqlRes.data.createMemory.id);
       setActiveStep(2);
     } catch (err) {
-      setDetailsError('Error creating memory: ' + err.message);
+      setDetailsError('Error creating memory: ' + (err?.message || err));
     } finally {
       setCreatingMemory(false);
     }
@@ -117,9 +128,9 @@ function MemoryEntryForm({ onMemoryCreated }) {
       setAlert({ message: 'Memory created successfully!', severity: 'success', open: true });
       // Reset all state
       setActiveStep(0);
-      setPhotoResult(null);
+      setPhotoFile(null);
       setTitle('');
-      setDate('');
+      setDate(dayjs());
       setDescription('');
       setSelectedPeople([]);
       setMemoryId(null);
@@ -137,9 +148,7 @@ function MemoryEntryForm({ onMemoryCreated }) {
       label: 'Upload Photo',
       content: (
         <Box>
-          <FileUpload
-            onFileSelect={handleFileSelect}
-          />
+          <FileUpload onFileSelect={handleFileSelect} />
           {photoError && <Alert severity="error" sx={{ mt: 2 }}>{photoError}</Alert>}
         </Box>
       ),
@@ -159,13 +168,12 @@ function MemoryEntryForm({ onMemoryCreated }) {
               required
               style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
             />
-            <input
-              type="date"
+            <DatePicker
+              label="Date"
               value={date}
-              onChange={e => setDate(e.target.value)}
-              aria-label="Date"
-              required
-              style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
+              onChange={newValue => setDate(newValue)}
+              slotProps={{ textField: { required: true, fullWidth: true, size: 'medium' } }}
+              format="DD/MM/YYYY"
             />
             <textarea
               placeholder="Description"

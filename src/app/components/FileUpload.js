@@ -1,26 +1,35 @@
 import React, { useRef, useState } from 'react';
-import { Box, Button, Typography, Paper, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Paper, Alert } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 function FileUpload({ onFileSelect }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [error, setError] = useState('');
-  const [uploading, setUploading] = useState(false);
-  const [result, setResult] = useState(null);
   const inputRef = useRef();
   const [dragOver, setDragOver] = useState(false);
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
 
   const handleFile = (file) => {
     if (!file) return;
     if (!ACCEPTED_TYPES.includes(file.type)) {
       setError('Only JPEG, PNG, and WebP images are allowed.');
       setSelectedFile(null);
+      if (onFileSelect) onFileSelect(null);
+      return;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      setError('File too large. Maximum size is 5MB.');
+      setSelectedFile(null);
+      if (onFileSelect) onFileSelect(null);
       return;
     }
     setError('');
     setSelectedFile(file);
-    setResult(null);
+    if (onFileSelect) onFileSelect(file);
   };
 
   const handleDrop = (e) => {
@@ -45,41 +54,6 @@ function FileUpload({ onFileSelect }) {
     handleFile(file);
   };
 
-  const handleUpload = async () => {
-    if (!selectedFile) return;
-    setUploading(true);
-    setError('');
-    setResult(null);
-    const formData = new FormData();
-    formData.append('photo', selectedFile);
-    try {
-      const res = await fetch('/api/photos/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        let msg = data.error || 'Upload failed.';
-        // Multer error mapping
-        if (msg.includes('File too large')) {
-          msg = 'The selected image is too large. Maximum size is 5MB.';
-        } else if (msg.includes('Only JPEG, PNG, and WebP images are allowed')) {
-          msg = 'Only JPEG, PNG, and WebP images are allowed.';
-        } else if (msg.toLowerCase().includes('image processing failed')) {
-          msg = 'There was a problem processing your image. Please try another file.';
-        }
-        setError(msg);
-      } else {
-        setResult(data);
-        if (onFileSelect) onFileSelect(data);
-      }
-    } catch {
-      setError('Network error.');
-    } finally {
-      setUploading(false);
-    }
-  };
-
   return (
     <Box>
       <Paper
@@ -87,10 +61,13 @@ function FileUpload({ onFileSelect }) {
         sx={{
           p: 2,
           mb: 2,
-          border: dragOver ? '2px solid #1976d2' : '2px dashed #aaa',
+          border: dragOver
+            ? `2px solid ${theme.palette.primary.main}`
+            : `2px dashed ${isDark ? theme.palette.divider : '#aaa'}`,
           textAlign: 'center',
           cursor: 'pointer',
-          background: dragOver ? '#e3f2fd' : '#fafafa',
+          background: theme.palette.background.paper,
+          color: theme.palette.text.primary,
           transition: 'border 0.2s, background 0.2s',
         }}
         onDrop={handleDrop}
@@ -99,7 +76,16 @@ function FileUpload({ onFileSelect }) {
         onClick={() => inputRef.current.click()}
         aria-label="File upload dropzone"
       >
-        <Typography variant="body1" gutterBottom>
+        <Typography
+          variant="body1"
+          gutterBottom
+          sx={{
+            color: theme.palette.text.secondary,
+            opacity: 0.85,
+            fontWeight: 500,
+            fontSize: 16,
+          }}
+        >
           Drag & drop an image here, or click to select
         </Typography>
         <input
@@ -126,62 +112,6 @@ function FileUpload({ onFileSelect }) {
           <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>
         )}
       </Paper>
-      <Box display="flex" alignItems="center" gap={2}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => inputRef.current.click()}
-          disabled={uploading}
-          aria-label="Choose image"
-        >
-          Choose Image
-        </Button>
-        <Button
-          variant="contained"
-          color="success"
-          onClick={handleUpload}
-          disabled={!selectedFile || uploading}
-          aria-label="Upload image"
-        >
-          {uploading ? <CircularProgress size={24} /> : 'Upload'}
-        </Button>
-      </Box>
-      {result &&
-        (() => {
-          // Use folder and baseFilename from result
-          const { folder, baseFilename } = result;
-          return (
-            <Box mt={3}>
-              <Typography variant="subtitle1">Uploaded Images:</Typography>
-              <Box display="flex" gap={2} mt={1}>
-                <Box>
-                  <Typography variant="caption">Original</Typography>
-                  <img
-                    src={`/api/photos/${folder}/${baseFilename}?size=original`}
-                    alt="Original"
-                    style={{ maxWidth: 200, borderRadius: 8, display: 'block' }}
-                  />
-                </Box>
-                <Box>
-                  <Typography variant="caption">Medium</Typography>
-                  <img
-                    src={`/api/photos/${folder}/${baseFilename}?size=medium`}
-                    alt="Medium"
-                    style={{ maxWidth: 120, borderRadius: 8, display: 'block' }}
-                  />
-                </Box>
-                <Box>
-                  <Typography variant="caption">Thumbnail</Typography>
-                  <img
-                    src={`/api/photos/${folder}/${baseFilename}?size=thumbnail`}
-                    alt="Thumbnail"
-                    style={{ maxWidth: 80, borderRadius: 8, display: 'block' }}
-                  />
-                </Box>
-              </Box>
-            </Box>
-          );
-        })()}
     </Box>
   );
 }
