@@ -243,14 +243,14 @@ export default function MemoryDetailPage() {
             </Box>
             <Divider sx={{ my: 2 }} />
             <Box sx={{ mb: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary" sx={{ fontWeight: 600, mb: 0.5 }}>Metadata</Typography>
               <Typography variant="body2" color="text.secondary">
-                <strong>Created:</strong> {memory.createdAt ? new Date(memory.createdAt).toLocaleString() : 'Unknown'}<br />
-                <strong>Last Updated:</strong> {memory.updatedAt ? new Date(memory.updatedAt).toLocaleString() : 'Unknown'}
+                <strong>Memory added:</strong> {memory.createdAt ? new Date(memory.createdAt).toLocaleString() : 'Unknown'}</Typography>
+                <Typography variant="body2" color="text.secondary">
+                <strong>Last updated:</strong> {memory.updatedAt ? new Date(memory.updatedAt).toLocaleString() : 'Unknown'}
               </Typography>
               {memory.location && typeof memory.location.lat === 'number' && typeof memory.location.lng === 'number' && (
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                  <span role="img" aria-label="Location">📍</span> Latitude: {memory.location.lat.toFixed(5)}, Longitude: {memory.location.lng.toFixed(5)}
+                <Typography variant="body2" color="text.secondary">
+                  <strong>Location:</strong> Latitude: {memory.location.lat.toFixed(5)}, Longitude: {memory.location.lng.toFixed(5)}
                 </Typography>
               )}
             </Box>
