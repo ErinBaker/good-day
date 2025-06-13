@@ -8,7 +8,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs, { Dayjs } from 'dayjs';
-import { Stack, Button, Avatar, ToggleButton, ToggleButtonGroup } from '@mui/material';
+import { Stack, Button, Avatar, ToggleButton, ToggleButtonGroup, List, ListItem, ListItemAvatar, ListItemText, Checkbox, ListItemButton, useMediaQuery } from '@mui/material';
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
 import Skeleton from '@mui/material/Skeleton';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -20,6 +20,7 @@ import SearchMemoriesInput, { type MemorySuggestion } from './SearchMemoriesInpu
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import { AvatarGenerator } from 'random-avatar-generator';
+import { useTheme } from '@mui/material/styles';
 
 const PAGE_SIZE = 5;
 
@@ -271,6 +272,9 @@ const MemoryTimelineContainer: React.FC = () => {
     }
   }, [selectedMemoryId, allMemories]);
 
+  const theme = useTheme();
+  const isLargeScreen = useMediaQuery(theme.breakpoints.up('md'));
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
 
@@ -342,61 +346,110 @@ const MemoryTimelineContainer: React.FC = () => {
                   slotProps={{ textField: { size: 'small', fullWidth: true } }}
                   minDate={dateRange[0] || undefined}
                 />
-                <Autocomplete
-                  multiple
-                  options={peopleData?.people || []}
-                  value={selectedPeople}
-                  onChange={(_e, newValue) => {
-                    setSelectedPeople(newValue as Person[]);
-                    setAllMemories([]); // Reset timeline when filter changes
-                    setOffset(0);
-                    setHasMore(true);
-                    setInitialLoad(true);
-                  }}
-                  getOptionLabel={option => option.name + (option.relationship ? ` (${option.relationship})` : '')}
-                  isOptionEqualToValue={(option, value) => option.id === value.id}
-                  loading={peopleLoading}
-                  disabled={peopleLoading || !!peopleError}
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      label="Filter by People"
-                      placeholder="Select people..."
-                      error={!!peopleError}
-                      helperText={peopleError ? 'Failed to load people' : ''}
-                      fullWidth
-                    />
-                  )}
-                  renderTags={(selected, getTagProps) =>
-                    selected.map((option, index) => {
-                      const restTagProps = Object.fromEntries(Object.entries(getTagProps({ index })).filter(([k]) => k !== 'key'));
+                {/* People Filter */}
+                {isLargeScreen ? (
+                  <List dense sx={{ maxHeight: 320, overflowY: 'auto', bgcolor: 'background.paper', borderRadius: 1, border: '1px solid', borderColor: 'divider', p: 0 }}>
+                    {peopleData?.people?.map((person) => {
+                      const checked = selectedPeople.some((p) => p.id === person.id);
+                      const avatarUrl = person.name ? avatarGenerator.generateRandomAvatar(person.name) : undefined;
+                      return (
+                        <ListItem key={person.id} disablePadding secondaryAction={null}>
+                          <ListItemButton
+                            role={undefined}
+                            onClick={() => {
+                              let newSelected;
+                              if (checked) {
+                                newSelected = selectedPeople.filter((p) => p.id !== person.id);
+                              } else {
+                                newSelected = [...selectedPeople, person];
+                              }
+                              setSelectedPeople(newSelected);
+                              setAllMemories([]);
+                              setOffset(0);
+                              setHasMore(true);
+                              setInitialLoad(true);
+                            }}
+                            dense
+                            selected={checked}
+                            sx={{ borderRadius: 0, pl: 1, pr: 1 }}
+                          >
+                            <ListItemAvatar>
+                              <Avatar src={avatarUrl} alt={`Avatar for ${person.name}`} sx={{ width: 32, height: 32 }} />
+                            </ListItemAvatar>
+                            <ListItemText
+                              primary={person.name}
+                              secondary={person.relationship}
+                              primaryTypographyProps={{ fontWeight: checked ? 600 : 400 }}
+                            />
+                            <Checkbox
+                              edge="end"
+                              checked={checked}
+                              tabIndex={-1}
+                              disableRipple
+                              inputProps={{ 'aria-labelledby': `person-checkbox-${person.id}` }}
+                            />
+                          </ListItemButton>
+                        </ListItem>
+                      );
+                    })}
+                  </List>
+                ) : (
+                  <Autocomplete
+                    multiple
+                    options={peopleData?.people || []}
+                    value={selectedPeople}
+                    onChange={(_e, newValue) => {
+                      setSelectedPeople(newValue as Person[]);
+                      setAllMemories([]); // Reset timeline when filter changes
+                      setOffset(0);
+                      setHasMore(true);
+                      setInitialLoad(true);
+                    }}
+                    getOptionLabel={option => option.name + (option.relationship ? ` (${option.relationship})` : '')}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    loading={peopleLoading}
+                    disabled={peopleLoading || !!peopleError}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        label="Filter by People"
+                        placeholder="Select people..."
+                        error={!!peopleError}
+                        helperText={peopleError ? 'Failed to load people' : ''}
+                        fullWidth
+                      />
+                    )}
+                    renderTags={(selected, getTagProps) =>
+                      selected.map((option, index) => {
+                        const restTagProps = Object.fromEntries(Object.entries(getTagProps({ index })).filter(([k]) => k !== 'key'));
+                        const avatarUrl = 'name' in option ? avatarGenerator.generateRandomAvatar(option.name) : undefined;
+                        return (
+                          <Chip
+                            key={option.id}
+                            avatar={avatarUrl ? (
+                              <Avatar src={avatarUrl} alt={`Avatar for ${option.name}`} sx={{ width: 32, height: 32 }} />
+                            ) : undefined}
+                            label={option.name + (option.relationship ? ` (${option.relationship})` : '')}
+                            {...restTagProps}
+                          />
+                        );
+                      })
+                    }
+                    renderOption={(props, option) => {
                       const avatarUrl = 'name' in option ? avatarGenerator.generateRandomAvatar(option.name) : undefined;
                       return (
-                        <Chip
-                          key={option.id}
-                          avatar={avatarUrl ? (
-                            <Avatar src={avatarUrl} alt={`Avatar for ${option.name}`} sx={{ width: 32, height: 32 }} />
-                          ) : undefined}
-                          label={option.name + (option.relationship ? ` (${option.relationship})` : '')}
-                          {...restTagProps}
-                        />
+                        <li {...props} key={option.id} style={{ display: 'flex', alignItems: 'center' }}>
+                          <Avatar
+                            src={avatarUrl}
+                            alt={`Avatar for ${option.name}`}
+                            sx={{ width: 28, height: 28, marginRight: 1 }}
+                          />
+                          <span>{option.name}{option.relationship ? ` (${option.relationship})` : ''}</span>
+                        </li>
                       );
-                    })
-                  }
-                  renderOption={(props, option) => {
-                    const avatarUrl = 'name' in option ? avatarGenerator.generateRandomAvatar(option.name) : undefined;
-                    return (
-                      <li {...props} key={option.id} style={{ display: 'flex', alignItems: 'center' }}>
-                        <Avatar
-                          src={avatarUrl}
-                          alt={`Avatar for ${option.name}`}
-                          sx={{ width: 28, height: 28, marginRight: 1 }}
-                        />
-                        <span>{option.name}{option.relationship ? ` (${option.relationship})` : ''}</span>
-                      </li>
-                    );
-                  }}
-                />
+                    }}
+                  />
+                )}
               </Stack>
             </LocalizationProvider>
           </Paper>
