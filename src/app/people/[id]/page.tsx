@@ -21,6 +21,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import PersonStatistics from '../../components/PersonStatistics';
+import { AvatarGenerator } from 'random-avatar-generator';
 
 const PERSON_MEMORIES_QUERY = gql`
   query PersonMemories($id: ID!) {
@@ -74,6 +75,7 @@ export default function PersonDetailPage() {
       // TODO: Show error feedback
     },
   });
+  const avatarGenerator = new AvatarGenerator();
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMenuAnchorEl(event.currentTarget);
@@ -118,7 +120,11 @@ export default function PersonDetailPage() {
             <IconButton aria-label="Back" onClick={() => window.history.back()} sx={{ mr: 2 }}>
               <ArrowBackIcon />
             </IconButton>
-            <Avatar sx={{ width: 56, height: 56, fontSize: 28, bgcolor: 'primary.main', mr: 2 }}>
+            <Avatar sx={{ width: 56, height: 56, fontSize: 28, bgcolor: 'primary.main', mr: 2 }}
+              src={person.name ? avatarGenerator.generateRandomAvatar(person.name) : undefined}
+              alt={person.name}
+            >
+              {/* fallback initials if no image loads */}
               {person.name ? person.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0,2) : '?'}
             </Avatar>
             <Box>
