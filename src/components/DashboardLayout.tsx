@@ -1,13 +1,24 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import { AppProvider } from '@toolpad/core/AppProvider';
-import { DashboardLayout, SidebarFooterProps } from '@toolpad/core/DashboardLayout';
+import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { createTheme } from '@mui/material/styles';
 import { NAVIGATION } from './navigation';
+import Typography from '@mui/material/Typography';
+import Image from 'next/image';
+import logo from '../app/logo.svg';
 
 // Placeholder for account sidebar/footer (can be expanded later)
-function SidebarFooterAccount({ mini }: SidebarFooterProps) {
+function SidebarFooterAccount() {
   return null;
+}
+
+function SidebarHeader() {
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center', height: 32, pl: 2 }}>
+      <Image src={logo} alt="Good Day App Logo" height={32} />
+    </Box>
+  );
 }
 
 const dashboardTheme = createTheme({
@@ -37,12 +48,15 @@ export default function DashboardLayoutComponent({ children, pathname, navigate 
   const router = React.useMemo(() => ({
     pathname,
     searchParams: new URLSearchParams(),
-    navigate: navigate || (() => {}),
+    navigate: (url: string | URL) => {
+      const path = typeof url === 'string' ? url : url.toString();
+      (navigate || (() => {}))(path);
+    },
   }), [pathname, navigate]);
 
   return (
     <AppProvider navigation={NAVIGATION} router={router} theme={dashboardTheme}>
-      <DashboardLayout slots={{ sidebarFooter: SidebarFooterAccount }}>
+      <DashboardLayout slots={{ appTitle: SidebarHeader, sidebarFooter: SidebarFooterAccount }}>
         <Box sx={{ p: 3, width: '100%' }}>{children}</Box>
       </DashboardLayout>
     </AppProvider>
