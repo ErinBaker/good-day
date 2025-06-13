@@ -8,6 +8,7 @@ import PersonSelection from '../components/PersonSelection';
 import { useMutation, gql } from '@apollo/client';
 import type { Person } from '../components/PersonSelection';
 import { useRouter } from 'next/navigation';
+import exifr from 'exifr';
 
 const CREATE_MEMORY = gql`
   mutation CreateMemory($title: String!, $date: String!, $description: String!, $photoUrl: String!) {
@@ -33,6 +34,7 @@ interface MemoryDetails {
   title: string;
   date: Dayjs | null;
   description: string;
+  location?: { lat: string; lng: string };
 }
 
 const OnboardingStepUpload: React.FC<{
@@ -136,7 +138,7 @@ const OnboardingStepDetails: React.FC<{
     {/* Right: Form */}
     <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, p: { xs: 1, md: 4 }, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       <Typography variant="h5" gutterBottom>What makes this memory special?</Typography>
-      <Typography variant="body1" sx={{ mb: 2 }}>Add a title, a date, and a short description — something your future self will thank you for.</Typography>
+      <Typography variant="body1" sx={{ mb: 2 }}>Add a title, a date, a short description, and (if available) a location.</Typography>
       <TextField
         label="Title"
         value={details.title}
@@ -165,6 +167,26 @@ const OnboardingStepDetails: React.FC<{
         sx={{ mt: 2 }}
         inputProps={{ maxLength: 500 }}
       />
+      <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+        <TextField
+          label="Latitude"
+          value={details.location?.lat ?? ''}
+          onChange={e => setDetails({ ...details, location: { lat: e.target.value, lng: details.location?.lng ?? '' } })}
+          fullWidth
+          type="number"
+          inputProps={{ step: 'any', min: -90, max: 90 }}
+          placeholder="Latitude"
+        />
+        <TextField
+          label="Longitude"
+          value={details.location?.lng ?? ''}
+          onChange={e => setDetails({ ...details, location: { lat: details.location?.lat ?? '', lng: e.target.value } })}
+          fullWidth
+          type="number"
+          inputProps={{ step: 'any', min: -180, max: 180 }}
+          placeholder="Longitude"
+        />
+      </Box>
       {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
         <Button variant="outlined" onClick={onBack}>Back</Button>
@@ -235,6 +257,11 @@ export default function OnboardingMemoryFlow() {
         setError('Please fill in all fields.');
         return;
       }
+      // Validate location if present
+      if ((details.location?.lat && isNaN(Number(details.location.lat))) || (details.location?.lng && isNaN(Number(details.location.lng)))) {
+        setError('Latitude and longitude must be numbers.');
+        return;
+      }
       setLoading(true);
       try {
         // Upload image
@@ -260,6 +287,7 @@ export default function OnboardingMemoryFlow() {
             date: details.date ? details.date.toISOString() : dayjs().toISOString(),
             description: details.description.trim(),
             photoUrl,
+            location: details.location?.lat && details.location?.lng ? { lat: parseFloat(details.location.lat), lng: parseFloat(details.location.lng) } : null,
           },
         });
         setMemoryId(gqlRes.data.createMemory.id);
@@ -314,9 +342,25 @@ export default function OnboardingMemoryFlow() {
   };
 
   // New handler for image selection that sets image and advances step
-  const handleImageSelected = (file: File) => {
+  const handleImageSelected = async (file: File) => {
     setImage(file);
     setError('');
+    // Try to extract EXIF metadata
+    try {
+      const exif = await exifr.parse(file, { gps: true });
+      const newDetails = { ...details };
+      if (exif?.DateTimeOriginal || exif?.CreateDate) {
+        newDetails.date = dayjs(exif.DateTimeOriginal || exif.CreateDate);
+      }
+      if (exif?.latitude && exif?.longitude) {
+        newDetails.location = { lat: exif.latitude.toString(), lng: exif.longitude.toString() };
+      } else {
+        newDetails.location = { lat: '', lng: '' };
+      }
+      setDetails(newDetails);
+    } catch {
+      // Ignore EXIF errors
+    }
     setStep(1);
   };
 
