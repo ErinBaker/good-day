@@ -30,7 +30,7 @@ const CREATE_PERSON = gql`
   }
 `;
 
-type Person = {
+export type Person = {
   id: string;
   name: string;
   relationship?: string;

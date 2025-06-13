@@ -5,6 +5,7 @@ import FileUpload from './FileUpload';
 import PersonSelection from './PersonSelection';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
+import { TextField } from '@mui/material';
 
 const CREATE_MEMORY = gql`
   mutation CreateMemory($title: String!, $date: String!, $description: String!, $photoUrl: String!) {
@@ -93,7 +94,7 @@ function MemoryEntryForm({ onMemoryCreated }) {
       const gqlRes = await createMemory({
         variables: {
           title: title.trim(),
-          date: dayjs(date).toISOString(),
+          date: date ? date.toISOString() : dayjs().toISOString(),
           description: description.trim(),
           photoUrl,
         },
@@ -159,14 +160,13 @@ function MemoryEntryForm({ onMemoryCreated }) {
         <Box component="form" onSubmit={handleDetailsSubmit} sx={{ mt: 1 }}>
           <Typography variant="subtitle1" sx={{ mb: 1 }}>Enter details for your memory</Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <input
-              type="text"
-              placeholder="Title"
+            <TextField
+              label="Title"
               value={title}
               onChange={e => setTitle(e.target.value)}
-              aria-label="Title"
+              fullWidth
               required
-              style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
+              inputProps={{ maxLength: 80 }}
             />
             <DatePicker
               label="Date"
@@ -175,14 +175,15 @@ function MemoryEntryForm({ onMemoryCreated }) {
               slotProps={{ textField: { required: true, fullWidth: true, size: 'medium' } }}
               format="DD/MM/YYYY"
             />
-            <textarea
-              placeholder="Description"
+            <TextField
+              label="Description"
               value={description}
               onChange={e => setDescription(e.target.value)}
-              aria-label="Description"
+              fullWidth
               required
-              rows={3}
-              style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
+              multiline
+              minRows={3}
+              inputProps={{ maxLength: 500 }}
             />
           </Box>
           {detailsError && <Alert severity="error" sx={{ mt: 2 }}>{detailsError}</Alert>}

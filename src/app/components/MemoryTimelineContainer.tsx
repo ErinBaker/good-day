@@ -257,12 +257,6 @@ const MemoryTimelineContainer: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Memory Timeline
-      </Typography>
-      <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 3 }}>
-        Browse and relive your memories. Use filters to find specific moments.
-      </Typography>
 
       {/* Large search input above filters */}
       <Box sx={{ mb: 4, width: '100%' }}>
