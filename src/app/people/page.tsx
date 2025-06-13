@@ -9,6 +9,8 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import DateCell from '@/components/DateCell';
 import Link from 'next/link';
 import { useQuery, gql } from '@apollo/client';
+import { AvatarGenerator } from 'random-avatar-generator';
+import Avatar from '@mui/material/Avatar';
 
 const GET_ALL_PEOPLE = gql`
   query GetAllPeople($sortBy: String) {
@@ -50,7 +52,26 @@ export default function PeoplePage() {
   const [deleteTarget, setDeleteTarget] = useState<Person | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
+  const avatarGenerator = new AvatarGenerator();
+
   const columns: GridColDef<Person>[] = [
+    {
+      field: 'avatar',
+      headerName: '',
+      width: 60,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => {
+        const avatarUrl = params.row.name ? avatarGenerator.generateRandomAvatar(params.row.name) : undefined;
+        return (
+          <Avatar
+            src={avatarUrl}
+            alt={params.row.name}
+            sx={{ width: 36, height: 36 }}
+          />
+        );
+      },
+    },
     { field: 'name', headerName: 'Name', flex: 1, minWidth: 120 },
     { field: 'relationship', headerName: 'Relationship', flex: 1, minWidth: 120 },
     { field: 'createdAt', headerName: 'Created At', flex: 1, minWidth: 160, renderCell: (params) => <DateCell value={params.value} /> },
