@@ -197,7 +197,9 @@ export default function MemoryDetailPage() {
             >
               <DialogTitle id="delete-memory-dialog-title">Delete Memory</DialogTitle>
               <DialogContent>
-                <Typography>Are you sure you want to permanently delete this memory? This action cannot be undone.</Typography>
+                <Typography>Let go of this memory?</Typography>
+                <Typography>It will be permanently deleted, but the people you shared it with will not be affected.
+                This is a permanent action.</Typography>
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleDeleteCancel} color="primary" disabled={deleting}>Cancel</Button>

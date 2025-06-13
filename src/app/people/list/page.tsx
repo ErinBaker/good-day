@@ -272,7 +272,10 @@ export default function PeopleListPage() {
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>Delete Person</DialogTitle>
         <DialogContent>
-          <Typography>Are you sure you want to delete <b>{deleteTarget?.name}</b>? This cannot be undone.</Typography>
+          <Typography>
+            Are you sure you want to say goodbye to <b>{deleteTarget?.name}</b>?<br/>
+            This can&apos;t be undone. Their profile will be gone, but the memories they were part of will live on.
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>

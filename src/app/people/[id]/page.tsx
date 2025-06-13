@@ -182,9 +182,10 @@ export default function PersonDetailPage() {
           >
             <DialogTitle id="delete-person-dialog-title">Delete Person</DialogTitle>
             <DialogContent>
-              <Typography>Are you sure you want to permanently delete this person? This action cannot be undone.</Typography>
-              <Typography sx={{ mt: 2 }} color="text.secondary">
-                Memories will remain, but this person will be untagged from {memories.length} {memories.length === 1 ? 'memory' : 'memories'}.
+              <Typography>
+                Are you sure you want to say goodbye to <b>{person?.name}</b>?</Typography>
+                <Typography>
+                This can&apos;t be undone. Their profile will be gone, but the {memories.length} {memories.length === 1 ? 'memory' : 'memories'} they were part of will live on.
               </Typography>
             </DialogContent>
             <DialogActions>

@@ -10,6 +10,11 @@ import Button from "@mui/material/Button";
 import FileUpload from "../../../components/FileUpload";
 import PersonSelection from "../../../components/PersonSelection";
 import type { SyntheticEvent } from "react";
+import Stack from "@mui/material/Stack";
+import Container from "@mui/material/Container";
+import IconButton from "@mui/material/IconButton";
+import DeleteIcon from '@mui/icons-material/Delete';
+import Skeleton from '@mui/material/Skeleton';
 
 const MEMORY_DETAIL_QUERY = gql`
   query Memory($id: ID!) {
@@ -64,6 +69,8 @@ export default function EditMemoryPage() {
   const [detailsError, setDetailsError] = useState("");
   const [saving, setSaving] = useState(false);
   const [alert, setAlert] = useState<{ message: string; severity: 'success' | 'error' | 'info' | 'warning'; open: boolean }>({ message: '', severity: 'success', open: false });
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     if (memory) {
@@ -80,6 +87,27 @@ export default function EditMemoryPage() {
   const [updateMemory] = useMutation(UPDATE_MEMORY_MUTATION);
 
   const handleFileSelect = async (result: unknown) => {
+    // If result is a File, upload it
+    if (result instanceof File) {
+      try {
+        const formData = new FormData();
+        formData.append('photo', result);
+        const res = await fetch('/api/photos/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        const data = await res.json();
+        if (!res.ok || !data.folder || !data.baseFilename) {
+          setDetailsError(data.error || 'Photo upload failed.');
+          return;
+        }
+        setPhotoUrl(`/api/photos/${data.folder}/${data.baseFilename}`);
+      } catch {
+        setDetailsError('Photo upload failed.');
+      }
+      return;
+    }
+    // If result is already-uploaded object
     if (
       result &&
       typeof result === 'object' &&
@@ -129,59 +157,110 @@ export default function EditMemoryPage() {
   if (!memory) return <Alert severity="warning">Memory not found.</Alert>;
 
   return (
-    <Box sx={{ maxWidth: 600, mx: 'auto', py: 4, px: { xs: 1, sm: 2 } }}>
+    <Container maxWidth="xl" sx={{ py: { xs: 2, md: 6 }, px: { xs: 0, sm: 2 }, minHeight: '100vh' }}>
       <Typography variant="h4" component="h1" gutterBottom>Edit Memory</Typography>
-      <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-        {/* Photo Preview and Remove Button */}
-        {photoUrl ? (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <img src={photoUrl} alt="Current" style={{ maxWidth: 120, borderRadius: 8, border: '1px solid #ccc' }} />
-            <Button variant="outlined" color="error" onClick={handleRemovePhoto} disabled={saving}>
-              Remove Photo
-            </Button>
-          </Box>
-        ) : (
-          <Alert severity="warning">You must upload a new photo before saving.</Alert>
-        )}
-        <FileUpload onFileSelect={handleFileSelect} />
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-          aria-label="Title"
-          required
-          style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
-        />
-        <input
-          type="date"
-          value={date}
-          onChange={e => setDate(e.target.value)}
-          aria-label="Date"
-          required
-          style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
-        />
-        <textarea
-          placeholder="Description"
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-          aria-label="Description"
-          required
-          rows={3}
-          style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
-        />
-        <PersonSelection value={selectedPeople} onChange={setSelectedPeople} />
-        {detailsError && <Alert severity="error">{detailsError}</Alert>}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-          <Button type="submit" variant="contained" color="primary" disabled={saving || !photoUrl}>
-            {saving ? <CircularProgress size={18} /> : 'Save Changes'}
-          </Button>
-          <Button variant="outlined" color="secondary" onClick={() => router.push(`/memory/${id}`)} disabled={saving}>
-            Cancel
-          </Button>
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={0} sx={{ width: '100%', minHeight: 400 }}>
+        {/* Left: Photo or Dropzone */}
+        <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, height: { xs: 300, md: '100%' }, minHeight: { xs: 300, md: 400 }, display: 'flex', alignItems: 'stretch', justifyContent: 'center', position: 'relative', bgcolor: 'grey.100' }}>
+          {photoUrl ? (
+            <>
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height="100%"
+                animation="wave"
+                sx={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  zIndex: 1,
+                  transition: 'opacity 0.3s',
+                  opacity: imgLoaded || imgError ? 0 : 1,
+                  pointerEvents: 'none',
+                }}
+              />
+              {imgError && (
+                <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100', position: 'absolute', top: 0, left: 0, zIndex: 3 }}>
+                  <Typography color="text.secondary">Image not available</Typography>
+                </Box>
+              )}
+              <Box
+                component="img"
+                src={photoUrl}
+                alt={title || 'Current'}
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  opacity: imgLoaded && !imgError ? 1 : 0,
+                  transition: 'opacity 0.3s',
+                  background: 'transparent',
+                  display: 'block',
+                  zIndex: 2,
+                  borderRadius: 2,
+                }}
+                onLoad={() => setImgLoaded(true)}
+                onError={() => setImgError(true)}
+                draggable={false}
+              />
+              <IconButton
+                aria-label="Delete photo"
+                onClick={handleRemovePhoto}
+                sx={{ position: 'absolute', top: 16, right: 16, zIndex: 10, bgcolor: 'rgba(255,255,255,0.85)', '&:hover': { bgcolor: 'rgba(255,255,255,1)' } }}
+                disabled={saving}
+              >
+                <DeleteIcon color="error" />
+              </IconButton>
+            </>
+          ) : (
+            <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
+              <FileUpload onFileSelect={handleFileSelect} />
+            </Box>
+          )}
         </Box>
-      </Box>
-      {alert.open && <Alert severity={alert.severity} sx={{ mt: 2 }}>{alert.message}</Alert>}
-    </Box>
+        {/* Right: Edit Fields */}
+        <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, p: { xs: 2, md: 6 }, bgcolor: 'background.paper', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <input
+              type="text"
+              placeholder="Title"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              aria-label="Title"
+              required
+              style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
+            />
+            <input
+              type="date"
+              value={date}
+              onChange={e => setDate(e.target.value)}
+              aria-label="Date"
+              required
+              style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
+            />
+            <textarea
+              placeholder="Description"
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              aria-label="Description"
+              required
+              rows={3}
+              style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
+            />
+            <PersonSelection value={selectedPeople} onChange={setSelectedPeople} />
+            {detailsError && <Alert severity="error">{detailsError}</Alert>}
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+              <Button type="submit" variant="contained" color="primary" disabled={saving || !photoUrl}>
+                {saving ? <CircularProgress size={18} /> : 'Save Changes'}
+              </Button>
+              <Button variant="outlined" color="secondary" onClick={() => router.push(`/memory/${id}`)} disabled={saving}>
+                Cancel
+              </Button>
+            </Box>
+          </Box>
+          {alert.open && <Alert severity={alert.severity} sx={{ mt: 2 }}>{alert.message}</Alert>}
+        </Box>
+      </Stack>
+    </Container>
   );
 } 
