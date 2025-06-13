@@ -8,7 +8,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers';
 import dayjs, { Dayjs } from 'dayjs';
-import { Stack, Button } from '@mui/material';
+import { Stack, Button, Avatar } from '@mui/material';
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
 import Skeleton from '@mui/material/Skeleton';
 import Autocomplete from '@mui/material/Autocomplete';
@@ -19,6 +19,7 @@ import { useSearchParams } from 'next/navigation';
 import SearchMemoriesInput, { type MemorySuggestion } from './SearchMemoriesInput';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
+import { AvatarGenerator } from 'random-avatar-generator';
 
 const PAGE_SIZE = 5;
 
@@ -38,6 +39,8 @@ type Person = {
   name: string;
   relationship?: string;
 };
+
+const avatarGenerator = new AvatarGenerator();
 
 const MemoryTimelineContainer: React.FC = () => {
   const [offset, setOffset] = useState(0);
@@ -347,15 +350,32 @@ const MemoryTimelineContainer: React.FC = () => {
                   renderTags={(selected, getTagProps) =>
                     selected.map((option, index) => {
                       const restTagProps = Object.fromEntries(Object.entries(getTagProps({ index })).filter(([k]) => k !== 'key'));
+                      const avatarUrl = 'name' in option ? avatarGenerator.generateRandomAvatar(option.name) : undefined;
                       return (
                         <Chip
                           key={option.id}
+                          avatar={avatarUrl ? (
+                            <Avatar src={avatarUrl} alt={`Avatar for ${option.name}`} sx={{ width: 32, height: 32 }} />
+                          ) : undefined}
                           label={option.name + (option.relationship ? ` (${option.relationship})` : '')}
                           {...restTagProps}
                         />
                       );
                     })
                   }
+                  renderOption={(props, option) => {
+                    const avatarUrl = 'name' in option ? avatarGenerator.generateRandomAvatar(option.name) : undefined;
+                    return (
+                      <li {...props} key={option.id} style={{ display: 'flex', alignItems: 'center' }}>
+                        <Avatar
+                          src={avatarUrl}
+                          alt={`Avatar for ${option.name}`}
+                          sx={{ width: 28, height: 28, marginRight: 1 }}
+                        />
+                        <span>{option.name}{option.relationship ? ` (${option.relationship})` : ''}</span>
+                      </li>
+                    );
+                  }}
                 />
               </Stack>
             </LocalizationProvider>
