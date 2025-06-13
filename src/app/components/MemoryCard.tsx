@@ -11,6 +11,7 @@ import Fade from '@mui/material/Fade';
 import { useTheme } from '@mui/material/styles';
 import Link from 'next/link';
 import RelativeTime from './RelativeTime';
+import { AvatarGenerator } from 'random-avatar-generator';
 
 export interface MemoryCardProps {
   id: string;
@@ -23,10 +24,10 @@ export interface MemoryCardProps {
   selected?: boolean;
 }
 
-const AVATAR_PLACEHOLDER =
-  'https://mui.com/static/images/avatar/1.jpg'; // MUI demo placeholder
 const PHOTO_PLACEHOLDER =
   'https://placehold.co/600x400?text=No+Image&font=roboto&size=32&bg=ececec&fg=888&format=webp'; // 3:4 portrait placeholder
+
+const avatarGenerator = new AvatarGenerator();
 
 export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, people, description, date, animate = true, selected = false }) => {
   const [imgSrc, setImgSrc] = useState<string | undefined>(undefined);
@@ -109,19 +110,22 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, peo
             )}
             {people.length > 0 && (
               <Stack direction="row" spacing={1} alignItems="center">
-                {people.map((person) => (
-                  <Box key={person.id} sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
-                    <Avatar
-                      src={AVATAR_PLACEHOLDER}
-                      alt={person.name}
-                      sx={{ width: 24, height: 24, mr: 0.5 }}
-                      imgProps={{ 'aria-label': person.name }}
-                    />
-                    <Typography variant="caption" sx={{ mr: 1 }}>
-                      {person.name}
-                    </Typography>
-                  </Box>
-                ))}
+                {people.map((person) => {
+                  const avatarUrl = person.name ? avatarGenerator.generateRandomAvatar(person.name) : undefined;
+                  return (
+                    <Box key={person.id} sx={{ display: 'flex', alignItems: 'center', mr: 1 }}>
+                      <Avatar
+                        src={avatarUrl}
+                        alt={person.name}
+                        sx={{ width: 24, height: 24, mr: 0.5 }}
+                        imgProps={{ 'aria-label': person.name }}
+                      />
+                      <Typography variant="caption" sx={{ mr: 1 }}>
+                        {person.name}
+                      </Typography>
+                    </Box>
+                  );
+                })}
               </Stack>
             )}
           </Stack>
