@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useCallback } from 'react';
-import { Box, Button, Stepper, Step, StepLabel, Typography, Paper, TextField, Alert, CircularProgress } from '@mui/material';
+import { Box, Button, Stepper, Step, StepLabel, Typography, Paper, TextField, Alert, CircularProgress, Fade, Backdrop } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import PersonSelection from '../components/PersonSelection';
@@ -216,6 +216,7 @@ export default function OnboardingMemoryFlow() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [memoryId, setMemoryId] = useState<string | null>(null);
+  const [transitioning, setTransitioning] = useState(false);
 
   const [createMemory] = useMutation(CREATE_MEMORY);
   const [addPeople] = useMutation(ADD_PEOPLE);
@@ -292,15 +293,19 @@ export default function OnboardingMemoryFlow() {
           },
         },
       });
-      // Redirect to memory detail page
-      router.push(`/memory/${memoryId}`);
-      // Optionally reset state if user comes back
-      setStep(0);
-      setImage(null);
-      setDetails({ title: '', date: null, description: '' });
-      setPeople([]);
-      setMemoryId(null);
-      setError('');
+      // Show transition overlay before redirect
+      setTransitioning(true);
+      setTimeout(() => {
+        router.push(`/memory/${memoryId}`);
+        // Do NOT reset state here to avoid flashing the empty form
+        // setStep(0);
+        // setImage(null);
+        // setDetails({ title: '', date: null, description: '' });
+        // setPeople([]);
+        // setMemoryId(null);
+        // setError('');
+        // setTransitioning(false);
+      }, 1000);
     } catch (err: unknown) {
       setError('Error tagging people: ' + (err instanceof Error ? err.message : String(err)));
     } finally {
@@ -316,15 +321,27 @@ export default function OnboardingMemoryFlow() {
   };
 
   return (
-    <Paper sx={{ mx: 'auto', mt: 2, p: 4 }}>
-      <Stepper activeStep={step} alternativeLabel sx={{ mb: 4 }}>
-        <Step><StepLabel>Share a photo</StepLabel></Step>
-        <Step><StepLabel>Memory Details</StepLabel></Step>
-        <Step><StepLabel>Tag People</StepLabel></Step>
-      </Stepper>
-      {step === 0 && <OnboardingStepUpload onImageSelected={handleImageSelected} error={error} loading={loading} />}
-      {step === 1 && <OnboardingStepDetails image={image} details={details} setDetails={setDetails} onBack={handleBack} onNext={handleNext} error={error} loading={loading} />}
-      {step === 2 && <OnboardingStepPeople image={image} people={people} setPeople={setPeople} onBack={handleBack} onSubmit={handleSubmit} error={error} loading={loading} />}
-    </Paper>
+    <Box sx={{ position: 'relative' }}>
+      {transitioning ? (
+        <Fade in={transitioning} timeout={400} unmountOnExit>
+          <Backdrop open sx={{ zIndex: (theme) => theme.zIndex.drawer + 2, color: '#fff', flexDirection: 'column' }}>
+            <CircularProgress color="inherit" sx={{ mb: 3 }} />
+            <Typography variant="h5" sx={{ fontWeight: 600, mb: 1 }}>Creating your memory...</Typography>
+            <Typography variant="body1">Hang tight! We&apos;re saving your special moment.</Typography>
+          </Backdrop>
+        </Fade>
+      ) : (
+        <Paper sx={{ mx: 'auto', mt: 2, p: 4, transition: 'opacity 0.4s' }}>
+          <Stepper activeStep={step} alternativeLabel sx={{ mb: 4 }}>
+            <Step><StepLabel>Share a photo</StepLabel></Step>
+            <Step><StepLabel>Memory Details</StepLabel></Step>
+            <Step><StepLabel>Tag People</StepLabel></Step>
+          </Stepper>
+          {step === 0 && <OnboardingStepUpload onImageSelected={handleImageSelected} error={error} loading={loading} />}
+          {step === 1 && <OnboardingStepDetails image={image} details={details} setDetails={setDetails} onBack={handleBack} onNext={handleNext} error={error} loading={loading} />}
+          {step === 2 && <OnboardingStepPeople image={image} people={people} setPeople={setPeople} onBack={handleBack} onSubmit={handleSubmit} error={error} loading={loading} />}
+        </Paper>
+      )}
+    </Box>
   );
 } 
