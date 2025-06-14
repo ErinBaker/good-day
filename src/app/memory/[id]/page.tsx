@@ -22,11 +22,16 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Container from '@mui/material/Container';
 import CloseIcon from '@mui/icons-material/Close';
 import dynamic from 'next/dynamic';
 import { AvatarGenerator } from 'random-avatar-generator';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import UpdateIcon from '@mui/icons-material/Update';
+import PlaceIcon from '@mui/icons-material/Place';
+import Tooltip from '@mui/material/Tooltip';
 
 const MEMORY_DETAIL_QUERY = gql`
   query Memory($id: ID!) {
@@ -139,7 +144,7 @@ export default function MemoryDetailPage() {
       {memory && (
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={0} sx={{ width: '100%', minHeight: 400 }}>
           {/* Left: Photo */}
-          <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, height: { xs: 300, md: '100%' }, minHeight: { xs: 300, md: 400 }, display: 'flex', alignItems: 'stretch', justifyContent: 'center', position: 'relative', bgcolor: 'grey.100' }}>
+          <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, height: { xs: 300, md: '100%' }, minHeight: { xs: 300, md: 400 }, display: 'flex', alignItems: 'stretch', justifyContent: 'center', position: 'relative', bgcolor: 'grey.100', boxShadow: 3, borderRadius: 2 }}>
             {/* Skeleton always rendered behind the image */}
             <Skeleton
               variant="rectangular"
@@ -154,11 +159,12 @@ export default function MemoryDetailPage() {
                 transition: 'opacity 0.3s',
                 opacity: imgLoaded || imgError ? 0 : 1,
                 pointerEvents: 'none',
+                borderRadius: 2,
               }}
             />
             {/* Error overlay if image fails */}
             {imgError && (
-              <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100', position: 'absolute', top: 0, left: 0, zIndex: 3 }}>
+              <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100', position: 'absolute', top: 0, left: 0, zIndex: 3, borderRadius: 2 }}>
                 <Typography color="text.secondary">Image not available</Typography>
               </Box>
             )}
@@ -177,6 +183,8 @@ export default function MemoryDetailPage() {
                 display: 'block',
                 zIndex: 2,
                 cursor: 'zoom-in',
+                borderRadius: 2,
+                boxShadow: 3,
               }}
               onClick={() => !imgError && setLightboxOpen(true)}
               onLoad={() => setImgLoaded(true)}
@@ -197,16 +205,50 @@ export default function MemoryDetailPage() {
           </Box>
           {/* Right: Details */}
           <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, p: { xs: 2, md: 6 }, bgcolor: 'background.paper', position: 'relative', flex: 1, overflowY: 'auto' }}>
-            {/* Context Menu Trigger */}
-            <IconButton
-              aria-label="memory actions"
-              aria-controls={menuAnchorEl ? 'memory-actions-menu' : undefined}
-              aria-haspopup="true"
-              onClick={handleMenuOpen}
-              sx={{ position: 'absolute', top: 16, right: 16, zIndex: 10 }}
-            >
-              <MoreVertIcon />
-            </IconButton>
+            {/* Top Bar: Back, Pagination, Menu */}
+            <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2} sx={{ mb: 2 }}>
+              <Tooltip title="Back">
+                <IconButton aria-label="Back" onClick={() => router.back()}>
+                  <ArrowBackIcon />
+                </IconButton>
+              </Tooltip>
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <Tooltip title={memory.previousMemoryId ? 'Previous memory' : 'No previous memory'}>
+                  <span>
+                    <IconButton
+                      aria-label="Previous memory"
+                      onClick={() => memory.previousMemoryId && router.push(`/memory/${memory.previousMemoryId}`)}
+                      disabled={!memory.previousMemoryId}
+                      size="large"
+                    >
+                      <ArrowBackIosNewIcon />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+                <Tooltip title={memory.nextMemoryId ? 'Next memory' : 'No next memory'}>
+                  <span>
+                    <IconButton
+                      aria-label="Next memory"
+                      onClick={() => memory.nextMemoryId && router.push(`/memory/${memory.nextMemoryId}`)}
+                      disabled={!memory.nextMemoryId}
+                      size="large"
+                    >
+                      <ArrowForwardIosIcon />
+                    </IconButton>
+                  </span>
+                </Tooltip>
+              </Stack>
+              <Tooltip title="Actions">
+                <IconButton
+                  aria-label="memory actions"
+                  aria-controls={menuAnchorEl ? 'memory-actions-menu' : undefined}
+                  aria-haspopup="true"
+                  onClick={handleMenuOpen}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              </Tooltip>
+            </Stack>
             <Menu
               id="memory-actions-menu"
               anchorEl={menuAnchorEl}
@@ -237,77 +279,78 @@ export default function MemoryDetailPage() {
                 </Button>
               </DialogActions>
             </Dialog>
-            <Typography variant="caption" color="text.secondary" sx={{ mb: 2 }} title={memory.date ? dayjs(memory.date).format('dddd MMMM D, YYYY [at] h:mma') : ''} aria-label={memory.date ? `Date: ${dayjs(memory.date).format('dddd MMMM D, YYYY [at] h:mma')}` : ''}>
-            Looking back to {memory.date && <RelativeTime date={memory.date} />}
-            </Typography>
-            <Typography variant="h3" sx={{ mb: 1, fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.1 }} component="h1">
-              {memory.title}
-            </Typography>
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="h4" component="div" sx={{ mb: 1 }}>
-                {memory.description || <span>You didn&apos;t add a note, but the feeling lingers.</span>}
-              </Typography>
-            </Box>
-            <Box sx={{ mb: 2 }}>
-              {memory.people && memory.people.length > 0 ? (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
-                  {memory.people.map((person: { id: string; name: string; relationship?: string }) => {
-                    const avatarUrl = person.name ? avatarGenerator.generateRandomAvatar(person.name) : undefined;
-                    return (
-                      <Chip
-                        key={person.id}
-                        avatar={<Avatar src={avatarUrl} sx={{ width: 24, height: 24 }} alt={person.name} />}
-                        label={person.relationship ? `${person.name} (${person.relationship})` : person.name}
-                        variant="outlined"
-                        sx={{ fontSize: '1em', height: 32, cursor: 'pointer' }}
-                        component="a"
-                        href={`/people/${person.id}`}
-                        clickable
-                      />
-                    );
-                  })}
-                </Box>
-              ) : (
-                <Typography variant="body2" color="text.secondary">No people tagged.</Typography>
-              )}
-              {memory.location && typeof memory.location.lat === 'number' && typeof memory.location.lng === 'number' && (
-                <MemoryLocationMap lat={memory.location.lat} lng={memory.location.lng} />
-              )}
-            </Box>
-            <Divider sx={{ my: 2 }} />
-            <Box sx={{ mb: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                <strong>Memory added:</strong> {memory.createdAt ? new Date(memory.createdAt).toLocaleString() : 'Unknown'}</Typography>
-                <Typography variant="body2" color="text.secondary">
-                <strong>Last updated:</strong> {memory.updatedAt ? new Date(memory.updatedAt).toLocaleString() : 'Unknown'}
-              </Typography>
-              {memory.location && typeof memory.location.lat === 'number' && typeof memory.location.lng === 'number' && (
-                <Typography variant="body2" color="text.secondary">
-                  <strong>Location:</strong> Latitude: {memory.location.lat.toFixed(5)}, Longitude: {memory.location.lng.toFixed(5)}
+            <Stack spacing={2}>
+              {/* Date */}
+              <Stack direction="row" alignItems="center" spacing={1}>
+                <Typography variant="overline" sx={{ textTransform: 'uppercase' }} color="text.secondary" title={memory.date ? dayjs(memory.date).format('dddd MMMM D, YYYY [at] h:mma') : ''} aria-label={memory.date ? `Date: ${dayjs(memory.date).format('dddd MMMM D, YYYY [at] h:mma')}` : ''}>
+                  {memory.date && <RelativeTime date={memory.date} />}
                 </Typography>
+              </Stack>
+              {/* Title */}
+              <Typography variant="h3" sx={{ fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 1.1 }} component="h1">
+                {memory.title}
+              </Typography>
+              {/* Description */}
+              <Box>
+                <Typography variant="h4" component="div" sx={{ mb: 1 }}>
+                  {memory.description || <span>You didn&apos;t add a note, but the feeling lingers.</span>}
+                </Typography>
+              </Box>
+              {/* People Chips */}
+              <Box>
+                {memory.people && memory.people.length > 0 ? (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
+                    {memory.people.map((person: { id: string; name: string; relationship?: string }) => {
+                      const avatarUrl = person.name ? avatarGenerator.generateRandomAvatar(person.name) : undefined;
+                      return (
+                        <Tooltip key={person.id} title={person.relationship ? person.relationship : 'No relationship info'}>
+                          <Chip
+                            avatar={<Avatar src={avatarUrl} sx={{ width: 24, height: 24 }} alt={person.name} />}
+                            label={person.name}
+                            variant="outlined"
+                            sx={{ fontSize: '1em', height: 32, cursor: 'pointer' }}
+                            component="a"
+                            href={`/people/${person.id}`}
+                            clickable
+                          />
+                        </Tooltip>
+                      );
+                    })}
+                  </Box>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">No people tagged.</Typography>
+                )}
+              </Box>
+              {/* Location Map */}
+              {memory.location && typeof memory.location.lat === 'number' && typeof memory.location.lng === 'number' && (
+                <Box sx={{ mb: 2 }}>
+                  <MemoryLocationMap lat={memory.location.lat} lng={memory.location.lng} />
+                </Box>
               )}
-            </Box>
-            {/* Previous/Next Navigation */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, mt: 3 }}>
-              <Button
-                variant="outlined"
-                startIcon={<ArrowBackIcon />}
-                onClick={() => memory.previousMemoryId && router.push(`/memory/${memory.previousMemoryId}`)}
-                disabled={!memory.previousMemoryId}
-                aria-label="Previous memory"
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outlined"
-                endIcon={<ArrowForwardIcon />}
-                onClick={() => memory.nextMemoryId && router.push(`/memory/${memory.nextMemoryId}`)}
-                disabled={!memory.nextMemoryId}
-                aria-label="Next memory"
-              >
-                Next
-              </Button>
-            </Box>
+              {/* Metadata */}
+              <Stack direction="row" spacing={2} alignItems="center">
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <UpdateIcon fontSize="small" color="action" />
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Added:</strong> {memory.createdAt ? new Date(memory.createdAt).toLocaleString() : 'Unknown'}
+                  </Typography>
+                </Stack>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <UpdateIcon fontSize="small" color="action" />
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Last updated:</strong> {memory.updatedAt ? new Date(memory.updatedAt).toLocaleString() : 'Unknown'}
+                  </Typography>
+                </Stack>
+                {memory.location && typeof memory.location.lat === 'number' && typeof memory.location.lng === 'number' && (
+                  <Stack direction="row" alignItems="center" spacing={1}>
+                    <PlaceIcon fontSize="small" color="action" />
+                    <Typography variant="body2" color="text.secondary">
+                      <strong>Lat:</strong> {memory.location.lat.toFixed(5)}, <strong>Lng:</strong> {memory.location.lng.toFixed(5)}
+                    </Typography>
+                  </Stack>
+                )}
+              </Stack>
+            </Stack>
           </Box>
         </Stack>
       )}
