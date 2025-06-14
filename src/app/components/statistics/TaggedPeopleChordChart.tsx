@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, Typography, CircularProgress } from '@mui/material';
 import { ResponsiveChord } from '@nivo/chord';
 import { useMemories } from '../useMemories';
+import nivoTheme from '../../../app/stats/nivoTheme';
 
 const MAX_PEOPLE = 10; // Limit to top N people for clarity
 
@@ -79,6 +80,7 @@ const TaggedPeopleChordChart: React.FC = () => {
             colors={{ scheme: 'category10' }}
             isInteractive={true}
             ariaLabel="Tagged people chord diagram"
+            theme={nivoTheme}
           />
         </div>
       </CardContent>

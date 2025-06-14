@@ -7,7 +7,6 @@ import { Typography, Container } from '@mui/material';
 import TotalCountsCard from '../components/statistics/TotalCountsCard';
 import TimeSeriesChart from '../components/statistics/TimeSeriesChart';
 import TaggedPersonsChart from '../components/statistics/TaggedPersonsChart';
-import DateCoverageChart from '../components/statistics/DateCoverageChart';
 import PatternVisualization from '../components/statistics/PatternVisualization';
 import TaggedPeopleChordChart from '../components/statistics/TaggedPeopleChordChart';
 
@@ -19,12 +18,12 @@ const StatisticsDashboardPage: React.FC = () => {
       </Typography>
       <Stack spacing={3}>
         <Box display="flex" flexDirection="column" gap={3}>
-          <Box flex={1} minWidth={240}><TotalCountsCard /></Box>
-          <Box flex={1} minWidth={320}><TimeSeriesChart /></Box>
-          <Box flex={1} minWidth={240}><TaggedPersonsChart /></Box>
-          <Box flex={1} minWidth={240}><DateCoverageChart /></Box>
-          <Box flex={1} minWidth={240}><PatternVisualization /></Box>
-          <Box flex={1} minWidth={240}><TaggedPeopleChordChart /></Box>
+          <Box flex={1}><TotalCountsCard /></Box>
+          <Box flex={1}><TaggedPeopleChordChart /></Box>
+          <Box flex={1}><TimeSeriesChart /></Box>
+          <Box flex={1}><TaggedPersonsChart /></Box>
+          <Box flex={1}><PatternVisualization /></Box>
+
         </Box>       
       </Stack>
     </Container>

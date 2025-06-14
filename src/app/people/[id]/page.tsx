@@ -104,7 +104,7 @@ export default function PersonDetailPage() {
   };
 
   return (
-    <Box sx={{ maxWidth: 900, mx: 'auto', py: 4, px: { xs: 1, sm: 2 } }}>
+    <Box sx={{ mx: 'auto', py: 4, px: { xs: 1, sm: 2 } }}>
       {loading && (
         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
           <CircularProgress />

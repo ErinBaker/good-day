@@ -2,6 +2,7 @@ import React from 'react';
 import { Card, CardContent, Typography, CircularProgress } from '@mui/material';
 import { ResponsiveTreeMap } from '@nivo/treemap';
 import { usePersonTagStats } from '../useMemories';
+import nivoTheme from '../../../app/stats/nivoTheme';
 
 const TaggedPersonsChart: React.FC = () => {
   const { personTagStats, loading, error } = usePersonTagStats(10);
@@ -53,10 +54,7 @@ const TaggedPersonsChart: React.FC = () => {
             parentLabelTextColor="#888"
             borderColor="#fff"
             colors={{ scheme: 'nivo' }}
-            theme={{
-              labels: { text: { fontSize: 12, fill: '#333' } },
-              axis: { legend: { text: { fontSize: 14, fill: '#333' } } },
-            }}
+            theme={nivoTheme}
             ariaLabel="Tagged persons treemap chart"
           />
         </div>
