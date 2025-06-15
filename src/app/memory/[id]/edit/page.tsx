@@ -15,6 +15,10 @@ import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from '@mui/icons-material/Delete';
 import Skeleton from '@mui/material/Skeleton';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import TextField from '@mui/material/TextField';
+import Divider from '@mui/material/Divider';
+import Tooltip from '@mui/material/Tooltip';
 
 const MEMORY_DETAIL_QUERY = gql`
   query Memory($id: ID!) {
@@ -64,8 +68,6 @@ export default function EditMemoryPage() {
   const [description, setDescription] = useState("");
   const [selectedPeople, setSelectedPeople] = useState<Person[]>([]);
   const [photoUrl, setPhotoUrl] = useState("");
-  const [originalPhotoUrl, setOriginalPhotoUrl] = useState<string>("");
-  const [photoRemoved, setPhotoRemoved] = useState(false);
   const [detailsError, setDetailsError] = useState("");
   const [saving, setSaving] = useState(false);
   const [alert, setAlert] = useState<{ message: string; severity: 'success' | 'error' | 'info' | 'warning'; open: boolean }>({ message: '', severity: 'success', open: false });
@@ -79,8 +81,8 @@ export default function EditMemoryPage() {
       setDescription(memory.description || "");
       setSelectedPeople(memory.people || []);
       setPhotoUrl(memory.photoUrl || "");
-      setOriginalPhotoUrl(memory.photoUrl || "");
-      setPhotoRemoved(false);
+      setImgLoaded(false);
+      setImgError(false);
     }
   }, [memory]);
 
@@ -122,7 +124,8 @@ export default function EditMemoryPage() {
 
   const handleRemovePhoto = () => {
     setPhotoUrl("");
-    setPhotoRemoved(true);
+    setImgLoaded(false);
+    setImgError(false);
   };
 
   const handleSubmit = async (e: SyntheticEvent) => {
@@ -158,10 +161,18 @@ export default function EditMemoryPage() {
 
   return (
     <Container maxWidth="xl" sx={{ py: { xs: 2, md: 6 }, px: { xs: 0, sm: 2 }, minHeight: '100vh' }}>
-      <Typography variant="h4" component="h1" gutterBottom>Edit Memory</Typography>
+      {/* Top Bar */}
+      <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 3 }}>
+        <Tooltip title="Back">
+          <IconButton aria-label="Back" onClick={() => router.back()}>
+            <ArrowBackIcon />
+          </IconButton>
+        </Tooltip>
+        <Typography variant="h4" component="h1" fontWeight={700}>Edit Memory</Typography>
+      </Stack>
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={0} sx={{ width: '100%', minHeight: 400 }}>
         {/* Left: Photo or Dropzone */}
-        <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, height: { xs: 300, md: '100%' }, minHeight: { xs: 300, md: 400 }, display: 'flex', alignItems: 'stretch', justifyContent: 'center', position: 'relative', bgcolor: 'grey.100' }}>
+        <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, height: { xs: 300, md: '100%' }, minHeight: { xs: 300, md: 400 }, display: 'flex', alignItems: 'stretch', justifyContent: 'center', position: 'relative', bgcolor: 'grey.100', boxShadow: 3, borderRadius: 2 }}>
           {photoUrl ? (
             <>
               <Skeleton
@@ -177,10 +188,11 @@ export default function EditMemoryPage() {
                   transition: 'opacity 0.3s',
                   opacity: imgLoaded || imgError ? 0 : 1,
                   pointerEvents: 'none',
+                  borderRadius: 2,
                 }}
               />
               {imgError && (
-                <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100', position: 'absolute', top: 0, left: 0, zIndex: 3 }}>
+                <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100', position: 'absolute', top: 0, left: 0, zIndex: 3, borderRadius: 2 }}>
                   <Typography color="text.secondary">Image not available</Typography>
                 </Box>
               )}
@@ -198,19 +210,23 @@ export default function EditMemoryPage() {
                   display: 'block',
                   zIndex: 2,
                   borderRadius: 2,
+                  boxShadow: 3,
                 }}
                 onLoad={() => setImgLoaded(true)}
                 onError={() => setImgError(true)}
                 draggable={false}
+                aria-label="Current memory photo"
               />
-              <IconButton
-                aria-label="Delete photo"
-                onClick={handleRemovePhoto}
-                sx={{ position: 'absolute', top: 16, right: 16, zIndex: 10, bgcolor: 'rgba(255,255,255,0.85)', '&:hover': { bgcolor: 'rgba(255,255,255,1)' } }}
-                disabled={saving}
-              >
-                <DeleteIcon color="error" />
-              </IconButton>
+              <Tooltip title="Remove photo">
+                <IconButton
+                  aria-label="Delete photo"
+                  onClick={handleRemovePhoto}
+                  sx={{ position: 'absolute', top: 16, right: 16, zIndex: 10, bgcolor: 'rgba(255,255,255,0.85)', '&:hover': { bgcolor: 'rgba(255,255,255,1)' } }}
+                  disabled={saving}
+                >
+                  <DeleteIcon color="error" />
+                </IconButton>
+              </Tooltip>
             </>
           ) : (
             <Box sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
@@ -219,45 +235,54 @@ export default function EditMemoryPage() {
           )}
         </Box>
         {/* Right: Edit Fields */}
-        <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, p: { xs: 2, md: 6 }, bgcolor: 'background.paper', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <input
-              type="text"
-              placeholder="Title"
+        <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, p: { xs: 2, md: 6 }, bgcolor: 'background.paper', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', justifyContent: 'center', borderRadius: 2, boxShadow: 1 }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <TextField
+              label="Title"
               value={title}
               onChange={e => setTitle(e.target.value)}
-              aria-label="Title"
               required
-              style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
+              fullWidth
+              inputProps={{ maxLength: 100, 'aria-label': 'Title' }}
+              disabled={saving}
+              margin="normal"
             />
-            <input
+            <TextField
+              label="Date"
               type="date"
               value={date}
               onChange={e => setDate(e.target.value)}
-              aria-label="Date"
               required
-              style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+              inputProps={{ 'aria-label': 'Date' }}
+              disabled={saving}
+              margin="normal"
             />
-            <textarea
-              placeholder="Description"
+            <TextField
+              label="Description"
               value={description}
               onChange={e => setDescription(e.target.value)}
-              aria-label="Description"
               required
-              rows={3}
-              style={{ padding: 12, borderRadius: 4, border: '1px solid #ccc', fontSize: 16 }}
+              fullWidth
+              multiline
+              minRows={3}
+              inputProps={{ maxLength: 500, 'aria-label': 'Description' }}
+              disabled={saving}
+              margin="normal"
             />
-            <PersonSelection value={selectedPeople} onChange={setSelectedPeople} />
-            {detailsError && <Alert severity="error">{detailsError}</Alert>}
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-              <Button type="submit" variant="contained" color="primary" disabled={saving || !photoUrl}>
+            <PersonSelection value={selectedPeople} onChange={setSelectedPeople} disabled={saving} />
+            {detailsError && <Alert severity="error" sx={{ mt: 1 }}>{detailsError}</Alert>}
+            <Divider sx={{ my: 2 }} />
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <Button type="submit" variant="contained" color="primary" disabled={saving || !photoUrl} aria-label="Save changes">
                 {saving ? <CircularProgress size={18} /> : 'Save Changes'}
               </Button>
-              <Button variant="outlined" color="secondary" onClick={() => router.push(`/memory/${id}`)} disabled={saving}>
+              <Button variant="outlined" color="secondary" onClick={() => router.push(`/memory/${id}`)} disabled={saving} aria-label="Cancel editing">
                 Cancel
               </Button>
-            </Box>
-          </Box>
+            </Stack>
+          </form>
           {alert.open && <Alert severity={alert.severity} sx={{ mt: 2 }}>{alert.message}</Alert>}
         </Box>
       </Stack>
