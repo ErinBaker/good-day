@@ -10,7 +10,6 @@ import Skeleton from "@mui/material/Skeleton";
 import RelativeTime from '../../components/RelativeTime';
 import Chip from '@mui/material/Chip';
 import Avatar from '@mui/material/Avatar';
-import Divider from '@mui/material/Divider';
 import dayjs from 'dayjs';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
@@ -28,10 +27,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import dynamic from 'next/dynamic';
 import { AvatarGenerator } from 'random-avatar-generator';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import UpdateIcon from '@mui/icons-material/Update';
 import PlaceIcon from '@mui/icons-material/Place';
 import Tooltip from '@mui/material/Tooltip';
+import DOMPurify from 'dompurify';
 
 const MEMORY_DETAIL_QUERY = gql`
   query Memory($id: ID!) {
@@ -291,10 +290,18 @@ export default function MemoryDetailPage() {
                 {memory.title}
               </Typography>
               {/* Description */}
-              <Box>
-                <Typography variant="h4" component="div" sx={{ mb: 1 }}>
-                  {memory.description || <span>You didn&apos;t add a note, but the feeling lingers.</span>}
-                </Typography>
+              <Box sx={{ mb: 1 }}>
+                {memory.description ? (
+                  <div
+                    style={{ fontSize: '1.25rem', lineHeight: 1.5 }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(memory.description) }}
+                    aria-label="Memory description"
+                  />
+                ) : (
+                  <Typography variant="h4" component="div">
+                    You didn&apos;t add a note, but the feeling lingers.
+                  </Typography>
+                )}
               </Box>
               {/* People Chips */}
               <Box>

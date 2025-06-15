@@ -12,6 +12,7 @@ import { useTheme } from '@mui/material/styles';
 import Link from 'next/link';
 import RelativeTime from './RelativeTime';
 import { AvatarGenerator } from 'random-avatar-generator';
+import DOMPurify from 'dompurify';
 
 export interface MemoryCardProps {
   id: string;
@@ -120,9 +121,11 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, peo
               {title}
             </Typography>
           )}
-          <Typography variant="body1" sx={{ mb: 2 }}>
-            {description}
-          </Typography>
+          <div
+            style={{ marginBottom: 16, fontSize: '1rem', lineHeight: 1.5 }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(description) }}
+            aria-label="Memory description"
+          />
           <Stack direction="row" spacing={2} alignItems="center" sx={{ mt: 2, flexWrap: 'wrap' }}>
             {date && (
               <Typography variant="caption" color="text.secondary" title={new Date(date).toISOString()} aria-label={`Date: ${new Date(date).toISOString()}`}>

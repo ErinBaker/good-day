@@ -9,6 +9,13 @@ import { useMutation, gql } from '@apollo/client';
 import type { Person } from '../components/PersonSelection';
 import { useRouter } from 'next/navigation';
 import exifr from 'exifr';
+import { EditorContent, useEditor, BubbleMenu, FloatingMenu, Editor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import FormatBoldIcon from '@mui/icons-material/FormatBold';
+import FormatItalicIcon from '@mui/icons-material/FormatItalic';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import './OnboardingMemoryFlow.tiptap.css';
 
 const CREATE_MEMORY = gql`
   mutation CreateMemory($title: String!, $date: String!, $description: String!, $photoUrl: String!) {
@@ -127,76 +134,157 @@ const OnboardingStepDetails: React.FC<{
   onNext: () => void;
   error: string;
   loading: boolean;
-}> = ({ image, details, setDetails, onBack, onNext, error, loading }) => (
-  <Box sx={{ width: '100%', minHeight: { xs: 400, md: 500 }, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 2, md: 0 } }}>
-    {/* Left: Image Preview */}
-    <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, height: { xs: 240, md: 400 }, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100', borderRadius: 2, overflow: 'hidden' }}>
-      {image && (
-        <img src={URL.createObjectURL(image)} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, maxHeight: 400, maxWidth: '100%' }} />
-      )}
-    </Box>
-    {/* Right: Form */}
-    <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, p: { xs: 1, md: 4 }, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-      <Typography variant="h5" gutterBottom>What makes this memory special?</Typography>
-      <Typography variant="body1" sx={{ mb: 2 }}>Add a title, a date, a short description, and (if available) a location.</Typography>
-      <TextField
-        label="Title"
-        value={details.title}
-        onChange={e => setDetails({ ...details, title: e.target.value })}
-        fullWidth
-        placeholder="e.g. 'My First Concert'"
-        required
-        sx={{ mb: 2 }}
-        inputProps={{ maxLength: 80 }}
-      />
-      <DatePicker
-        label="Date"
-        value={details.date}
-        onChange={date => setDetails({ ...details, date })}
-        slotProps={{ textField: { required: true, fullWidth: true, size: 'medium' } }}
-        format="DD/MM/YYYY"
-      />
-      <TextField
-        label="Description"
-        value={details.description}
-        onChange={e => setDetails({ ...details, description: e.target.value })}
-        fullWidth
-        required
-        multiline
-        minRows={3}
-        sx={{ mt: 2 }}
-        inputProps={{ maxLength: 500 }}
-      />
-      <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-        <TextField
-          label="Latitude"
-          value={details.location?.lat ?? ''}
-          onChange={e => setDetails({ ...details, location: { lat: e.target.value, lng: details.location?.lng ?? '' } })}
-          fullWidth
-          type="number"
-          inputProps={{ step: 'any', min: -90, max: 90 }}
-          placeholder="Latitude"
-        />
-        <TextField
-          label="Longitude"
-          value={details.location?.lng ?? ''}
-          onChange={e => setDetails({ ...details, location: { lat: details.location?.lat ?? '', lng: e.target.value } })}
-          fullWidth
-          type="number"
-          inputProps={{ step: 'any', min: -180, max: 180 }}
-          placeholder="Longitude"
-        />
+}> = ({ image, details, setDetails, onBack, onNext, error, loading }) => {
+  // Ensure description is always a string before passing to useEditor
+  const safeDetails = { ...details, description: typeof details.description === 'string' ? details.description : '' };
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: safeDetails.description,
+    onUpdate: ({ editor }: { editor: Editor }) => {
+      setDetails({ ...details, description: String(editor.getHTML()) });
+    },
+    editorProps: {
+      attributes: {
+        'aria-label': 'Description',
+        'tabIndex': 0,
+        'role': 'textbox',
+        'style': 'min-height:120px; outline:none; font-size:1rem; padding:12px; border-radius:4px; border:1px solid #ccc; background:#fff;',
+      },
+    },
+  });
+
+  return (
+    <Box sx={{ width: '100%', minHeight: { xs: 400, md: 500 }, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 2, md: 0 } }}>
+      {/* Left: Image Preview */}
+      <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, height: { xs: 240, md: 400 }, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100', borderRadius: 2, overflow: 'hidden' }}>
+        {image && (
+          <img src={URL.createObjectURL(image)} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8, maxHeight: 400, maxWidth: '100%' }} />
+        )}
       </Box>
-      {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
-        <Button variant="outlined" onClick={onBack}>Back</Button>
-        <Button variant="contained" onClick={onNext} disabled={!(details.title && details.date && details.description) || loading}>
-          {loading ? <CircularProgress size={20} /> : 'Next'}
-        </Button>
+      {/* Right: Form */}
+      <Box sx={{ width: { xs: '100%', md: '50%' }, minWidth: 0, p: { xs: 1, md: 4 }, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <Typography variant="h5" gutterBottom>What makes this memory special?</Typography>
+        <Typography variant="body1" sx={{ mb: 2 }}>Add a title, a date, a short description, and (if available) a location.</Typography>
+        <TextField
+          label="Title"
+          value={details.title}
+          onChange={e => setDetails({ ...details, title: e.target.value })}
+          fullWidth
+          placeholder="e.g. 'My First Concert'"
+          required
+          sx={{ mb: 2 }}
+          inputProps={{ maxLength: 80 }}
+        />
+        <DatePicker
+          label="Date"
+          value={details.date}
+          onChange={date => setDetails({ ...details, date })}
+          slotProps={{ textField: { required: true, fullWidth: true, size: 'medium' } }}
+          format="DD/MM/YYYY"
+        />
+        <Box sx={{ mt: 2, mb: 1 }}>
+          <Typography variant="subtitle1" sx={{ mb: 1 }}>Description</Typography>
+          <Box sx={{ position: 'relative', minHeight: 120 }}>
+            {editor && (
+              <>
+                <BubbleMenu className="bubble-menu" tippyOptions={{ duration: 100 }} editor={editor}>
+                  <button
+                    type="button"
+                    onClick={() => editor.chain().focus().toggleBold().run()}
+                    className={editor.isActive('bold') ? 'is-active' : ''}
+                    aria-label="Bold"
+                  >
+                    <FormatBoldIcon fontSize="small" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => editor.chain().focus().toggleItalic().run()}
+                    className={editor.isActive('italic') ? 'is-active' : ''}
+                    aria-label="Italic"
+                  >
+                    <FormatItalicIcon fontSize="small" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => editor.chain().focus().toggleStrike().run()}
+                    className={editor.isActive('strike') ? 'is-active' : ''}
+                    aria-label="Strike"
+                  >
+                    <s>S</s>
+                  </button>
+                </BubbleMenu>
+              </>
+            )}
+            {editor && (
+              <FloatingMenu className="floating-menu" tippyOptions={{ duration: 100 }} editor={editor}>
+                <button
+                  type="button"
+                  onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+                  className={editor.isActive('heading', { level: 1 }) ? 'is-active' : ''}
+                  aria-label="Heading 1"
+                >
+                  H1
+                </button>
+                <button
+                  type="button"
+                  onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+                  className={editor.isActive('heading', { level: 2 }) ? 'is-active' : ''}
+                  aria-label="Heading 2"
+                >
+                  H2
+                </button>
+                <button
+                  type="button"
+                  onClick={() => editor.chain().focus().toggleBulletList().run()}
+                  className={editor.isActive('bulletList') ? 'is-active' : ''}
+                  aria-label="Bullet list"
+                >
+                  <FormatListBulletedIcon fontSize="small" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => editor.chain().focus().toggleOrderedList().run()}
+                  className={editor.isActive('orderedList') ? 'is-active' : ''}
+                  aria-label="Numbered list"
+                >
+                  <FormatListNumberedIcon fontSize="small" />
+                </button>
+              </FloatingMenu>
+            )}
+            <EditorContent editor={editor} />
+          </Box>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
+          <TextField
+            label="Latitude"
+            value={details.location?.lat ?? ''}
+            onChange={e => setDetails({ ...details, location: { lat: e.target.value, lng: details.location?.lng ?? '' } })}
+            fullWidth
+            type="number"
+            inputProps={{ step: 'any', min: -90, max: 90 }}
+            placeholder="Latitude"
+          />
+          <TextField
+            label="Longitude"
+            value={details.location?.lng ?? ''}
+            onChange={e => setDetails({ ...details, location: { lat: details.location?.lat ?? '', lng: e.target.value } })}
+            fullWidth
+            type="number"
+            inputProps={{ step: 'any', min: -180, max: 180 }}
+            placeholder="Longitude"
+          />
+        </Box>
+        {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+          <Button variant="outlined" onClick={onBack}>Back</Button>
+          <Button variant="contained" onClick={onNext} disabled={!(details.title && details.date && details.description) || loading}>
+            {loading ? <CircularProgress size={20} /> : 'Next'}
+          </Button>
+        </Box>
       </Box>
     </Box>
-  </Box>
-);
+  );
+};
 
 const OnboardingStepPeople: React.FC<{
   image: File | null;
@@ -257,6 +345,10 @@ export default function OnboardingMemoryFlow() {
         setError('Please fill in all fields.');
         return;
       }
+      // Type guard: ensure description is a string
+      if (typeof details.description !== 'string') {
+        details.description = String(details.description ?? '');
+      }
       // Validate location if present
       if ((details.location?.lat && isNaN(Number(details.location.lat))) || (details.location?.lng && isNaN(Number(details.location.lng)))) {
         setError('Latitude and longitude must be numbers.');
@@ -285,7 +377,7 @@ export default function OnboardingMemoryFlow() {
           variables: {
             title: details.title.trim(),
             date: details.date ? details.date.toISOString() : dayjs().toISOString(),
-            description: details.description.trim(),
+            description: String(details.description).trim(),
             photoUrl,
             location: details.location?.lat && details.location?.lng ? { lat: parseFloat(details.location.lat), lng: parseFloat(details.location.lng) } : null,
           },
@@ -356,6 +448,10 @@ export default function OnboardingMemoryFlow() {
         newDetails.location = { lat: exif.latitude.toString(), lng: exif.longitude.toString() };
       } else {
         newDetails.location = { lat: '', lng: '' };
+      }
+      // Ensure description is always a string
+      if (typeof newDetails.description !== 'string') {
+        newDetails.description = String(newDetails.description ?? '');
       }
       setDetails(newDetails);
     } catch {

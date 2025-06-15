@@ -1,0 +1,56 @@
+.bubble-menu, .floating-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--mui-palette-background-paper, #fff);
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12), 0 1.5px 4px rgba(0,0,0,0.08);
+  padding: 0.25rem 0.5rem;
+  z-index: 1000;
+  border: 1px solid var(--mui-palette-divider, #e0e0e0);
+  min-height: 40px;
+  min-width: 0;
+  transition: box-shadow 0.2s, border 0.2s;
+
+  button {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--mui-palette-text-primary, #333);
+    font-size: 1.1rem;
+    border-radius: 6px;
+    padding: 6px 8px;
+    margin: 0 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+
+    &:hover, &:focus-visible {
+      background: var(--mui-palette-action-hover, #f5f5f5);
+      color: var(--mui-palette-primary-main, #1976d2);
+      box-shadow: 0 0 0 2px var(--mui-palette-primary-main, #1976d2, 0.15);
+    }
+    &:active, &.is-active {
+      background: var(--mui-palette-primary-light, #e3f2fd);
+      color: var(--mui-palette-primary-main, #1976d2);
+      box-shadow: 0 0 0 2px var(--mui-palette-primary-main, #1976d2, 0.25);
+    }
+    &:disabled {
+      color: var(--mui-palette-action-disabled, #bdbdbd);
+      cursor: not-allowed;
+      background: none;
+      box-shadow: none;
+    }
+  }
+}
+
+// Optional: subtle fade-in animation
+.bubble-menu, .floating-menu {
+  animation: fadeInMenu 0.18s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes fadeInMenu {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+} 
