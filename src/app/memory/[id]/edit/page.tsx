@@ -16,9 +16,10 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from '@mui/icons-material/Delete';
 import Skeleton from '@mui/material/Skeleton';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import TextField from '@mui/material/TextField';
+import TiptapEditor from '../../../components/TiptapEditor';
 import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
+import TextField from '@mui/material/TextField';
 
 const MEMORY_DETAIL_QUERY = gql`
   query Memory($id: ID!) {
@@ -259,20 +260,13 @@ export default function EditMemoryPage() {
               disabled={saving}
               margin="normal"
             />
-            <TextField
-              label="Description"
+            <TiptapEditor
               value={description}
-              onChange={e => setDescription(e.target.value)}
-              required
-              fullWidth
-              multiline
-              minRows={3}
-              inputProps={{ maxLength: 500, 'aria-label': 'Description' }}
-              disabled={saving}
-              margin="normal"
+              onChange={setDescription}
+              label="Description"
+              error={detailsError}
             />
             <PersonSelection value={selectedPeople} onChange={setSelectedPeople} disabled={saving} />
-            {detailsError && <Alert severity="error" sx={{ mt: 1 }}>{detailsError}</Alert>}
             <Divider sx={{ my: 2 }} />
             <Stack direction="row" spacing={2} justifyContent="flex-end">
               <Button type="submit" variant="contained" color="primary" disabled={saving || !photoUrl} aria-label="Save changes">

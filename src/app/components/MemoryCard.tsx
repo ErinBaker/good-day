@@ -12,7 +12,6 @@ import { useTheme } from '@mui/material/styles';
 import Link from 'next/link';
 import RelativeTime from './RelativeTime';
 import { AvatarGenerator } from 'random-avatar-generator';
-import DOMPurify from 'dompurify';
 
 export interface MemoryCardProps {
   id: string;
@@ -29,6 +28,18 @@ const PHOTO_PLACEHOLDER =
   'https://placehold.co/600x400?text=No+Image&font=roboto&size=32&bg=ececec&fg=888&format=webp'; // 3:4 portrait placeholder
 
 const avatarGenerator = new AvatarGenerator();
+
+// Utility to strip HTML tags and get plain text
+function htmlToPlainText(html: string): string {
+  if (typeof window !== 'undefined') {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return div.textContent || div.innerText || '';
+  } else {
+    // SSR fallback
+    return html.replace(/<[^>]+>/g, '');
+  }
+}
 
 export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, people, description, date, animate = true, selected = false }) => {
   const [imgSrc, setImgSrc] = useState<string | undefined>(undefined);
@@ -122,10 +133,20 @@ export const MemoryCard: React.FC<MemoryCardProps> = ({ id, title, photoUrl, peo
             </Typography>
           )}
           <div
-            style={{ marginBottom: 16, fontSize: '1rem', lineHeight: 1.5 }}
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(description) }}
+            style={{
+              marginBottom: 16,
+              fontSize: '1rem',
+              lineHeight: 1.5,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              display: 'block',
+              maxWidth: '100%'
+            }}
             aria-label="Memory description"
-          />
+          >
+            {htmlToPlainText(description)}
+          </div>
           <Stack direction="row" spacing={2} alignItems="center" sx={{ mt: 2, flexWrap: 'wrap' }}>
             {date && (
               <Typography variant="caption" color="text.secondary" title={new Date(date).toISOString()} aria-label={`Date: ${new Date(date).toISOString()}`}>
