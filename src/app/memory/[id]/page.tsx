@@ -76,7 +76,7 @@ export default function MemoryDetailPage() {
     variables: { id },
     onCompleted: async () => {
       setDeleteDialogOpen(false);
-      await client.refetchQueries({ include: ["Memories"] });
+      await client.resetStore();
       router.push("/");
     },
     onError: () => {

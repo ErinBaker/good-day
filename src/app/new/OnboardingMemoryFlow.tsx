@@ -150,7 +150,7 @@ const OnboardingStepDetails: React.FC<{
     editorProps: {
       attributes: {
         'aria-label': 'Description',
-        'tabIndex': 0,
+        'tabIndex': '0',
         'role': 'textbox',
         'style': 'min-height:120px; outline:none; font-size:1rem; padding:12px; border-radius:4px; border:1px solid #ccc; background:#fff;',
       },
@@ -445,6 +445,7 @@ export default function OnboardingMemoryFlow() {
     // Try to extract EXIF metadata
     try {
       const exif = await exifr.parse(file, { gps: true });
+      console.log('[EXIF DEBUG]', exif);
       const newDetails = { ...details };
       if (exif?.DateTimeOriginal || exif?.CreateDate) {
         newDetails.date = dayjs(exif.DateTimeOriginal || exif.CreateDate);
@@ -459,7 +460,8 @@ export default function OnboardingMemoryFlow() {
         newDetails.description = String(newDetails.description ?? '');
       }
       setDetails(newDetails);
-    } catch {
+    } catch (e) {
+      console.log('[EXIF ERROR]', e);
       // Ignore EXIF errors
     }
     setStep(1);
