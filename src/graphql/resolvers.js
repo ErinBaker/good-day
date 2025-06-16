@@ -1,5 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { searchMemories as searchMemoriesService } from '../app/services/memorySearch.js';
+import fs from 'fs';
+import path from 'path';
 const prisma = new PrismaClient();
 
 const resolvers = {
@@ -155,6 +157,8 @@ const resolvers = {
           description: input.description,
           photoUrl: input.photoUrl,
           location: input.location ? { lat: input.location.lat, lng: input.location.lng } : undefined,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         },
         include: { people: true, photos: true },
       });
@@ -171,7 +175,18 @@ const resolvers = {
         });
       }
 
-      // Step 3: Return the memory (optionally re-fetch with people)
+      // Step 3: Link orphaned photos (no memoryId, matching photoUrl or recent uploads) to this memory
+      if (input.photoUrl) {
+        await prisma.photo.updateMany({
+          where: {
+            memoryId: null,
+            baseFilename: input.photoUrl.split('/').pop(),
+          },
+          data: { memoryId: memory.id },
+        });
+      }
+
+      // Step 4: Return the memory (optionally re-fetch with people)
       return prisma.memory.findUnique({
         where: { id: memory.id },
         include: { people: true, photos: true },
@@ -200,6 +215,58 @@ const resolvers = {
     deleteMemory: async (_, { id }) => {
       console.log(`[deleteMemory] Attempting to delete memory with id: ${id}`);
       try {
+        // Find all photos for this memory
+        const photos = await prisma.photo.findMany({ where: { memoryId: id } });
+        console.log(`[deleteMemory] Found ${photos.length} photos for memory ${id}`);
+        // Delete all photo files
+        photos.forEach(photo => {
+          const ext = path.extname(photo.baseFilename);
+          const base = path.basename(photo.baseFilename, ext);
+          const folderPath = path.join(process.cwd(), 'uploads', photo.folder);
+          console.log(`[deleteMemory] photo.folder: ${photo.folder}`);
+          console.log(`[deleteMemory] photo.baseFilename: ${photo.baseFilename}`);
+          // Delete original
+          const originalPath = path.join(folderPath, photo.baseFilename);
+          console.log(`[deleteMemory] Constructed originalPath: ${originalPath}`);
+          if (fs.existsSync(originalPath)) {
+            try {
+              fs.unlinkSync(originalPath);
+              console.log(`[deleteMemory] Deleted original: ${originalPath}`);
+            } catch (err) {
+              console.error(`[deleteMemory] Failed to delete original: ${originalPath}`, err);
+            }
+          } else {
+            console.log(`[deleteMemory] Original not found: ${originalPath}`);
+          }
+          // Delete thumbnail
+          const thumbnailPath = path.join(folderPath, `${base}_thumbnail${ext}`);
+          console.log(`[deleteMemory] Constructed thumbnailPath: ${thumbnailPath}`);
+          if (fs.existsSync(thumbnailPath)) {
+            try {
+              fs.unlinkSync(thumbnailPath);
+              console.log(`[deleteMemory] Deleted thumbnail: ${thumbnailPath}`);
+            } catch (err) {
+              console.error(`[deleteMemory] Failed to delete thumbnail: ${thumbnailPath}`, err);
+            }
+          } else {
+            console.log(`[deleteMemory] Thumbnail not found: ${thumbnailPath}`);
+          }
+          // Delete medium
+          const mediumPath = path.join(folderPath, `${base}_medium${ext}`);
+          console.log(`[deleteMemory] Constructed mediumPath: ${mediumPath}`);
+          if (fs.existsSync(mediumPath)) {
+            try {
+              fs.unlinkSync(mediumPath);
+              console.log(`[deleteMemory] Deleted medium: ${mediumPath}`);
+            } catch (err) {
+              console.error(`[deleteMemory] Failed to delete medium: ${mediumPath}`, err);
+            }
+          } else {
+            console.log(`[deleteMemory] Medium not found: ${mediumPath}`);
+          }
+        });
+        // Delete all photo records
+        await prisma.photo.deleteMany({ where: { memoryId: id } });
         await prisma.memory.delete({ where: { id } });
         console.log(`[deleteMemory] Successfully deleted memory with id: ${id}`);
         return true;
