@@ -18,13 +18,17 @@ import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
 import './OnboardingMemoryFlow.tiptap.css';
 
 const CREATE_MEMORY = gql`
-  mutation CreateMemory($title: String!, $date: String!, $description: String!, $photoUrl: String!) {
-    createMemory(input: { title: $title, date: $date, description: $description, photoUrl: $photoUrl }) {
+  mutation CreateMemory($title: String!, $date: String!, $description: String!, $photoUrl: String!, $location: LocationInput) {
+    createMemory(input: { title: $title, date: $date, description: $description, photoUrl: $photoUrl, location: $location }) {
       id
       title
       date
       description
       photoUrl
+      location {
+        lat
+        lng
+      }
     }
   }
 `;
@@ -373,13 +377,14 @@ export default function OnboardingMemoryFlow() {
         }
         const photoUrl = `/api/photos/${data.folder}/${data.baseFilename}`;
         // Create memory
+        const locationVar = details.location?.lat && details.location?.lng ? { lat: parseFloat(details.location.lat), lng: parseFloat(details.location.lng) } : null;
         const gqlRes = await createMemory({
           variables: {
             title: details.title.trim(),
             date: details.date ? details.date.toISOString() : dayjs().toISOString(),
             description: String(details.description).trim(),
             photoUrl,
-            location: details.location?.lat && details.location?.lng ? { lat: parseFloat(details.location.lat), lng: parseFloat(details.location.lng) } : null,
+            location: locationVar,
           },
         });
         setMemoryId(gqlRes.data.createMemory.id);

@@ -1,26 +1,17 @@
-import React, { useRef, useCallback, useEffect, useState } from 'react';
+import React, { useRef, useCallback, useEffect, useState, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useMemories, Memory, useMemoryDateRange } from './useMemories';
 import MemoryCard from './MemoryCard';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers';
 import dayjs, { Dayjs } from 'dayjs';
-import { Stack, Button, Avatar, ToggleButton, ToggleButtonGroup, List, ListItem, ListItemAvatar, ListItemText, Checkbox, ListItemButton, useMediaQuery } from '@mui/material';
+import { Stack, Button } from '@mui/material';
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
 import Skeleton from '@mui/material/Skeleton';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
-import Chip from '@mui/material/Chip';
 import { useQuery, gql } from '@apollo/client';
 import { useSearchParams } from 'next/navigation';
 import SearchMemoriesInput, { type MemorySuggestion } from './SearchMemoriesInput';
 import Container from '@mui/material/Container';
-import Paper from '@mui/material/Paper';
-import { AvatarGenerator } from 'random-avatar-generator';
-import { useTheme } from '@mui/material/styles';
 import MemoryTimelineFilters from './MemoryTimelineFilters';
 
 const PAGE_SIZE = 5;
@@ -44,8 +35,6 @@ type Person = {
 
 type ShortcutOption = { label: string; getValue: () => [Dayjs | null, Dayjs | null] };
 
-const avatarGenerator = new AvatarGenerator();
-
 const MemoryTimelineContainer: React.FC = () => {
   const [offset, setOffset] = useState(0);
   const [allMemories, setAllMemories] = useState<Memory[]>([]);
@@ -61,7 +50,13 @@ const MemoryTimelineContainer: React.FC = () => {
   const [searchText, setSearchText] = useState<string>('');
   const [selectedMemoryId, setSelectedMemoryId] = useState<string | null>(null);
 
-  const shortcutOptions: ShortcutOption[] = [
+  // Declare these once for use in effects and dependencies
+  const allMemoriesLength = allMemories.length;
+  const dateRange0 = dateRange[0];
+  const dateRange1 = dateRange[1];
+
+  // Memoize shortcutOptions to avoid recreating on every render
+  const shortcutOptions: ShortcutOption[] = useMemo(() => [
     {
       label: 'This Week',
       getValue: () => {
@@ -95,7 +90,7 @@ const MemoryTimelineContainer: React.FC = () => {
       label: 'Reset',
       getValue: () => [minDate ? dayjs(minDate) : null, maxDate ? dayjs(maxDate) : null] as [Dayjs | null, Dayjs | null],
     },
-  ];
+  ], [minDate, maxDate]);
 
   const [activeShortcut, setActiveShortcut] = useState<number | null>(null);
 
@@ -130,7 +125,7 @@ const MemoryTimelineContainer: React.FC = () => {
         setActiveShortcut(null);
       }
     }
-  }, [dateRange]);
+  }, [dateRange, activeShortcut, shortcutOptions]);
 
   // Set initial dateRange from backend only if user hasn't changed them
   useEffect(() => {
@@ -190,7 +185,7 @@ const MemoryTimelineContainer: React.FC = () => {
       setHasMore(false);
     }
     if (initialLoad && !loading) setInitialLoad(false);
-  }, [memories, offset, loading, initialLoad, totalCount, shouldFetch]);
+  }, [memories, offset, loading, initialLoad, totalCount, shouldFetch, allMemories.length, hasMore]);
 
   // Intersection Observer for infinite scroll
   const loaderRef = useRef<HTMLDivElement>(null);
@@ -207,26 +202,23 @@ const MemoryTimelineContainer: React.FC = () => {
   useEffect(() => {
     const option = { root: null, rootMargin: '20px', threshold: 1.0 };
     const observer = new IntersectionObserver(handleObserver, option);
-    if (loaderRef.current) observer.observe(loaderRef.current);
+    const currentLoader = loaderRef.current;
+    if (currentLoader) observer.observe(currentLoader);
     return () => {
-      if (loaderRef.current) observer.unobserve(loaderRef.current);
+      if (currentLoader) observer.unobserve(currentLoader);
     };
   }, [handleObserver]);
 
-  // Set initial startDate and endDate to the earliest and latest memory dates
+  // For useEffect at line 148 (set initial dateRange), extract memoriesToCheck
+  const memoriesToCheck = allMemoriesLength > 0 ? allMemories : memories;
+
   useEffect(() => {
-    const memoriesToCheck = allMemories.length > 0 ? allMemories : memories;
     if ((dateRange[0] === null || dateRange[1] === null) && memoriesToCheck.length > 0) {
       const sortedMemories = [...memoriesToCheck].sort((a, b) => Number(a.date) - Number(b.date));
-      if (dateRange[0] === null) setDateRange([dayjs(Number(sortedMemories[0].date)), dateRange[1]]);
-      if (dateRange[1] === null) setDateRange([dateRange[0], dayjs(Number(sortedMemories[sortedMemories.length - 1].date))]);
+      if (dateRange[0] === null) setDateRange(d => [dayjs(Number(sortedMemories[0].date)), d[1]]);
+      if (dateRange[1] === null) setDateRange(d => [d[0], dayjs(Number(sortedMemories[sortedMemories.length - 1].date))]);
     }
-  }, [
-    allMemories.length,
-    memories.length,
-    dateRange[0] ? dateRange[0].valueOf() : null,
-    dateRange[1] ? dateRange[1].valueOf() : null
-  ]);
+  }, [allMemories, memories, dateRange, memoriesToCheck]);
 
   // Pre-select people from URL query param on mount or when peopleData loads
   useEffect(() => {
@@ -258,12 +250,12 @@ const MemoryTimelineContainer: React.FC = () => {
     }
   }, [searchSelection]);
 
-  // Optionally clear search when filters change
+  // Extract complex expressions for useEffect for option to clear search when filters change
   useEffect(() => {
     setSearchSelection(null);
     setSearchText('');
     setSelectedMemoryId(null);
-  }, [dateRange[0], dateRange[1], selectedPeople]);
+  }, [dateRange0, dateRange1, selectedPeople]);
 
   // Ref map for scrolling
   const memoryRefs = useRef<{ [id: string]: HTMLDivElement | null }>({});
@@ -271,10 +263,7 @@ const MemoryTimelineContainer: React.FC = () => {
     if (selectedMemoryId && memoryRefs.current[selectedMemoryId]) {
       memoryRefs.current[selectedMemoryId]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-  }, [selectedMemoryId, allMemories]);
-
-  const theme = useTheme();
-  const isLargeScreen = useMediaQuery(theme.breakpoints.up('md'));
+  }, [selectedMemoryId, allMemories, allMemoriesLength]);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -351,6 +340,14 @@ const MemoryTimelineContainer: React.FC = () => {
                 <Typography variant="h6" color="text.secondary" mt={2}>
                   No memories found for your filters.
                 </Typography>
+                <Button
+                  href="/new"
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 3 }}
+                >
+                  Create a New Memory
+                </Button>
               </Box>
             )}
             {/* Memory cards */}

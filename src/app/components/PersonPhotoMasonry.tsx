@@ -38,10 +38,15 @@ const PersonPhotoMasonry: React.FC<PersonPhotoMasonryProps> = ({ memories, withT
       aria-label="Memories photo grid"
     >
       {memories.map((memory) => {
+        // Always use the _thumbnail version, preserving the original extension
+        let displayPhotoUrl = memory.photoUrl;
+        if (displayPhotoUrl && /\.(jpe?g|webp)$/i.test(displayPhotoUrl)) {
+          displayPhotoUrl = displayPhotoUrl.replace(/\.(jpe?g|webp)$/i, match => `_thumbnail${match}`);
+        }
         const img = (
           <Box
             component="img"
-            src={memory.photoUrl || PHOTO_PLACEHOLDER}
+            src={displayPhotoUrl || PHOTO_PLACEHOLDER}
             alt={memory.title || "Memory photo"}
             sx={{ width: '100%', display: 'block', cursor: 'pointer', borderRadius: 2, transition: 'box-shadow 0.2s', boxShadow: 1, '&:hover': { boxShadow: 6 } }}
             tabIndex={0}

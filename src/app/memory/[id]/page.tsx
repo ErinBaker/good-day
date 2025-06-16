@@ -291,17 +291,11 @@ export default function MemoryDetailPage() {
               </Typography>
               {/* Description */}
               <Box sx={{ mb: 1 }}>
-                {memory.description ? (
-                  <div
-                    style={{ fontSize: '1.25rem', lineHeight: 1.5 }}
-                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(memory.description) }}
-                    aria-label="Memory description"
-                  />
-                ) : (
-                  <Typography variant="h4" component="div">
-                    You didn&apos;t add a note, but the feeling lingers.
-                  </Typography>
-                )}
+                <div
+                  style={{ fontSize: '1.25rem', lineHeight: 1.5 }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(memory.description) }}
+                  aria-label="Memory description"
+                />
               </Box>
               {/* People Chips */}
               <Box>

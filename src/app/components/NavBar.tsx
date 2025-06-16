@@ -19,7 +19,7 @@ const NavBar: React.FC = () => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Button
             component={Link}
-            href="/create-memory"
+            href="/new"
             variant="contained"
             color="primary"
             sx={{ fontWeight: 600 }}
