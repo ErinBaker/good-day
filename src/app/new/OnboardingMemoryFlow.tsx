@@ -444,8 +444,14 @@ export default function OnboardingMemoryFlow() {
     setError('');
     // Try to extract EXIF metadata
     try {
-      const exif = await exifr.parse(file, { gps: true });
+      console.log('[EXIF FILE]', file);
+      let exif = await exifr.parse(file, { gps: true });
       console.log('[EXIF DEBUG]', exif);
+      if (!exif) {
+        console.warn('[EXIF WARNING] exifr.parse(file, { gps: true }) returned undefined, trying without options', file);
+        exif = await exifr.parse(file);
+        console.log('[EXIF DEBUG - no options]', exif);
+      }
       const newDetails = { ...details };
       if (exif?.DateTimeOriginal || exif?.CreateDate) {
         newDetails.date = dayjs(exif.DateTimeOriginal || exif.CreateDate);
